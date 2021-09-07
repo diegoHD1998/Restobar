@@ -7337,11 +7337,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DiegoHD\\Desktop\\SistemaRestobarSayka2\\SistemaRestobarSayka2\\SistemaRestobarSayka2.csproj",
+      "projectUniqueName": "C:\\Users\\DiegoHD\\Desktop\\Restobar\\SistemaRestobarSayka2\\SistemaRestobarSayka2\\SistemaRestobarSayka2.csproj",
       "projectName": "SistemaRestobarSayka2",
-      "projectPath": "C:\\Users\\DiegoHD\\Desktop\\SistemaRestobarSayka2\\SistemaRestobarSayka2\\SistemaRestobarSayka2.csproj",
+      "projectPath": "C:\\Users\\DiegoHD\\Desktop\\Restobar\\SistemaRestobarSayka2\\SistemaRestobarSayka2\\SistemaRestobarSayka2.csproj",
       "packagesPath": "C:\\Users\\DiegoHD\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DiegoHD\\Desktop\\SistemaRestobarSayka2\\SistemaRestobarSayka2\\obj\\",
+      "outputPath": "C:\\Users\\DiegoHD\\Desktop\\Restobar\\SistemaRestobarSayka2\\SistemaRestobarSayka2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\DiegoHD\\AppData\\Roaming\\NuGet\\NuGet.Config",

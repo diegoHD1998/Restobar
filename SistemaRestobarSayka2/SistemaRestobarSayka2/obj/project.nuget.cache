@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "u/mgtxb/icIHHNN3qsJy+Bueo8B7x5YpcyAHhEsqlWixOCV6SQnxcwvVisU+1mY57gNX6oj9yITa+z6dNYyqAw==",
+  "dgSpecHash": "y9G20BgHhKyjvLBDY9keRb5ViTHh+urPHWV9E8eQikIqwzyLyQu9dQW/F/VBIM7yxIJ7dak3OfQ7/zI3POYwnw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\DiegoHD\\Desktop\\SistemaRestobarSayka2\\SistemaRestobarSayka2\\SistemaRestobarSayka2.csproj",
+  "projectFilePath": "C:\\Users\\DiegoHD\\Desktop\\Restobar\\SistemaRestobarSayka2\\SistemaRestobarSayka2\\SistemaRestobarSayka2.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\DiegoHD\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\DiegoHD\\.nuget\\packages\\microsoft.aspnetcore.html.abstractions\\2.2.0\\microsoft.aspnetcore.html.abstractions.2.2.0.nupkg.sha512",
