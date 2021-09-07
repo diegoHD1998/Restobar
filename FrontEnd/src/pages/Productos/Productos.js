@@ -51,7 +51,6 @@ export default function Productos ()  {
             if(res.status >= 200 && res.status<300){
                 setCategorias(res.data)
                 setloading(false)
-                console.log(categorias)
             }else{
                 console.log('Error al cargar Datos de Categoria')
             }

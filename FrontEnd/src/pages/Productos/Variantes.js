@@ -249,8 +249,9 @@ export default function Variantes ()  {
 
         return index;
     };
-
-    const findIndexById2 = (id) => {/* -------Nuevo-------- */
+    
+    /* -------Nuevo-------- */
+    /* const findIndexById2 = (id) => {
         let index = -1;
         for (let i = 0; i < opcionVariantes.length; i++) {
             if (opcionVariantes[i].idVariante === id) {
@@ -260,7 +261,7 @@ export default function Variantes ()  {
         }
 
         return index;
-    }
+    } */
 
 
     const onInputChange = (e, name) => {
@@ -308,12 +309,12 @@ export default function Variantes ()  {
             </span>
         </div>
     );
-
-    const header2 = (/* -------Nuevo-------- */
+    /* -------Nuevo-------- */
+    /* const header2 = (
         <div className="table-header">
             <h6 className="p-m-0">Opciones Variantes</h6>
         </div>
-    );
+    ); */
 
     const productDialogFooter = (
         <>
@@ -348,7 +349,7 @@ export default function Variantes ()  {
             
             let texto = ''
 
-            _opciones.map(opcion => {
+            _opciones.forEach(opcion => {
 
                 if(_opciones.indexOf(opcion) !== _opciones.length - 1){
                     texto += `${opcion.nombre}, `
