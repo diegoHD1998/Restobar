@@ -257,7 +257,7 @@ export default function Mesas ()  {
 
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: '450px'}} header="Detalle Mesas " modal className="p-fluid " footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: '450px'}} header="Detalle Mesa " modal className="p-fluid " footer={productDialogFooter} onHide={hideDialog}>
                         
                         <div className="p-field">
                             <label htmlFor="nombre">Nombre</label>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+/* import { Link } from 'react-router-dom'; */
 import classNames from 'classnames';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -10,6 +11,8 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import VarienteService from '../../service/ProductosService/VarianteService'
 import OpcionVarianteService from '../../service/ProductosService/OpcionVarianteService'
+
+/* import OpcionVariante from './OpcionVariante' */
 
 
 export default function Variantes ()  {
@@ -33,7 +36,6 @@ export default function Variantes ()  {
     const [variante, setVariante] = useState(emptyProduct);
 
     const [opcionVariantes, setOpcionVariantes] = useState(null);
-    const [PreOpcionVariantes, setPreOpcionVariantes] = useState(null);
     const [opcionVariante, setOpcionVariante] = useState(emptyOpcionVariante);
 
     const [opcionDialog, setOpcionDialog] = useState(false);
@@ -46,8 +48,12 @@ export default function Variantes ()  {
     const toast = useRef(null);
     const dt = useRef(null);
 
-    
-    /* const [productos, setProductos] = useState([]) */
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [opciones, setOpciones] = useState(null)
+    const [opcion, setOpcion] = useState('')
+    const ocultarDialog = () =>{
+        setDialogVisible(false)
+    }
 
     const [loading, setloading] = useState(true)
     
@@ -82,6 +88,12 @@ export default function Variantes ()  {
 
     }, []);
 
+    const abrirOpciones = (rowData) =>{
+        setOpcion(rowData.nombre)
+        setOpciones(EncontrarOpciones(rowData))
+        setDialogVisible(true)
+    }
+
 
     const openNew = () => {
         setVariante(emptyProduct);
@@ -113,7 +125,7 @@ export default function Variantes ()  {
     const saveProduct = async() => { 
         setSubmitted(true);
 
-        if (variante.nombre.trim() /* && variante.productoIdProducto != null */) {
+        if (variante.nombre.trim()) {
             let _variantes = [...variantes];
             let _variante = { ...variante };
 
@@ -171,7 +183,7 @@ export default function Variantes ()  {
     const saveOpcionVariante = async() => { 
         setSubmitted2(true);
 
-        if (opcionVariante.nombre.trim()) {
+        if (opcionVariante.nombre.trim() && opcionVariante.precio.trim()) {
             let _OpcionVariantes = [...opcionVariantes];
             let _OpcionVariante = { ...opcionVariante };
             
@@ -180,7 +192,6 @@ export default function Variantes ()  {
             .then(res => {
                 if(res.status >= 200 && res.status<300){
                     _OpcionVariantes.push(res.data);
-                    /* console.log(_OpcionVariantes) */
                     toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Creada', life: 3000 });
                     console.log(res.data)
                 }else if(res.status >= 400 && res.status<500){
@@ -213,7 +224,6 @@ export default function Variantes ()  {
         .then(res => {
 
             if(res.status >= 200 && res.status < 300){
-
                 setVarientes(variantes.filter(val => val.idVariante !== res.data))
                 setDeleteProductDialog(false);
                 setVariante(emptyProduct);
@@ -281,8 +291,8 @@ export default function Variantes ()  {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-search" className="p-button-rounded p-button-info p-mr-2" />
-                <Button icon="pi pi-plus" className="p-button-rounded p-button-secondary p-mr-2" tooltip='Agregar Opciones' tooltipOptions={{position: 'top', my: ''}} onClick={() => openNewOpcion(rowData)} />
+                <Button icon="pi pi-search" className="p-button-rounded p-button-info p-mr-2" tooltip='Ver detalle opciones' tooltipOptions={{position: 'top'}} onClick={()=> abrirOpciones(rowData)} />
+                <Button icon="pi pi-plus" className="p-button-rounded p-button-secondary p-mr-2" tooltip='Agregar Opciones' tooltipOptions={{position: 'top'}} onClick={() => openNewOpcion(rowData)} />
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editProduct(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
@@ -326,13 +336,15 @@ export default function Variantes ()  {
         </>
     );
 
-    const BodyOpcionVarianteEnTabla = (rowData) => {/* -------Nuevo-------- */
+    const EncontrarOpciones = (rowData) => {
+        return opcionVariantes.filter(opcion => opcion?.varianteIdVariante === rowData?.idVariante) // Aqui estan todos los datos de la OpcionVariantes
+    }
 
-        console.log(opcionVariantes)
+    const BodyOpcionVarianteEnTabla = (rowData) => {/* -------Nuevo-------- */
 
         if(opcionVariantes){
 
-            let _opciones = opcionVariantes.filter(opcion => opcion?.varianteIdVariante === rowData?.idVariante)  // Aqui estan todos los datos de la OpcionVariantes
+            let _opciones = EncontrarOpciones(rowData) 
             
             let texto = ''
 
@@ -407,19 +419,19 @@ export default function Variantes ()  {
                     {/* Dialog Para ingresar una nueva opcionVariante */}
                     <Dialog visible={opcionDialog} style={{ width: '450px'}} header="Opcion Variante " modal className="p-fluid " footer={opcionDialogFooter} onHide={hideDialogOpcion}>
                         
-                        <div className="p-field">
+                        <div className="p-field" style={{ marginBottom: '40px'}} >
                             <label htmlFor="nombre">Nombre</label>
                             <InputText id="nombre" value={opcionVariante.nombre} onChange={(e) => onInputChanceOpcionVariante(e, 'nombre')} required autoFocus className={classNames({ 'p-invalid': submitted && !opcionVariante.nombre })} />
                             {submitted2 && !opcionVariante.nombre && <small className="p-invalid">Nombre Requerido.</small>}
                         </div>
                         
-                        <div className="p-field">
+                        <div className="p-field" style={{ marginBottom: '40px'}}>
                             <label htmlFor="precio">Precio</label>
                             <InputText id="precio" value={opcionVariante.precio} onChange={(e) => onInputChanceOpcionVariante(e, 'precio')} required  className={classNames({ 'p-invalid': submitted && !opcionVariante.precio })} />
                             {submitted2 && !opcionVariante.precio && <small className="p-invalid">Precio Requerido.</small>}
                         </div>
 
-                        <div className="p-field">
+                        <div className="p-field" >
                             <label htmlFor="orden">Orden</label>
                             <Dropdown id="orden" value={opcionVariante.orden} options={numerosOrden} placeholder='Seleccione Orden' onChange={(e) => onInputChanceOpcionVariante(e, 'orden')} />
                         </div>
@@ -431,6 +443,16 @@ export default function Variantes ()  {
                             <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
                             {variante && <span>Estas seguro que quieres eliminar la Variente <b>{variante.nombre}</b>?</span>}
                         </div>
+                    </Dialog>
+
+                    <Dialog visible={dialogVisible} style={{ width: '600px'}} header={`Detalle de opciones de Variante: ${opcion} `} modal className="p-fluid " onHide={ocultarDialog}>
+
+                        <DataTable value={opciones} className="datatable-responsive">
+                            <Column field="nombre" header="Nombre" sortable></Column>
+                            <Column field="precio" header="Precio" body={MonedaBodyTemplate} sortable></Column>
+                            <Column field="orden" header="Orden" sortable></Column>
+                        </DataTable>
+
                     </Dialog>
 
                 </div>

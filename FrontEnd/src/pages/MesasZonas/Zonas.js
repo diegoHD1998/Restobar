@@ -239,7 +239,7 @@ export default function Zonas ()  {
 
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: '450px'}} header="Detalle Zonas " modal className="p-fluid " footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: '450px'}} header="Detalle Zona " modal className="p-fluid " footer={productDialogFooter} onHide={hideDialog}>
                         
                         <div className="p-field" style={{height:'120px'}}>
                             <label htmlFor="nombre">Nombre</label>
