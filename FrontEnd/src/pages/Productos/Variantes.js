@@ -23,7 +23,7 @@ export default function Variantes ()  {
         idOpcionV: null,
         nombre: '',
         precio: null,
-        idVariante: null,
+        varianteIdVariante: null,
         orden: null
     }
 
@@ -89,8 +89,9 @@ export default function Variantes ()  {
         setProductDialog(true);
     }
 
-    const openNewOpcion = () => {/* -------Nuevo-------- */
+    const openNewOpcion = (data) => {/* -------Nuevo-------- */
         setOpcionVariante(emptyOpcionVariante);
+        setOpcionVariante({varianteIdVariante: data.idVariante})
         setSubmitted2(false);
         setOpcionDialog(true);
     }
@@ -166,37 +167,20 @@ export default function Variantes ()  {
     /* -------Nuevo-------- */
     /* -------------------------------------------------------------------------------------------------------- */
     /* -------------------------------------------------------------------------------------------------------- */
-    const PreSaveOpcionVariante = () => {
-        setSubmitted2(true);
-
-        if (opcionVariante.nombre.trim()) {
-
-            let _OpcionVariante = { ...opcionVariante };
-            let _PreOpcionVariantes = [...PreOpcionVariantes];
-
-            _PreOpcionVariantes.push(_OpcionVariante)
-            toast.current.show({ severity: 'success', summary: 'Operacion PreExitosa', detail: 'Opcion Variante PreCreada', life: 3000 });
-
-            setPreOpcionVariantes(_PreOpcionVariantes);
-            setOpcionDialog(false);
-            setOpcionVariante(emptyOpcionVariante)
-
-        }
-    }
-
-    /* -------Nuevo-------- */
+    
     const saveOpcionVariante = async() => { 
         setSubmitted2(true);
 
         if (opcionVariante.nombre.trim()) {
             let _OpcionVariantes = [...opcionVariantes];
             let _OpcionVariante = { ...opcionVariante };
-
+            
             delete _OpcionVariante.idOpcionV;
             await opcionVarianteService.create(_OpcionVariante)
             .then(res => {
                 if(res.status >= 200 && res.status<300){
                     _OpcionVariantes.push(res.data);
+                    /* console.log(_OpcionVariantes) */
                     toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Creada', life: 3000 });
                     console.log(res.data)
                 }else if(res.status >= 400 && res.status<500){
@@ -294,23 +278,16 @@ export default function Variantes ()  {
         )
     };
 
-    const leftToolbarTemplateOpcion = () => {/* -------Nuevo-------- */
-        return (
-            <React.Fragment>
-                <Button label="Nueva Opcion Variante" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={openNewOpcion} />
-            </React.Fragment>
-        )
-    };
-
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
                 <Button icon="pi pi-search" className="p-button-rounded p-button-info p-mr-2" />
+                <Button icon="pi pi-plus" className="p-button-rounded p-button-secondary p-mr-2" tooltip='Agregar Opciones' tooltipOptions={{position: 'top', my: ''}} onClick={() => openNewOpcion(rowData)} />
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editProduct(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
         );
-    }
+    };
 
     const header = (
         <div className="table-header">
@@ -338,7 +315,7 @@ export default function Variantes ()  {
     const opcionDialogFooter = (/* -------Nuevo-------- */
         <>
             <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={hideDialogOpcion} />
-            <Button label="Guardar" icon="pi pi-check" className="p-button-text" onClick={PreSaveOpcionVariante} />
+            <Button label="Guardar" icon="pi pi-check" className="p-button-text" onClick={saveOpcionVariante} />
         </>
     );
 
@@ -351,27 +328,37 @@ export default function Variantes ()  {
 
     const BodyOpcionVarianteEnTabla = (rowData) => {/* -------Nuevo-------- */
 
+        console.log(opcionVariantes)
+
         if(opcionVariantes){
 
-            let _opciones = []
-            _opciones = opcionVariantes.find(val => val?.idOpcionV === rowData?.idVariante)  // Aqui estan todos los datos de la OpcionVariantes
+            let _opciones = opcionVariantes.filter(opcion => opcion?.varianteIdVariante === rowData?.idVariante)  // Aqui estan todos los datos de la OpcionVariantes
+            
+            let texto = ''
 
-            return (
-                <>
-                    <div>
-                        {
-                            _opciones.map((opcion) => {
-                                
-                                if(_opciones.indexOf(opcion) !== _opciones.length - 1){
-                                    <span >{`${opcion?.nombre},`}</span>
-                                }else{
-                                    <span >{`${opcion?.nombre}.`}</span>
-                                }
-                            })
-                        }
-                    </div>
-                </>
-            );
+            _opciones.map(opcion => {
+
+                if(_opciones.indexOf(opcion) !== _opciones.length - 1){
+                    texto += `${opcion.nombre}, `
+                }else{
+                    texto += `${opcion.nombre}. `
+                }
+            })
+            
+
+            if(_opciones){
+                return (
+                    <>
+                        <div>
+                            <span>{texto}</span>
+                        </div>
+                    </>
+                );
+            }else{
+                console.log('Esta Variante no posee opciones')
+            }
+        }else{
+            console.log('No hay data de opciones')
         }
     }
 
@@ -414,18 +401,6 @@ export default function Variantes ()  {
                             {submitted && !variante.nombre && <small className="p-invalid">Nombre Requerido.</small>}
                         </div>
 
-                        <div>
-                            <Toolbar className="p-mb-4" left={leftToolbarTemplateOpcion}></Toolbar>
-                            <DataTable value={PreOpcionVariantes ? PreOpcionVariantes : opcionVariantes} header={header2} emptyMessage="Opciones de Variante No Encontradas." >
-                                <Column field="nombre" header="Nombre" sortable ></Column>
-                                <Column field="precio" header="Precio" body={MonedaBodyTemplate} sortable ></Column>
-                                <Column field="orden" header="Orden" sortable ></Column>
-                                
-                            </DataTable>
-                        </div>
-
-                        
-                
                     </Dialog>
 
                     {/* -------Nuevo-------- */}
@@ -446,12 +421,12 @@ export default function Variantes ()  {
 
                         <div className="p-field">
                             <label htmlFor="orden">Orden</label>
-                            <Dropdown id="orden" options={numerosOrden} placeholder='Seleccione Orden' onChange={(e) => onInputChanceOpcionVariante(e, 'orden')} />
+                            <Dropdown id="orden" value={opcionVariante.orden} options={numerosOrden} placeholder='Seleccione Orden' onChange={(e) => onInputChanceOpcionVariante(e, 'orden')} />
                         </div>
                         
                     </Dialog>
 
-                    <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
+                    <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                         <div className="confirmation-content">
                             <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
                             {variante && <span>Estas seguro que quieres eliminar la Variente <b>{variante.nombre}</b>?</span>}
