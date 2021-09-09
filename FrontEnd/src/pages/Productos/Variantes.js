@@ -37,6 +37,7 @@ export default function Variantes ()  {
 
     const [opcionVariantes, setOpcionVariantes] = useState(null);
     const [opcionVariante, setOpcionVariante] = useState(emptyOpcionVariante);
+    const [opciones, setOpciones] = useState(null)
 
     const [opcionDialog, setOpcionDialog] = useState(false);
     const [submitted2, setSubmitted2] = useState(false);
@@ -49,19 +50,13 @@ export default function Variantes ()  {
     const dt = useRef(null);
 
     const [dialogVisible, setDialogVisible] = useState(false);
-    const [opciones, setOpciones] = useState(null)
-    const [opcion, setOpcion] = useState('')
-    const ocultarDialog = () =>{
-        setDialogVisible(false)
-    }
-
+    const [deleteOpcionDialog, setDeleteOpcionDialog] = useState(false)
+    
     const [loading, setloading] = useState(true)
-    
-    
     
     const varienteService = new VarienteService(); 
     const opcionVarianteService = new OpcionVarianteService()
-
+    
     useEffect(() => {
 
         const varienteService = new VarienteService();
@@ -74,7 +69,7 @@ export default function Variantes ()  {
             }
             
         });
-
+        
 
         const opcionVarianteService = new OpcionVarianteService();
         opcionVarianteService.readAll().then((res) => {
@@ -85,23 +80,27 @@ export default function Variantes ()  {
             }
         });
         
-
+        
     }, []);
-
+    /* -------Nuevo-------- */
     const abrirOpciones = (rowData) =>{
-        setOpcion(rowData.nombre)
+        setVariante(rowData)
         setOpciones(EncontrarOpciones(rowData))
         setDialogVisible(true)
     }
-
+    /* -------Nuevo-------- */
+    const ocultarDialog = () =>{
+        setDialogVisible(false)
+        setVariante(emptyProduct)
+    }
 
     const openNew = () => {
         setVariante(emptyProduct);
         setSubmitted(false);
         setProductDialog(true);
     }
-
-    const openNewOpcion = (data) => {/* -------Nuevo-------- */
+    /* -------Nuevo-------- */
+    const openNewOpcion = (data) => {
         setOpcionVariante(emptyOpcionVariante);
         setOpcionVariante({varianteIdVariante: data.idVariante})
         setSubmitted2(false);
@@ -112,14 +111,18 @@ export default function Variantes ()  {
         setSubmitted(false);
         setProductDialog(false);
     }
-
-    const hideDialogOpcion = () => {/* -------Nuevo-------- */
+    /* -------Nuevo-------- */
+    const hideDialogOpcion = () => {
         setSubmitted2(false);
         setOpcionDialog(false);
     }
 
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
+    }
+
+    const hideDeleteOpcionDialog = () => {
+        setDeleteOpcionDialog(false)
     }
 
     const saveProduct = async() => { 
@@ -219,6 +222,11 @@ export default function Variantes ()  {
         setDeleteProductDialog(true);
     }
 
+    const confirmDeleteOpcion = (opcion) => {
+        setOpcionVariante(opcion)
+        setDeleteOpcionDialog(true)
+    }
+
     const deleteProduct = async() => { 
         await varienteService.delete(variante.idVariante)
         .then(res => {
@@ -234,6 +242,26 @@ export default function Variantes ()  {
             }else{
                 console.log(res)
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Delete Variante, Status No controlado`, life: 5000 });
+            }
+        });
+    }
+
+    const deleteOpcion = async() => { 
+        await opcionVarianteService.delete(opcionVariante.idOpcionV)
+        .then(res => {
+
+            if(res.status >= 200 && res.status < 300){
+
+                setOpcionVariantes(opcionVariantes.filter(val => val.idOpcionV !== res.data));
+                setDeleteOpcionDialog(false);
+                setOpcionVariante(emptyOpcionVariante);
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Eliminada', life: 3000 });
+
+            }else if(res.status >= 400 && res.status < 500){
+                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+            }else{
+                console.log(res)
+                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Delete Opcion Variante, Status No controlado`, life: 5000 });
             }
         });
     }
@@ -300,6 +328,14 @@ export default function Variantes ()  {
         );
     };
 
+    const actionBodyTemplateOpcion = (rowData)=>{
+        return (
+            <div>
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteOpcion(rowData)} />
+            </div>
+        )
+    }
+
     const header = (
         <div className="table-header">
             <h5 className="p-m-0">Administracion de Variantes</h5>
@@ -334,6 +370,13 @@ export default function Variantes ()  {
         <>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} />
             <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} />
+        </>
+    );
+
+    const deleteOpcionDialogFooter = (
+        <>
+            <Button label="No" icon="pi pi-times" className="p-button-text"  onClick={hideDeleteOpcionDialog}  />
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteOpcion} />
         </>
     );
 
@@ -446,15 +489,26 @@ export default function Variantes ()  {
                         </div>
                     </Dialog>
 
-                    <Dialog visible={dialogVisible} style={{ width: '600px'}} header={`Detalle de opciones de Variante: ${opcion} `} modal className="p-fluid " onHide={ocultarDialog}>
+                    <Dialog visible={dialogVisible} style={{ width: '600px'}} header={`Detalle de opciones de Variante: ${variante.nombre} `} modal className="p-fluid " onHide={ocultarDialog}>
 
                         <DataTable value={opciones} className="datatable-responsive">
                             <Column field="nombre" header="Nombre" sortable></Column>
                             <Column field="precio" header="Precio" body={MonedaBodyTemplate} sortable></Column>
                             <Column field="orden" header="Orden" sortable></Column>
+                            <Column body={actionBodyTemplateOpcion}></Column>
+                            
                         </DataTable>
 
                     </Dialog>
+
+                    <Dialog visible={deleteOpcionDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteOpcionDialogFooter} onHide={hideDeleteOpcionDialog}>
+                        <div className="confirmation-content">
+                            <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
+                            {opcionVariante && <span>Estas seguro que quieres eliminar la Opcion Variente <b>{opcionVariante.nombre}</b>?</span>}
+                        </div>
+                    </Dialog>
+
+                    
 
                 </div>
             </div>
