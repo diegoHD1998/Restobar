@@ -92,6 +92,7 @@ export default function Variantes ()  {
     const ocultarDialog = () =>{
         setDialogVisible(false)
         setVariante(emptyProduct)
+        setOpciones(null)
     }
 
     const openNew = () => {
@@ -253,10 +254,11 @@ export default function Variantes ()  {
             if(res.status >= 200 && res.status < 300){
 
                 setOpcionVariantes(opcionVariantes.filter(val => val.idOpcionV !== res.data));
+                setOpciones(opciones.filter(val => val.idOpcionV !== res.data));
                 setDeleteOpcionDialog(false);
                 setOpcionVariante(emptyOpcionVariante);
                 toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Eliminada', life: 3000 });
-
+                
             }else if(res.status >= 400 && res.status < 500){
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
             }else{
