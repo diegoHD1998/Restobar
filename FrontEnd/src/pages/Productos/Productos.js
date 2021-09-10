@@ -11,6 +11,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
 import ProductoService from '../../service/ProductosService/ProductoService'
 import CategoriaService from '../../service/ProductosService/CategoriaService'
+import VarianteService from '../../service/ProductosService/VarianteService'
 
 
 
@@ -24,7 +25,8 @@ export default function Productos ()  {
         precio: null,
         imagen:'',
         estado:'',
-        categoriaIdCategoria:null
+        categoriaIdCategoria:null,
+        varianteIdVariante:null
     };
 
     const [productos, setProductos] = useState(null); /* <----------------- */
@@ -36,11 +38,10 @@ export default function Productos ()  {
     const toast = useRef(null);
     const dt = useRef(null);
     
-    const [categorias, setCategorias] = useState([])
+    const [categorias, setCategorias] = useState([]);
+    const [variantes, setVariantes] = useState([]);
 
-    const [loading, setloading] = useState(true)
-    
-    
+    /* const [loading, setloading] = useState(true) */
     
     const productoService = new ProductoService(); 
 
@@ -50,21 +51,35 @@ export default function Productos ()  {
         categoriaService.readAll().then((res) => {
             if(res.status >= 200 && res.status<300){
                 setCategorias(res.data)
-                setloading(false)
+                
+                /* setloading(false) */
             }else{
-                console.log('Error al cargar Datos de Categoria')
+                console.log('Error al cargar Datos de Categorias')
             }
         });
 
+        const varianteService = new VarianteService();
+        varianteService.readAll().then((res)=>{
+            if(res.status >= 200 && res.status<300){
+                setVariantes(res.data)
+                
+                /* setloading(false) */
+            }else{
+                console.log('Error al cargar Datos de Variantes')
+            }
+        });
 
+        
         const productoService = new ProductoService();
         productoService.readAll().then((res) => {
             if(res.status >= 200 && res.status<300){
                 setProductos(res.data)
+                
             }else{
                 console.log('Error al cargar Datos de Productos')
             }
         });
+        
 
     }, []);
 
@@ -210,6 +225,27 @@ export default function Productos ()  {
         }
     }
 
+    const VarianteBodyTemplate = (rowData) => {
+        if(variantes){
+            let _variante = variantes.find( val => val?.idVariante === rowData?.varianteIdVariante)
+            
+            if(_variante !== undefined){
+                return(
+                    <>
+                        <span>{`${_variante?.nombre}`}</span>
+                    </>
+                )
+            }else{
+                return(
+                    <>
+                        <span>No aplica</span>
+                    </>
+                )
+            }
+            
+        }
+    }
+
     const MonedaBodyTemplate = (rowData) => {
 
         return formatCurrency(rowData.precio)
@@ -271,16 +307,17 @@ export default function Productos ()  {
                     <Toolbar className="p-mb-4" left={leftToolbarTemplate}></Toolbar>
 
                     <DataTable ref={dt} value={productos}
-                        dataKey="idproducto" paginator rows={5} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
+                        dataKey="idproducto" paginator rows={10} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Productos"
-                        globalFilter={globalFilter} emptyMessage="Productos No Encontrados." header={header} loading={loading}>
+                        globalFilter={globalFilter} emptyMessage="Productos No Encontrados." header={header} /* loading={loading} */>
                         
                         <Column field="nombre" header="Nombre" sortable ></Column>
                         <Column field="descripcion" header="Descripcion" sortable ></Column>
                         <Column field="precio" body={MonedaBodyTemplate} header="Precio" sortable ></Column>
                         <Column field="imagen" header="Imagen" sortable ></Column>
                         <Column field="estado" header="Estado" sortable ></Column>
+                        <Column field="varianteIdVariante" body={VarianteBodyTemplate} header="Variante" sortable ></Column>
                         <Column field="categoriaIdCategoria" body={ColorBodytemplate} header="Categoria" sortable ></Column>
                         <Column body={actionBodyTemplate}></Column>
 
@@ -306,6 +343,10 @@ export default function Productos ()  {
                             {submitted && !producto.precio && <small className="p-invalid">Precio Requerido.</small>}
                         </div>
 
+                        <div className="p-field" >
+                            <label htmlFor="varianteIdVariante">Variante</label>
+                            <Dropdown id="varianteIdVariante" optionLabel="nombre" optionValue="idVariante" value={producto.varianteIdVariante} options={variantes} placeholder='Seleccione Variante' onChange={(e) => onInputChange(e, 'varianteIdVariante')}  rows={3} cols={20} />
+                        </div>
 
                         <div className="p-field" /* style={{height:'100px'}} */>
                             <label htmlFor="estado">Estado</label>
@@ -319,10 +360,11 @@ export default function Productos ()  {
                             {submitted && !producto.categoriaIdCategoria && <small className="p-invalid">Categoria Requerida.</small>}
                         </div>
 
+
                         <div className="p-field" style={{height:'150px'}}>
                             <label htmlFor="imagen">Imagen</label>
                             <InputText id="imagen" value={producto.imagen} onChange={(e) => onInputChange(e, 'imagen')} /* className={classNames({ 'p-invalid': submitted && !producto.imagen })} */ />
-                            {/* {submitted && !producto.imagen && <small className="p-invalid">Imagen Requerida.</small>} */}
+                            
                         </div>
                     </Dialog>
 

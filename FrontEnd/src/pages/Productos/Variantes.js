@@ -35,9 +35,9 @@ export default function Variantes ()  {
     const [variantes, setVarientes] = useState(null);
     const [variante, setVariante] = useState(emptyProduct);
 
-    const [opcionVariantes, setOpcionVariantes] = useState(null);
-    const [opcionVariante, setOpcionVariante] = useState(emptyOpcionVariante);
-    const [opciones, setOpciones] = useState(null)
+    const [opcionVariantes, setOpcionVariantes] = useState(null); //Todas las Opciones Varientes de la DB
+    const [opcionVariante, setOpcionVariante] = useState(emptyOpcionVariante);//OpcionVariente
+    const [opciones, setOpciones] = useState(null) //Opciones Variantes de una Variente en especifico
 
     const [opcionDialog, setOpcionDialog] = useState(false);
     const [submitted2, setSubmitted2] = useState(false);
@@ -102,10 +102,12 @@ export default function Variantes ()  {
     }
     /* -------Nuevo-------- */
     const openNewOpcion = (data) => {
+
         setOpcionVariante(emptyOpcionVariante);
         setOpcionVariante({varianteIdVariante: data.idVariante})
         setSubmitted2(false);
         setOpcionDialog(true);
+        
     }
 
     const hideDialog = () => {
@@ -187,27 +189,50 @@ export default function Variantes ()  {
     const saveOpcionVariante = async() => { 
         setSubmitted2(true);
 
-        if (opcionVariante.nombre.trim() && opcionVariante.precio.trim()) {
-            let _OpcionVariantes = [...opcionVariantes];
+        if (opcionVariante.nombre.trim() ) {
+            let _OpcionVariantes = [...opciones];
             let _OpcionVariante = { ...opcionVariante };
             
-            delete _OpcionVariante.idOpcionV;
-            await opcionVarianteService.create(_OpcionVariante)
-            .then(res => {
-                if(res.status >= 200 && res.status<300){
-                    _OpcionVariantes.push(res.data);
-                    toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Creada', life: 3000 });
-                    console.log(res.data)
-                }else if(res.status >= 400 && res.status<500){
-                    console.log(res)
-                    toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
-                }else{
-                    console.log(res)
-                    toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create OpcionVariante, Status No controlado`, life: 5000 });
-                }
-            });
+            if(opcionVariante.idOpcionV){
+                await opcionVarianteService.update(opcionVariante)
+                .then(res => {
+                    if(res.status >= 200 && res.status<300){
+                        console.log(opcionVariantes)
+                        const index = findIndexById2(opcionVariante.idOpcionV);
+                        _OpcionVariantes[index] = _OpcionVariante;
 
-            setOpcionVariantes(_OpcionVariantes);
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Actualizada', life: 3000 });
+                        console.log(res.data)
+
+                    }else if(res.status >= 400 && res.status<500){
+                        console.log(res)
+                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+                    }else{
+                        console.log(res)
+                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Update de Opcion Variante, Status no controlado`, life: 5000 });
+                    }
+                });
+            }else{
+
+                delete _OpcionVariante.idOpcionV;
+                await opcionVarianteService.create(_OpcionVariante)
+                .then(res => {
+                    if(res.status >= 200 && res.status<300){
+                        _OpcionVariantes.push(res.data);
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Creada', life: 3000 });
+                        console.log(res.data)
+                    }else if(res.status >= 400 && res.status<500){
+                        console.log(res)
+                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+                    }else{
+                        console.log(res)
+                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create OpcionVariante, Status No controlado`, life: 5000 });
+                    }
+                });
+            }
+            
+
+            setOpciones(_OpcionVariantes);
             setOpcionDialog(false);
             setOpcionVariante(emptyOpcionVariante);
         }
@@ -216,6 +241,10 @@ export default function Variantes ()  {
     const editProduct = (product) => {
         setVariante({ ...product });
         setProductDialog(true);
+    }
+    const editOpcion = (opcion) => {
+        setOpcionVariante({...opcion});
+        setOpcionDialog(true);
     }
 
     const confirmDeleteProduct = (product) => {
@@ -281,17 +310,17 @@ export default function Variantes ()  {
     };
     
     /* -------Nuevo-------- */
-    /* const findIndexById2 = (id) => {
+    const findIndexById2 = (id) => {
         let index = -1;
-        for (let i = 0; i < opcionVariantes.length; i++) {
-            if (opcionVariantes[i].idVariante === id) {
+        for (let i = 0; i < opciones.length; i++) {
+            if (opciones[i].idOpcionV === id) {
                 index = i;
                 break;
             }
         }
 
         return index;
-    } */
+    }
 
 
     const onInputChange = (e, name) => {
@@ -333,6 +362,7 @@ export default function Variantes ()  {
     const actionBodyTemplateOpcion = (rowData)=>{
         return (
             <div>
+                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editOpcion(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteOpcion(rowData)} />
             </div>
         )
@@ -494,9 +524,9 @@ export default function Variantes ()  {
                     <Dialog visible={dialogVisible} style={{ width: '600px'}} header={`Detalle de opciones de Variante: ${variante.nombre} `} modal className="p-fluid " onHide={ocultarDialog}>
 
                         <DataTable value={opciones} className="datatable-responsive">
-                            <Column field="nombre" header="Nombre" sortable></Column>
-                            <Column field="precio" header="Precio" body={MonedaBodyTemplate} sortable></Column>
-                            <Column field="orden" header="Orden" sortable></Column>
+                            <Column field="nombre" header="Nombre"></Column>
+                            <Column field="precio" header="Precio" body={MonedaBodyTemplate} ></Column>
+                            <Column field="orden" header="Orden"></Column>
                             <Column body={actionBodyTemplateOpcion}></Column>
                             
                         </DataTable>
