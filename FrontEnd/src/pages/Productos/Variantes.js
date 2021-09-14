@@ -37,7 +37,7 @@ export default function Variantes ()  {
 
     const [opcionVariantes, setOpcionVariantes] = useState(null); //Todas las Opciones Varientes de la DB
     const [opcionVariante, setOpcionVariante] = useState(emptyOpcionVariante);//OpcionVariente
-    const [opciones, setOpciones] = useState(null) //Opciones Variantes de una Variente en especifico
+    const [opciones, setOpciones] = useState([]) //Opciones Variantes de una Variente en especifico
 
     const [opcionDialog, setOpcionDialog] = useState(false);
     const [submitted2, setSubmitted2] = useState(false);
@@ -190,16 +190,22 @@ export default function Variantes ()  {
         setSubmitted2(true);
 
         if (opcionVariante.nombre.trim() ) {
-            let _OpcionVariantes = [...opciones];
+            let _OpcionVariantes = [...opcionVariantes];
             let _OpcionVariante = { ...opcionVariante };
+            
+
             
             if(opcionVariante.idOpcionV){
                 await opcionVarianteService.update(opcionVariante)
                 .then(res => {
                     if(res.status >= 200 && res.status<300){
-                        console.log(opcionVariantes)
                         const index = findIndexById2(opcionVariante.idOpcionV);
                         _OpcionVariantes[index] = _OpcionVariante;
+                        
+                        let _Opciones = [...opciones]
+                        const index2 = findIndexById3(opcionVariante.idOpcionV);
+                        _Opciones[index2] = _OpcionVariante
+                        setOpciones(_Opciones)
 
                         toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Actualizada', life: 3000 });
                         console.log(res.data)
@@ -217,11 +223,11 @@ export default function Variantes ()  {
                 delete _OpcionVariante.idOpcionV;
                 await opcionVarianteService.create(_OpcionVariante)
                 .then(res => {
-                    if(res.status >= 200 && res.status<300){
+                    if(res.status >= 200 && res.status < 300){
                         _OpcionVariantes.push(res.data);
                         toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Creada', life: 3000 });
                         console.log(res.data)
-                    }else if(res.status >= 400 && res.status<500){
+                    }else if(res.status >= 400 && res.status < 500){
                         console.log(res)
                         toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
                     }else{
@@ -231,10 +237,10 @@ export default function Variantes ()  {
                 });
             }
             
-
-            setOpciones(_OpcionVariantes);
+            setOpcionVariantes(_OpcionVariantes);
             setOpcionDialog(false);
             setOpcionVariante(emptyOpcionVariante);
+            
         }
     }
 
@@ -311,6 +317,18 @@ export default function Variantes ()  {
     
     /* -------Nuevo-------- */
     const findIndexById2 = (id) => {
+        let index = -1;
+        for (let i = 0; i < opcionVariantes.length; i++) {
+            if (opcionVariantes[i].idOpcionV === id) {
+                index = i;
+                break;
+            }
+        }
+
+        return index;
+    }
+
+    const findIndexById3 = (id) => {
         let index = -1;
         for (let i = 0; i < opciones.length; i++) {
             if (opciones[i].idOpcionV === id) {
@@ -438,27 +456,32 @@ export default function Variantes ()  {
                 return (
                     <>
                         <div>
-                            <span>{texto}</span>
+                            <span><b>{texto}</b></span>
                         </div>
                     </>
                 );
             }else{
+                
                 console.log('Esta Variante no posee opciones')
             }
         }else{
             console.log('No hay data de opciones')
         }
     }
+        
+    const MonedaBodyTemplate1 = (rowData) => {
+        let precio = rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
 
-    const MonedaBodyTemplate = (rowData) => {/* -------Nuevo-------- */
-
-        return formatCurrency(rowData.precio)
-
+        return(
+            <>
+                <div>
+                    <span>{`${precio}`}</span>
+                </div>
+            </>
+        )
+        
     }
 
-    const formatCurrency = (value) => {/* -------Nuevo-------- */
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits:0});
-    }
 
 
     return (
@@ -497,13 +520,13 @@ export default function Variantes ()  {
                         
                         <div className="p-field" style={{ marginBottom: '40px'}} >
                             <label htmlFor="nombre">Nombre</label>
-                            <InputText id="nombre" value={opcionVariante.nombre} onChange={(e) => onInputChanceOpcionVariante(e, 'nombre')} required autoFocus className={classNames({ 'p-invalid': submitted && !opcionVariante.nombre })} />
+                            <InputText id="nombre" value={opcionVariante.nombre} onChange={(e) => onInputChanceOpcionVariante(e, 'nombre')} required autoFocus className={classNames({ 'p-invalid': submitted2 && !opcionVariante.nombre })} />
                             {submitted2 && !opcionVariante.nombre && <small className="p-invalid">Nombre Requerido.</small>}
                         </div>
                         
                         <div className="p-field" style={{ marginBottom: '40px'}}>
                             <label htmlFor="precio">Precio</label>
-                            <InputText id="precio" value={opcionVariante.precio} onChange={(e) => onInputChanceOpcionVariante(e, 'precio')} required  className={classNames({ 'p-invalid': submitted && !opcionVariante.precio })} />
+                            <InputText id="precio" value={opcionVariante.precio} onChange={(e) => onInputChanceOpcionVariante(e, 'precio')} required  className={classNames({ 'p-invalid': submitted2 && !opcionVariante.precio })} />
                             {submitted2 && !opcionVariante.precio && <small className="p-invalid">Precio Requerido.</small>}
                         </div>
 
@@ -525,7 +548,7 @@ export default function Variantes ()  {
 
                         <DataTable value={opciones} className="datatable-responsive">
                             <Column field="nombre" header="Nombre"></Column>
-                            <Column field="precio" header="Precio" body={MonedaBodyTemplate} ></Column>
+                            <Column field="precio" header="Precio" body={MonedaBodyTemplate1} ></Column>
                             <Column field="orden" header="Orden"></Column>
                             <Column body={actionBodyTemplateOpcion}></Column>
                             
