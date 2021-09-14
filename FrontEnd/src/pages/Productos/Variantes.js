@@ -546,7 +546,7 @@ export default function Variantes ()  {
 
                     <Dialog visible={dialogVisible} style={{ width: '600px'}} header={`Detalle de opciones de Variante: ${variante.nombre} `} modal className="p-fluid " onHide={ocultarDialog}>
 
-                        <DataTable value={opciones} className="datatable-responsive">
+                        <DataTable value={opciones} className="datatable-responsive" emptyMessage="Variante No posee Opciones.">
                             <Column field="nombre" header="Nombre"></Column>
                             <Column field="precio" header="Precio" body={MonedaBodyTemplate1} ></Column>
                             <Column field="orden" header="Orden"></Column>
