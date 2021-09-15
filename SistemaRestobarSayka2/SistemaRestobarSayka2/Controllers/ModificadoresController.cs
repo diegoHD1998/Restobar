@@ -25,7 +25,8 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Modificador>>> GetModificadors()
         {
-            return await _context.Modificadors.ToListAsync();
+            var modificadores = await _context.Modificadors.ToListAsync();
+            return Ok(modificadores);
         }
 
         // GET: api/Modificadores/5
@@ -36,10 +37,10 @@ namespace SistemaRestobarSayka2.Controllers
 
             if (modificador == null)
             {
-                return NotFound();
+                return NotFound("Modificador No Encontrado");
             }
 
-            return modificador;
+            return Ok(modificador);
         }
 
         // PUT: api/Modificadores/5
@@ -49,7 +50,7 @@ namespace SistemaRestobarSayka2.Controllers
         {
             if (id != modificador.IdModificador)
             {
-                return BadRequest();
+                return BadRequest("Los Ids del Modificador No Coinciden");
             }
 
             _context.Entry(modificador).State = EntityState.Modified;
@@ -62,7 +63,7 @@ namespace SistemaRestobarSayka2.Controllers
             {
                 if (!ModificadorExists(id))
                 {
-                    return NotFound();
+                    return NotFound("No se a Encontrado El Modificador a Modificar");
                 }
                 else
                 {
@@ -70,7 +71,7 @@ namespace SistemaRestobarSayka2.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetModificador", new { id = modificador.IdModificador }, modificador);
         }
 
         // POST: api/Modificadores
@@ -78,8 +79,17 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpPost]
         public async Task<ActionResult<Modificador>> PostModificador(Modificador modificador)
         {
-            _context.Modificadors.Add(modificador);
-            await _context.SaveChangesAsync();
+            
+
+            try
+            {
+                _context.Modificadors.Add(modificador);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest("El Modificador No fue Guardado");
+            }
 
             return CreatedAtAction("GetModificador", new { id = modificador.IdModificador }, modificador);
         }
@@ -91,13 +101,21 @@ namespace SistemaRestobarSayka2.Controllers
             var modificador = await _context.Modificadors.FindAsync(id);
             if (modificador == null)
             {
-                return NotFound();
+                return NotFound("Modificador No Encontrado");
             }
 
-            _context.Modificadors.Remove(modificador);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Modificadors.Remove(modificador);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest("El modificador No fue Eliminado");
+            }
 
-            return NoContent();
+
+            return Ok(id);
         }
 
         private bool ModificadorExists(int id)

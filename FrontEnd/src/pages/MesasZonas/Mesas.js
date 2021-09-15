@@ -39,22 +39,33 @@ export default function Mesas ()  {
     useEffect(() => {
         const zonaService = new ZonaService();
         zonaService.readAll().then(res => {
-            if(res.status >= 200 && res.status<300){
-                setZonas(res.data) 
-                setloading(false)
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setZonas(res.data) 
+                    setloading(false)
+                }else{
+                    console.log('Error al cargar Datos de Zonas')
+                }    
             }else{
-                console.log('Error al cargar Datos de Zonas')
+                console.log('Error de conexion con Backend, Backend esta abajo ')
             }
-
+            
         });
 
         const mesaService = new MesaService();
         mesaService.readAll().then((res) => {
-            if(res.status >= 200 && res.status<300){
-                setMesas(res.data)
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setMesas(res.data)
+                }else{
+                    console.log('Error al cargar Datos de Mesas')
+                }
             }else{
-                console.log('Error al cargar Datos de Mesas')
+                toast.current.show({ severity: 'error', summary: 'Backend No Operativo', detail: `El servidor no responde a las peticiones solicitadas `, life: 20000 });
+                console.log('Error de conexion con Backend, Backend esta abajo ')
+                setloading(false)
             }
+            
             
         })
 

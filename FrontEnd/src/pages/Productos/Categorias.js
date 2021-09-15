@@ -50,13 +50,19 @@ export default function Categorias ()  {
     useEffect(() => {
         const categoriaService = new CategoriaService();
         categoriaService.readAll().then(res => {
-
-            if(res.status >= 200 && res.status <300){
-                setCategorias(res.data)
-                setloading(false)
+            if(res){
+                if(res.status >= 200 && res.status <300){
+                    setCategorias(res.data)
+                    setloading(false)
+                }else{
+                    console.log('Error al Cargar los Datos de Categoria')
+                }
             }else{
-                console.log('Error al Cargar los Datos de Categoria')
+                toast.current.show({ severity: 'error', summary: 'Backend No Operativo', detail: `El servidor no responde a las peticiones solicitadas `, life: 20000 });
+                console.log('Error de conexion con Backend, Backend esta abajo ')
+                setloading(false)
             }
+            
         });
     },[]);
 

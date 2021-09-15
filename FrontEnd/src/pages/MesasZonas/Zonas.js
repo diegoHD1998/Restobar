@@ -39,11 +39,18 @@ export default function Zonas ()  {
     useEffect(() => {
         const zonaService = new ZonaService();
         zonaService.readAll().then(res =>{
-            if(res.status >= 200 && res.status<300){
-                setZonas(res.data)
-                setloading(false)
+            if(res){
+
+                if(res.status >= 200 && res.status<300){
+                    setZonas(res.data)
+                    setloading(false)
+                }else{
+                    console.log('Error al Cargar Datos de Zonas')
+                }
             }else{
-                console.log('Error al Cargar Datos de Zonas')
+                toast.current.show({ severity: 'error', summary: 'Backend No Operativo', detail: `El servidor no responde a las peticiones solicitadas `, life: 20000 });
+                console.log('Error de conexion con Backend, Backend esta abajo ')
+                setloading(false)
             }
         });
     }, []);

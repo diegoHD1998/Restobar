@@ -49,35 +49,52 @@ export default function Productos ()  {
 
         const categoriaService = new CategoriaService(); 
         categoriaService.readAll().then((res) => {
-            if(res.status >= 200 && res.status<300){
-                setCategorias(res.data)
-                
-                /* setloading(false) */
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setCategorias(res.data)
+                    
+                    /* setloading(false) */
+                }else{
+                    console.log('Error al cargar Datos de Categorias')
+                }
             }else{
-                console.log('Error al cargar Datos de Categorias')
+                console.log('Error de conexion con Backend, Backend esta abajo -1')
             }
+            
         });
 
         const varianteService = new VarianteService();
         varianteService.readAll().then((res)=>{
-            if(res.status >= 200 && res.status<300){
-                setVariantes(res.data)
-                
-                /* setloading(false) */
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setVariantes(res.data)
+                    
+                    /* setloading(false) */
+                }else{
+                    console.log('Error al cargar Datos de Variantes')
+                }
             }else{
-                console.log('Error al cargar Datos de Variantes')
+                console.log('Error de conexion con Backend, Backend esta abajo -2')
             }
+            
         });
 
         
         const productoService = new ProductoService();
         productoService.readAll().then((res) => {
-            if(res.status >= 200 && res.status<300){
-                setProductos(res.data)
-                
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setProductos(res.data)
+                    
+                }else{
+                    console.log('Error al cargar Datos de Productos')
+                }
             }else{
-                console.log('Error al cargar Datos de Productos')
+                console.log('Error de conexion con Backend, Backend esta abajo -3')
+                toast.current.show({ severity: 'error', summary: 'Backend No Operativo', detail: `El servidor no responde a las peticiones solicitadas `, life: 20000 });
+                /* setloading(false) */
             }
+            
         });
         
 

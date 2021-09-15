@@ -12,7 +12,7 @@ import { Dropdown } from 'primereact/dropdown';
 import VarienteService from '../../service/ProductosService/VarianteService'
 import OpcionVarianteService from '../../service/ProductosService/OpcionVarianteService'
 
-/* import OpcionVariante from './OpcionVariante' */
+
 
 
 export default function Variantes ()  {
@@ -35,9 +35,9 @@ export default function Variantes ()  {
     const [variantes, setVarientes] = useState(null);
     const [variante, setVariante] = useState(emptyProduct);
 
-    const [opcionVariantes, setOpcionVariantes] = useState(null); //Todas las Opciones Varientes de la DB
-    const [opcionVariante, setOpcionVariante] = useState(emptyOpcionVariante);//OpcionVariente
-    const [opciones, setOpciones] = useState([]) //Opciones Variantes de una Variente en especifico
+    const [opcionVariantes, setOpcionVariantes] = useState(null); 
+    const [opcionVariante, setOpcionVariante] = useState(emptyOpcionVariante);
+    const [opciones, setOpciones] = useState([]) 
 
     const [opcionDialog, setOpcionDialog] = useState(false);
     const [submitted2, setSubmitted2] = useState(false);
@@ -61,34 +61,46 @@ export default function Variantes ()  {
 
         const varienteService = new VarienteService();
         varienteService.readAll().then((res) => {
-            if(res.status >= 200 && res.status<300){
-                setVarientes(res.data)
-                setloading(false)
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setVarientes(res.data)
+                    setloading(false)
+                }else{
+                    console.log('Error al cargar Datos de Variantes')
+                }
             }else{
-                console.log('Error al cargar Datos de Variantes')
+                console.log('Error de conexion con Backend, Backend esta abajo')
             }
+            
             
         });
         
 
         const opcionVarianteService = new OpcionVarianteService();
         opcionVarianteService.readAll().then((res) => {
-            if(res.status >= 200 && res.status<300){
-                setOpcionVariantes(res.data)
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setOpcionVariantes(res.data)
+                }else{
+                    console.log('Error al cargar Datos de OpcionVariantes')
+                }
             }else{
-                console.log('Error al cargar Datos de OpcionVariantes')
+                toast.current.show({ severity: 'error', summary: 'Backend No Operativo', detail: `El servidor no responde a las peticiones solicitadas `, life: 20000 });
+                console.log('Error de conexion con Backend, Backend esta abajo ')
+                setloading(false)
             }
+            
         });
         
         
     }, []);
-    /* -------Nuevo-------- */
+    
     const abrirOpciones = (rowData) =>{
         setVariante(rowData)
         setOpciones(EncontrarOpciones(rowData))
         setDialogVisible(true)
     }
-    /* -------Nuevo-------- */
+    
     const ocultarDialog = () =>{
         setDialogVisible(false)
         setVariante(emptyProduct)
@@ -100,7 +112,7 @@ export default function Variantes ()  {
         setSubmitted(false);
         setProductDialog(true);
     }
-    /* -------Nuevo-------- */
+    
     const openNewOpcion = (data) => {
 
         setOpcionVariante(emptyOpcionVariante);
@@ -114,7 +126,7 @@ export default function Variantes ()  {
         setSubmitted(false);
         setProductDialog(false);
     }
-    /* -------Nuevo-------- */
+    
     const hideDialogOpcion = () => {
         setSubmitted2(false);
         setOpcionDialog(false);
@@ -181,10 +193,6 @@ export default function Variantes ()  {
             setVariante(emptyProduct);
         }
     }
-
-    /* -------Nuevo-------- */
-    /* -------------------------------------------------------------------------------------------------------- */
-    /* -------------------------------------------------------------------------------------------------------- */
     
     const saveOpcionVariante = async() => { 
         setSubmitted2(true);
@@ -315,7 +323,7 @@ export default function Variantes ()  {
         return index;
     };
     
-    /* -------Nuevo-------- */
+    
     const findIndexById2 = (id) => {
         let index = -1;
         for (let i = 0; i < opcionVariantes.length; i++) {
@@ -349,7 +357,7 @@ export default function Variantes ()  {
         setVariante(_product);
     };
 
-    const onInputChanceOpcionVariante = (e, name) => {/* -------Nuevo-------- */
+    const onInputChanceOpcionVariante = (e, name) => {
         const val = (e.target && e.target.value) || '';
         let _opcionV = { ...opcionVariante };
         _opcionV[`${name}`] = val;
@@ -395,12 +403,6 @@ export default function Variantes ()  {
             </span>
         </div>
     );
-    /* -------Nuevo-------- */
-    /* const header2 = (
-        <div className="table-header">
-            <h6 className="p-m-0">Opciones Variantes</h6>
-        </div>
-    ); */
 
     const productDialogFooter = (
         <>
@@ -409,7 +411,7 @@ export default function Variantes ()  {
         </>
     );
 
-    const opcionDialogFooter = (/* -------Nuevo-------- */
+    const opcionDialogFooter = (
         <>
             <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={hideDialogOpcion} />
             <Button label="Guardar" icon="pi pi-check" className="p-button-text" onClick={saveOpcionVariante} />
@@ -431,10 +433,10 @@ export default function Variantes ()  {
     );
 
     const EncontrarOpciones = (rowData) => {
-        return opcionVariantes.filter(opcion => opcion?.varianteIdVariante === rowData?.idVariante) // Aqui estan todos los datos de la OpcionVariantes
+        return opcionVariantes.filter(opcion => opcion?.varianteIdVariante === rowData?.idVariante) 
     }
 
-    const BodyOpcionVarianteEnTabla = (rowData) => {/* -------Nuevo-------- */
+    const BodyOpcionVarianteEnTabla = (rowData) => {
 
         if(opcionVariantes){
 
@@ -495,7 +497,7 @@ export default function Variantes ()  {
                     <DataTable ref={dt} value={variantes}
                         dataKey="idVariante" paginator rows={5} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Zonas"
+                        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Variantes"
                         globalFilter={globalFilter} emptyMessage="Variantes No Encontradas." header={header} loading={loading}>
                         
                         <Column field="nombre" header="Nombre" sortable ></Column>
@@ -514,7 +516,7 @@ export default function Variantes ()  {
 
                     </Dialog>
 
-                    {/* -------Nuevo-------- */}
+                    
                     {/* Dialog Para ingresar una nueva opcionVariante */}
                     <Dialog visible={opcionDialog} style={{ width: '450px'}} header="Opcion Variante " modal className="p-fluid " footer={opcionDialogFooter} onHide={hideDialogOpcion}>
                         

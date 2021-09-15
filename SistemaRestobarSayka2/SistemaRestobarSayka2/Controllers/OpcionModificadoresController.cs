@@ -25,7 +25,8 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OpcionModificador>>> GetOpcionModificadors()
         {
-            return await _context.OpcionModificadors.ToListAsync();
+            var opcionModificadores = await _context.OpcionModificadors.ToListAsync();
+            return Ok(opcionModificadores);
         }
 
         // GET: api/OpcionModificadores/5
@@ -36,10 +37,10 @@ namespace SistemaRestobarSayka2.Controllers
 
             if (opcionModificador == null)
             {
-                return NotFound();
+                return NotFound("Opcion Modificador No Encontrado");
             }
 
-            return opcionModificador;
+            return Ok(opcionModificador);
         }
 
         // PUT: api/OpcionModificadores/5
@@ -49,7 +50,7 @@ namespace SistemaRestobarSayka2.Controllers
         {
             if (id != opcionModificador.IdOpcionM)
             {
-                return BadRequest();
+                return BadRequest("Los Ids de OpcionModificador No Coinciden");
             }
 
             _context.Entry(opcionModificador).State = EntityState.Modified;
@@ -62,7 +63,7 @@ namespace SistemaRestobarSayka2.Controllers
             {
                 if (!OpcionModificadorExists(id))
                 {
-                    return NotFound();
+                    return NotFound("No se a Encontrado La Opcion Modificador ");
                 }
                 else
                 {
@@ -70,7 +71,7 @@ namespace SistemaRestobarSayka2.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetOpcionModificador", new { id = opcionModificador.IdOpcionM }, opcionModificador);
         }
 
         // POST: api/OpcionModificadores
@@ -78,8 +79,17 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpPost]
         public async Task<ActionResult<OpcionModificador>> PostOpcionModificador(OpcionModificador opcionModificador)
         {
-            _context.OpcionModificadors.Add(opcionModificador);
-            await _context.SaveChangesAsync();
+            
+
+            try
+            {
+                _context.OpcionModificadors.Add(opcionModificador);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest("La Opcion Modificador No fue Guardada");
+            }
 
             return CreatedAtAction("GetOpcionModificador", new { id = opcionModificador.IdOpcionM }, opcionModificador);
         }
@@ -91,13 +101,22 @@ namespace SistemaRestobarSayka2.Controllers
             var opcionModificador = await _context.OpcionModificadors.FindAsync(id);
             if (opcionModificador == null)
             {
-                return NotFound();
+                return NotFound("Opcion Modificador No Encontrada");
             }
 
-            _context.OpcionModificadors.Remove(opcionModificador);
-            await _context.SaveChangesAsync();
+            
 
-            return NoContent();
+            try
+            {
+                _context.OpcionModificadors.Remove(opcionModificador);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest("La Opcion Modificador No fue Eliminada");
+            }
+
+            return Ok(id);
         }
 
         private bool OpcionModificadorExists(int id)

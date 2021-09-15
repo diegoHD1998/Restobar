@@ -14,7 +14,6 @@ export default function Roles ()  {
     let emptyProduct = {
         idRol: null,
         nombre: '',
-        
     };
 
     const [roles, setRoles] = useState(null); /* <----------------- */
@@ -22,7 +21,7 @@ export default function Roles ()  {
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [globalFilter, setGlobalFilter] = useState(null);
+    
     const [loading, setloading] = useState(true)
     const toast = useRef(null);
     const dt = useRef(null);
@@ -32,12 +31,19 @@ export default function Roles ()  {
     useEffect(() => {
         const rolService = new RolService();
         rolService.readAll().then(res =>{
-            if(res.status >= 200 && res.status <300){
-                setRoles(res.data)
-                setloading(false)
+            if(res){
+                if(res.status >= 200 && res.status <300){
+                    setRoles(res.data)
+                    setloading(false)
+                }else{
+                    console.log('Error al Cargar Datos de Roles')
+                }
             }else{
-                console.log('Error al Cargar Datos de Roles')
+                toast.current.show({ severity: 'error', summary: 'Backend No Operativo', detail: `El servidor no responde a las peticiones solicitadas `, life: 20000 });
+                console.log('Error de conexion con Backend, Backend esta abajo ')
+                setloading(false)
             }
+            
         });
     },[]);
 
@@ -176,11 +182,7 @@ export default function Roles ()  {
 
     const header = (/* <----------------- */
         <div className="table-header">
-            <h5 className="p-m-0">Administracion de Roles</h5>
-            <span className="p-input-icon-left">
-                <i className="pi pi-search" />
-                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
-            </span>
+            <h5 className="p-m-0">Roles en el sistema</h5>
         </div>
     );
 
@@ -208,7 +210,7 @@ export default function Roles ()  {
                         dataKey="idRol" paginator rows={10} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Roles"
-                        globalFilter={globalFilter} emptyMessage="Roles No Encontrados." header={header} loading={loading} >
+                        emptyMessage="Roles No Encontrados." header={header} loading={loading} >
                         <Column field="nombre" header="Rol" sortable ></Column>
                         <Column body={actionBodyTemplate}></Column>
 
