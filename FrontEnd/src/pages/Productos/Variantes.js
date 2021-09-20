@@ -23,11 +23,11 @@ export default function Variantes ()  {
     };
 
     let emptyOpcionVariante = {
-        idOpcionV: null,
+        idOpcionV: undefined,
         nombre: '',
-        precio: null,
-        varianteIdVariante: null,
-        orden: null
+        precio: undefined,
+        varianteIdVariante: undefined,
+        orden: undefined
     }
 
     const numerosOrden = [1,2,3,4,5,6]
@@ -361,7 +361,6 @@ export default function Variantes ()  {
         const val = (e.target && e.target.value) || '';
         let _opcionV = { ...opcionVariante };
         _opcionV[`${name}`] = val;
-
         setOpcionVariante(_opcionV);
     }
 
@@ -484,6 +483,19 @@ export default function Variantes ()  {
         
     }
 
+    let soloNumeros = (event) => {
+        let code = (event.which) ? event.which : event.keyCode;
+    
+        if (code >= 32 && code <= 47) {
+            event.preventDefault();
+            return
+        }
+        else if(code >= 58  && code <= 254){
+            event.preventDefault();
+            return
+        }
+    
+    }
 
 
     return (
@@ -528,7 +540,7 @@ export default function Variantes ()  {
                         
                         <div className="p-field" style={{ marginBottom: '40px'}}>
                             <label htmlFor="precio">Precio</label>
-                            <InputText id="precio" value={opcionVariante.precio} onChange={(e) => onInputChanceOpcionVariante(e, 'precio')} required  className={classNames({ 'p-invalid': submitted2 && !opcionVariante.precio })} />
+                            <InputText id="precio" value={opcionVariante.precio} onChange={(e) => onInputChanceOpcionVariante(e, 'precio')} onKeyPress={(e)=>soloNumeros(e)} required mode="currency" currency="CLP" locale="es-CL" className={classNames({ 'p-invalid': submitted2 && !opcionVariante.precio })} />
                             {submitted2 && !opcionVariante.precio && <small className="p-invalid">Precio Requerido.</small>}
                         </div>
 
