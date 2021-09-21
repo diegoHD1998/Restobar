@@ -25,4 +25,9 @@ export default class OpcionVarienteService {
         .catch(err => err.response)
     }
 
+    async buscarOpciones(id){
+        return await axios.get(`${baseUrl}/opcionesEspecificas/${id}`).then(res => res)
+        .catch(err => err.response)
+    }
+
 }

@@ -115,6 +115,20 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(id);
         }
 
+        // GET: api/OpcionVariantes/opcionesEspecificas/2
+        [HttpGet("opcionesEspecificas/{id}")]
+        public async Task<ActionResult<IEnumerable<OpcionVariante>>> OpcionesVariantes(int id)
+        {
+            var opcionesVariantes = await _context.OpcionVariantes.Where(o => o.VarianteIdVariante == id).ToListAsync();
+
+            if (opcionesVariantes == null)
+            {
+                return NotFound("Opciones Variantes No Encontradas");
+            }
+
+            return Ok(opcionesVariantes);
+        }
+
         private bool OpcionVarianteExists(int id)
         {
             return _context.OpcionVariantes.Any(e => e.IdOpcionV == id);

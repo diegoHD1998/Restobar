@@ -438,6 +438,10 @@ export default function Variantes ()  {
     const BodyOpcionVarianteEnTabla = (rowData) => {
 
         if(opcionVariantes){
+            //Preguntar aqui
+            
+            /* opcionVarianteService.buscarOpciones(rowData.idVariante)
+            .then(res => console.log(res)) */
 
             let _opciones = EncontrarOpciones(rowData) 
             
