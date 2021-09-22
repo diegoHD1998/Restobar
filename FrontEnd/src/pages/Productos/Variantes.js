@@ -5,9 +5,9 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
 import VarienteService from '../../service/ProductosService/VarianteService'
 import OpcionVarianteService from '../../service/ProductosService/OpcionVarianteService'
@@ -23,11 +23,11 @@ export default function Variantes ()  {
     };
 
     let emptyOpcionVariante = {
-        idOpcionV: undefined,
+        idOpcionV: null,
         nombre: '',
-        precio: undefined,
-        varianteIdVariante: undefined,
-        orden: undefined
+        precio: 0,
+        varianteIdVariante: null,
+        orden: null
     }
 
     const numerosOrden = [1,2,3,4,5,6]
@@ -197,7 +197,7 @@ export default function Variantes ()  {
     const saveOpcionVariante = async() => { 
         setSubmitted2(true);
 
-        if (opcionVariante.nombre.trim() ) {
+        if (opcionVariante.nombre && opcionVariante.precio) {
             let _OpcionVariantes = [...opcionVariantes];
             let _OpcionVariante = { ...opcionVariante };
             
@@ -364,14 +364,13 @@ export default function Variantes ()  {
         setOpcionVariante(_opcionV);
     }
 
-    const leftToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={openNew} />
-                
-            </React.Fragment>
-        )
-    };
+    const onInputNumberChange = (e, name) => {
+        const val = e.value || 0;
+        let _product = {...opcionVariante};
+        _product[`${name}`] = val;
+
+        setOpcionVariante(_product);
+    }
 
     const actionBodyTemplate = (rowData) => {
         return (
@@ -395,7 +394,8 @@ export default function Variantes ()  {
 
     const header = (
         <div className="table-header">
-            <h5 className="p-m-0">Administracion de Variantes</h5>
+            <h5 className="p-m-0"><b>Administracion de Variantes </b> </h5>
+            
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -460,9 +460,7 @@ export default function Variantes ()  {
             if(_opciones){
                 return (
                     <>
-                        <div>
-                            <span><b>{texto}</b></span>
-                        </div>
+                        <span><b>{texto}</b></span>
                     </>
                 );
             }else{
@@ -475,32 +473,10 @@ export default function Variantes ()  {
     }
         
     const MonedaBodyTemplate1 = (rowData) => {
-        let precio = rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
 
-        return(
-            <>
-                <div>
-                    <span>{`${precio}`}</span>
-                </div>
-            </>
-        )
+        return rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
         
     }
-
-    let soloNumeros = (event) => {
-        let code = (event.which) ? event.which : event.keyCode;
-    
-        if (code >= 32 && code <= 47) {
-            event.preventDefault();
-            return
-        }
-        else if(code >= 58  && code <= 254){
-            event.preventDefault();
-            return
-        }
-    
-    }
-
 
     return (
         
@@ -508,10 +484,10 @@ export default function Variantes ()  {
             <div className="p-col-12">
                 <div className="card">
                     <Toast ref={toast} />
-                    <Toolbar className="p-mb-4" left={leftToolbarTemplate}></Toolbar>
+                    <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-button-rounded p-mb-3" onClick={openNew} />
 
                     <DataTable ref={dt} value={variantes}
-                        dataKey="idVariante" paginator rows={5} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
+                        dataKey="idVariante" paginator rows={10} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Variantes"
                         globalFilter={globalFilter} emptyMessage="Variantes No Encontradas." header={header} loading={loading}>
@@ -544,7 +520,7 @@ export default function Variantes ()  {
                         
                         <div className="p-field" style={{ marginBottom: '40px'}}>
                             <label htmlFor="precio">Precio</label>
-                            <InputText id="precio" value={opcionVariante.precio} onChange={(e) => onInputChanceOpcionVariante(e, 'precio')} onKeyPress={(e)=>soloNumeros(e)} required mode="currency" currency="CLP" locale="es-CL" className={classNames({ 'p-invalid': submitted2 && !opcionVariante.precio })} />
+                            <InputNumber id="precio" value={opcionVariante.precio} onChange={(e) => onInputNumberChange(e, 'precio')} required mode="currency" currency="CLP" locale="es-CL" className={classNames({ 'p-invalid': submitted2 && !opcionVariante.precio })} />
                             {submitted2 && !opcionVariante.precio && <small className="p-invalid">Precio Requerido.</small>}
                         </div>
 

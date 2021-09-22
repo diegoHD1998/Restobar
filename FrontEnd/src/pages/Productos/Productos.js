@@ -4,9 +4,9 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
 import ProductoService from '../../service/ProductosService/ProductoService'
@@ -24,7 +24,7 @@ export default function Productos ()  {
         descripcion: '',
         precio: null,
         imagen:'',
-        estado:'',
+        estado:'Activo',
         categoriaIdCategoria:null,
         varianteIdVariante:null
     };
@@ -226,6 +226,15 @@ export default function Productos ()  {
         setProducto(_product);
     }
     
+    const onInputNumberChange = (e, name) => {
+        const val = e.value || 0;
+        let _product = {...producto};
+        _product[`${name}`] = val;
+
+        setProducto(_product);
+    }
+
+
     const ColorBodytemplate = (rowData) => {
 
         if(categorias){
@@ -265,23 +274,8 @@ export default function Productos ()  {
 
     const MonedaBodyTemplate = (rowData) => {
 
-        return formatCurrency(rowData.precio)
+        return rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
 
-    }
-
-    const formatCurrency = (value) => {
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits:0});
-    }
-    
-
-
-    const leftToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={openNew} />
-                
-            </React.Fragment>
-        )
     }
 
     const actionBodyTemplate = (rowData) => {
@@ -295,7 +289,7 @@ export default function Productos ()  {
 
     const header = (/* <----------------- */
         <div className="table-header">
-            <h5 className="p-m-0">Administracion de Productos</h5>
+            <h5 className="p-m-0"><b>Administracion de Productos</b></h5>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -321,13 +315,12 @@ export default function Productos ()  {
             <div className="p-col-12">
                 <div className="card">
                     <Toast ref={toast} />
-                    <Toolbar className="p-mb-4" left={leftToolbarTemplate}></Toolbar>
+                    <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-button-rounded p-mb-3" onClick={openNew} />
 
-                    <DataTable ref={dt} value={productos}
-                        dataKey="idproducto" paginator rows={10} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
-                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    <DataTable ref={dt} header={header} value={productos} dataKey="idProducto" className="datatable-responsive" 
+                        paginator rows={10} rowsPerPageOptions={[5, 10, 25]} paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Productos"
-                        globalFilter={globalFilter} emptyMessage="Productos No Encontrados." header={header} /* loading={loading} */>
+                        globalFilter={globalFilter} emptyMessage="Productos No Encontrados."  /* loading={loading} */>
                         
                         <Column field="nombre" header="Nombre" sortable ></Column>
                         <Column field="descripcion" header="Descripcion" sortable ></Column>
@@ -340,7 +333,7 @@ export default function Productos ()  {
 
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: '450px'}} header="Detalle Producto " modal className="p-fluid " footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: '600px'}} header="Detalle Producto " modal className="p-fluid " footer={productDialogFooter} onHide={hideDialog}>
                         
                         <div className="p-field">
                             <label htmlFor="nombre">Nombre</label>
@@ -356,7 +349,7 @@ export default function Productos ()  {
 
                         <div className="p-field">
                             <label htmlFor="precio">Precio</label>
-                            <InputText id="precio" value={producto.precio} onChange={(e) => onInputChange(e, 'precio')} required className={classNames({ 'p-invalid': submitted && !producto.precio })} />
+                            <InputNumber id="precio" value={producto.precio} onChange={(e) => onInputNumberChange(e, 'precio')} required mode="currency" currency="CLP" locale="es-CL" className={classNames({ 'p-invalid': submitted && !producto.precio })} />
                             {submitted && !producto.precio && <small className="p-invalid">Precio Requerido.</small>}
                         </div>
 

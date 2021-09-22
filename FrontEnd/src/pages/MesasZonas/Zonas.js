@@ -4,7 +4,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { ColorPicker } from 'primereact/colorpicker';
@@ -17,7 +16,7 @@ export default function Zonas ()  {
         idZona: null,
         nombre: '',
         color:'',
-        estado:''
+        estado:'Activo'
     };
 
     let estadoZona = [
@@ -184,15 +183,6 @@ export default function Zonas ()  {
         );
     }
 
-    const leftToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={openNew} />
-                
-            </React.Fragment>
-        )
-    }
-
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
@@ -204,7 +194,7 @@ export default function Zonas ()  {
 
     const header = (/* <----------------- */
         <div className="table-header">
-            <h5 className="p-m-0">Administracion de Zonas</h5>
+            <h5 className="p-m-0"><b>Administracion de Zonas</b></h5>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -230,7 +220,7 @@ export default function Zonas ()  {
             <div className="p-col-12">
                 <div className="card">
                     <Toast ref={toast} />
-                    <Toolbar className="p-mb-4" left={leftToolbarTemplate}></Toolbar>
+                    <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-button-rounded p-mb-3" onClick={openNew} />
 
                     <DataTable ref={dt} value={zonas} 
                         dataKey="idZona" paginator rows={5} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
@@ -248,22 +238,21 @@ export default function Zonas ()  {
 
                     <Dialog visible={productDialog} style={{ width: '450px'}} header="Detalle Zona " modal className="p-fluid " footer={productDialogFooter} onHide={hideDialog}>
                         
-                        <div className="p-field" style={{height:'120px'}}>
+                        <div className="p-field" /* style={{height:'120px'}} */>
                             <label htmlFor="nombre">Nombre</label>
                             <InputText id="nombre" value={zona.nombre} onChange={(e) => onInputChange(e, 'nombre')} required autoFocus className={classNames({ 'p-invalid': submitted && !zona.nombre })} />
                             {submitted && !zona.nombre && <small className="p-invalid">Nombre Requerido.</small>}
-                        </div>
-
-                        <div className="p-field" style={{height:'120px'}}>
-                            <label htmlFor="estado">Estado</label>
-                            <Dropdown id="estado" value={zona.estado} options={estadoZona} placeholder='Seleccione estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !zona.estado })}rows={3} cols={20} />
-                            {submitted && !zona.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
 
                         <div className="p-field">
                             <h6>Color</h6>
                             <ColorPicker id="color" style={{width:'30px' }} value={zona.color} defaultColor={`#56EBEE`} onChange={(e) => onInputChange(e, 'color')} className={classNames({ 'p-invalid': submitted && !zona.color })}  ></ColorPicker>
                             {submitted && !zona.color && <small style={{color:'red'}} className="p-invalid"> Color Requerido.</small>}
+                        </div>
+                        <div className="p-field" style={{height:'120px'}}>
+                            <label htmlFor="estado">Estado</label>
+                            <Dropdown id="estado" value={zona.estado} options={estadoZona} placeholder='Seleccione estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !zona.estado })}rows={3} cols={20} />
+                            {submitted && !zona.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
                 
                     </Dialog>

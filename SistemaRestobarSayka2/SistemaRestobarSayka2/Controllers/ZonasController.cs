@@ -29,6 +29,20 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(zonas);
         }
 
+        // GET: api/Zonas/zonasActivas
+        [HttpGet("zonasActivas")]
+        public async Task<ActionResult<IEnumerable<Zona>>> GetZonasActivas()
+        {
+            var zonas = await _context.Zonas.Where(z => z.Estado == "Activo").ToListAsync();
+
+            if (zonas == null)
+            {
+                return NotFound("Zonas Activas No Encontradas");
+            }
+
+            return Ok(zonas);
+        }
+
         // GET: api/Zonas/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Zona>> GetZona(int id)

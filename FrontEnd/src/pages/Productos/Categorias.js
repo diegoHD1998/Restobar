@@ -4,7 +4,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -19,14 +18,14 @@ export default function Categorias ()  {
         nombre: '',
         descripcion: '',
         color:'',
-        estado:'',
+        estado:'Activo',
         tipo:''
 
     };
 
     let estadoCategoria = [
         'Activo',
-        'inactivo'
+        'Inactivo'
     ];
 
     let tipoCategoria = [
@@ -196,15 +195,6 @@ export default function Categorias ()  {
         );
     }
 
-    const leftToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={openNew} />
-                
-            </React.Fragment>
-        )
-    }
-
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
@@ -216,7 +206,7 @@ export default function Categorias ()  {
 
     const header = (/* <----------------- */
         <div className="table-header">
-            <h5 className="p-m-0">Administracion de Categorias</h5>
+            <h5 className="p-m-0"><b>Administracion de Categorias</b></h5>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -242,11 +232,11 @@ export default function Categorias ()  {
             <div className="p-col-12">
                 <div className="card">
                     <Toast ref={toast} />
-                    <Toolbar className="p-mb-4" left={leftToolbarTemplate}></Toolbar>
+                    <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-button-rounded p-mb-3" onClick={openNew} />
 
-                    <DataTable ref={dt} value={categorias} 
-                        dataKey="idCategoria" paginator rows={10} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
-                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    <DataTable ref={dt} value={categorias} className="datatable-responsive"
+                        dataKey="idCategoria" paginator rows={10} rowsPerPageOptions={[5, 10, 25]} 
+                        paginatorTemplate="PrevPageLink PageLinks NextPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Categorias"
                         globalFilter={globalFilter} emptyMessage="Categorias No Encontradas." header={header} loading={loading}>
     

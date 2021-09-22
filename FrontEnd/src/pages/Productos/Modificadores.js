@@ -4,9 +4,9 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
 import ModificadorService from '../../service/ProductosService/ModificadorService'
 import OpcionModificadorService from '../../service/ProductosService/OpcionModificadorService'
@@ -24,7 +24,7 @@ export default function Modificadores ()  {
     let emptyOpcionModificador = {
         idOpcionM: null,
         nombre: '',
-        precio: null,
+        precio: 0,
         orden: null,
         modificadorIdModificador: null
     }
@@ -85,7 +85,7 @@ export default function Modificadores ()  {
                     console.log('Error al cargar Datos de OpcionModificador')
                 }
             }else{
-
+                console.log('Error de conexion con Backend, Backend esta abajo')
             }
         });
         
@@ -194,7 +194,7 @@ export default function Modificadores ()  {
     const saveOpcionModificador = async() => { 
         setSubmitted2(true);
 
-        if (opcionModificador.nombre.trim() ) {
+        if (opcionModificador.nombre && opcionModificador.precio) {
             let _OpcionModificadores = [...opcionModificadores];
             let _OpcionModificador = { ...opcionModificador };
             
@@ -360,14 +360,13 @@ export default function Modificadores ()  {
         setOpcionModificador(_opcionM);
     }
 
-    const leftToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={openNew} />
-                
-            </React.Fragment>
-        )
-    };
+    const onInputNumberChange = (e, name) => {
+        const val = e.value || 0;
+        let _product = {...opcionModificador};
+        _product[`${name}`] = val;
+
+        setOpcionModificador(_product);
+    }
 
     const actionBodyTemplate = (rowData) => {
         return (
@@ -391,7 +390,7 @@ export default function Modificadores ()  {
 
     const header = (
         <div className="table-header">
-            <h5 className="p-m-0">Administracion de Modificadores</h5>
+            <h5 className="p-m-0"><b>Administracion de Modificadores</b></h5>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
@@ -452,9 +451,7 @@ export default function Modificadores ()  {
             if(_opciones){
                 return (
                     <>
-                        <div>
-                            <span><b>{texto}</b></span>
-                        </div>
+                        <span><b>{texto}</b></span>
                     </>
                 );
             }else{
@@ -467,15 +464,8 @@ export default function Modificadores ()  {
     }
         
     const MonedaBodyTemplate1 = (rowData) => {
-        let precio = rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
-
-        return(
-            <>
-                <div>
-                    <span>{`${precio}`}</span>
-                </div>
-            </>
-        )
+        
+        return rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
         
     }
 
@@ -487,10 +477,10 @@ export default function Modificadores ()  {
             <div className="p-col-12">
                 <div className="card">
                     <Toast ref={toast} />
-                    <Toolbar className="p-mb-4" left={leftToolbarTemplate}></Toolbar>
+                    <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-button-rounded p-mb-3" onClick={openNew} />
 
                     <DataTable ref={dt} value={modificadores}
-                        dataKey="idModificador" paginator rows={5} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
+                        dataKey="idModificador" paginator rows={10} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Modificadores"
                         globalFilter={globalFilter} emptyMessage="Modificadores No Encontrados." header={header} loading={loading}>
@@ -523,7 +513,7 @@ export default function Modificadores ()  {
                         
                         <div className="p-field" style={{ marginBottom: '40px'}}>
                             <label htmlFor="precio">Precio</label>
-                            <InputText id="precio" value={opcionModificador.precio} onChange={(e) => onInputChanceOpcionModificador(e, 'precio')} required  className={classNames({ 'p-invalid': submitted2 && !opcionModificador.precio })} />
+                            <InputNumber id="precio" value={opcionModificador.precio} onChange={(e) => onInputNumberChange(e, 'precio')} required mode="currency" currency="CLP" locale="es-CL" className={classNames({ 'p-invalid': submitted2 && !opcionModificador.precio })} />
                             {submitted2 && !opcionModificador.precio && <small className="p-invalid">Precio Requerido.</small>}
                         </div>
 

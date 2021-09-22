@@ -11,6 +11,11 @@ export default class ZonaService {
         
     }
 
+    async readZonasActivas(){
+        return await axios.get(`${baseUrl}/zonasActivas`).then(res => res)
+        .catch(err => err.response)
+    }
+
     async create(zona){
         return await axios.post(baseUrl,zona).then(res => res)
         .catch(err => err.response)
