@@ -195,6 +195,14 @@ export default function Categorias ()  {
         );
     }
 
+    const statusBodyTemplate = (rowData) => {
+        return <span className={`product-badge-1 status-${rowData.estado.toLowerCase()}`}>{rowData.estado}</span>;
+    }
+
+    /* const statusBodyTemplate2 = (rowData) => {
+        return <span className={`product-badge-1 status-opcionV`}>{rowData.tipo}</span>;
+    } */
+
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
@@ -243,8 +251,8 @@ export default function Categorias ()  {
                         <Column field="nombre" header="Nombre" sortable ></Column>
                         <Column field="descripcion" header="Descripción" sortable ></Column>
                         <Column field="color" header="Color" body={ColorBodytemplate} sortable ></Column>
-                        <Column field="estado" header="Estado" sortable ></Column>
-                        <Column field="tipo" header="Tipo de Categoria" sortable ></Column>
+                        <Column field="estado" header="Estado" body={statusBodyTemplate} sortable ></Column>
+                        <Column field="tipo" header="Tipo de Categoria" /* body={statusBodyTemplate2} */ sortable ></Column>
                         <Column body={actionBodyTemplate}></Column>
 
                     </DataTable>

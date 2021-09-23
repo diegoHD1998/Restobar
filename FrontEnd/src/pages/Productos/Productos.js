@@ -12,6 +12,8 @@ import { Dropdown } from 'primereact/dropdown';
 import ProductoService from '../../service/ProductosService/ProductoService'
 import CategoriaService from '../../service/ProductosService/CategoriaService'
 import VarianteService from '../../service/ProductosService/VarianteService'
+import OpcionVarianteService from '../../service/ProductosService/OpcionVarianteService'
+
 
 
 
@@ -40,10 +42,15 @@ export default function Productos ()  {
     
     const [categorias, setCategorias] = useState([]);
     const [variantes, setVariantes] = useState([]);
+    const [opcionesV, setOpcionesV] = useState([])
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [nombreV, setNombreV] = useState(null)
 
     /* const [loading, setloading] = useState(true) */
     
     const productoService = new ProductoService(); 
+    const opcionVarianteService = new OpcionVarianteService();
+    
 
     useEffect(() => {
 
@@ -96,8 +103,6 @@ export default function Productos ()  {
             }
             
         });
-        
-
     }, []);
 
     let estadoProducto = [
@@ -105,6 +110,26 @@ export default function Productos ()  {
         'Inactivo'
     ];
 
+
+    const abrirOpciones = (rowData) =>{
+
+        opcionVarianteService.buscarOpciones(rowData.varianteIdVariante).then(res => {
+            setOpcionesV(res.data)
+            console.log(res.data)
+        });
+
+        let variante = variantes.find(val => val.idVariante === rowData.varianteIdVariante)
+
+        setNombreV(variante.nombre)
+        setDialogVisible(true)
+    }
+
+    const ocultarDialog = () =>{
+        setDialogVisible(false)
+        setOpcionesV(null)
+        setNombreV(null)
+
+    }
 
     const openNew = () => {
         setProducto(emptyProduct);
@@ -258,7 +283,7 @@ export default function Productos ()  {
             if(_variante !== undefined){
                 return(
                     <>
-                        <span>{`${_variante?.nombre}`}</span>
+                        <Button label={`${_variante?.nombre}`} icon="pi pi-search" /* iconPos='right' */ className="p-button-info p-button-rounded" style={{fontSize:'10px'}} onClick={()=> abrirOpciones(rowData)} />
                     </>
                 )
             }else{
@@ -278,6 +303,10 @@ export default function Productos ()  {
 
     }
 
+    const statusBodyTemplate = (rowData) => {
+        return <span className={`product-badge-1 status-${rowData.estado.toLowerCase()}`}>{rowData.estado}</span>;
+    }
+    
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
@@ -286,6 +315,7 @@ export default function Productos ()  {
             </div>
         );
     }
+
 
     const header = (/* <----------------- */
         <div className="table-header">
@@ -309,6 +339,12 @@ export default function Productos ()  {
             <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} />
         </>
     );
+
+    const MonedaBodyTemplate1 = (rowData) => {
+
+        return rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
+        
+    }
     return (
         
         <div className="p-grid crud-demo">
@@ -326,7 +362,7 @@ export default function Productos ()  {
                         <Column field="descripcion" header="Descripcion" sortable ></Column>
                         <Column field="precio" body={MonedaBodyTemplate} header="Precio" sortable ></Column>
                         <Column field="imagen" header="Imagen" sortable ></Column>
-                        <Column field="estado" header="Estado" sortable ></Column>
+                        <Column field="estado" body={statusBodyTemplate} header="Estado" sortable ></Column>
                         <Column field="varianteIdVariante" body={VarianteBodyTemplate} header="Variante" sortable ></Column>
                         <Column field="categoriaIdCategoria" body={ColorBodytemplate} header="Categoria" sortable ></Column>
                         <Column body={actionBodyTemplate}></Column>
@@ -354,21 +390,23 @@ export default function Productos ()  {
                         </div>
 
                         <div className="p-field" >
+                            <label htmlFor="categoriaIdCategoria">Categoria</label>
+                            <Dropdown id="categoriaIdCategoria" optionLabel="nombre" optionValue="idCategoria" value={producto.categoriaIdCategoria} options={categorias} placeholder='Seleccione Categoria' onChange={(e) => onInputChange(e, 'categoriaIdCategoria')} required className={classNames({ 'p-invalid': submitted && !producto.categoriaIdCategoria })}rows={3} cols={20} />
+                            {submitted && !producto.categoriaIdCategoria && <small className="p-invalid">Categoria Requerida.</small>}
+                        </div>
+
+                        <div className="p-field" >
                             <label htmlFor="varianteIdVariante">Variante</label>
                             <Dropdown id="varianteIdVariante" optionLabel="nombre" optionValue="idVariante" value={producto.varianteIdVariante} options={variantes} placeholder='Seleccione Variante' onChange={(e) => onInputChange(e, 'varianteIdVariante')}  rows={3} cols={20} />
                         </div>
 
+                        {/* ------------------------------------------------------------------------------------------------------------ */}
                         <div className="p-field" /* style={{height:'100px'}} */>
                             <label htmlFor="estado">Estado</label>
                             <Dropdown id="estado" value={producto.estado} options={estadoProducto} placeholder='Seleccione Estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !producto.estado })}rows={3} cols={20} />
                             {submitted && !producto.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
 
-                        <div className="p-field" >
-                            <label htmlFor="categoriaIdCategoria">Categoria</label>
-                            <Dropdown id="categoriaIdCategoria" optionLabel="nombre" optionValue="idCategoria" value={producto.categoriaIdCategoria} options={categorias} placeholder='Seleccione Categoria' onChange={(e) => onInputChange(e, 'categoriaIdCategoria')} required className={classNames({ 'p-invalid': submitted && !producto.categoriaIdCategoria })}rows={3} cols={20} />
-                            {submitted && !producto.categoriaIdCategoria && <small className="p-invalid">Categoria Requerida.</small>}
-                        </div>
 
 
                         <div className="p-field" style={{height:'150px'}}>
@@ -383,6 +421,17 @@ export default function Productos ()  {
                             <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
                             {producto && <span>Estas seguro que quieres eliminar el producto <b>{producto.nombre}</b>?</span>}
                         </div>
+                    </Dialog>
+
+
+                    <Dialog visible={dialogVisible} style={{ width: '600px'}} header={`Detalle de opciones de Variante: ${nombreV} `} modal className="p-fluid " onHide={ocultarDialog}>
+
+                        <DataTable value={opcionesV} className="datatable-responsive" emptyMessage="Variante No posee Opciones.">
+                            <Column field="nombre" header="Nombre"></Column>
+                            <Column field="precio" header="Precio" body={MonedaBodyTemplate1} ></Column>
+                            <Column field="orden" header="Orden"></Column>
+                        </DataTable>
+
                     </Dialog>
 
                 </div>

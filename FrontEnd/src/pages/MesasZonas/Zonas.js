@@ -182,6 +182,9 @@ export default function Zonas ()  {
             </>
         );
     }
+    const statusBodyTemplate = (rowData) => {
+        return <span className={`product-badge-1 status-${rowData.estado.toLowerCase()}`}>{rowData.estado}</span>;
+    }
 
     const actionBodyTemplate = (rowData) => {
         return (
@@ -230,7 +233,7 @@ export default function Zonas ()  {
                         
                         <Column field="nombre" header="Nombre" sortable ></Column>
                         <Column field="color" header="Color" body={ColorBodytemplate} sortable ></Column>
-                        <Column field="estado" header="Estado" sortable ></Column>
+                        <Column field="estado" header="Estado" body={statusBodyTemplate} sortable ></Column>
                         
                         <Column body={actionBodyTemplate}></Column>
 
