@@ -9,6 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
+import { InputSwitch } from 'primereact/inputswitch';
 import ProductoService from '../../service/ProductosService/ProductoService'
 import CategoriaService from '../../service/ProductosService/CategoriaService'
 import VarianteService from '../../service/ProductosService/VarianteService'
@@ -31,6 +32,18 @@ export default function Productos ()  {
         varianteIdVariante:null
     };
 
+    let estadoProducto = [
+        'Activo',
+        'Inactivo'
+    ];
+
+    let emptyModificador = {
+        productoIdProducto: null,
+        modificadorIdModificador: null
+    };
+
+
+
     const [productos, setProductos] = useState(null); /* <----------------- */
     const [producto, setProducto] = useState(emptyProduct);/* <----------------- */
     const [productDialog, setProductDialog] = useState(false);
@@ -44,7 +57,11 @@ export default function Productos ()  {
     const [variantes, setVariantes] = useState([]);
     const [opcionesV, setOpcionesV] = useState([])
     const [dialogVisible, setDialogVisible] = useState(false);
-    const [nombreV, setNombreV] = useState(null)
+    const [nombreV, setNombreV] = useState(null);
+
+    const [modificadores, setModificadores] = useState([]);
+    const [opcionesM, setOPcionesM] = useState([])
+
 
     /* const [loading, setloading] = useState(true) */
     
@@ -105,12 +122,6 @@ export default function Productos ()  {
         });
     }, []);
 
-    let estadoProducto = [
-        'Activo',
-        'Inactivo'
-    ];
-
-
     const abrirOpciones = (rowData) =>{
 
         opcionVarianteService.buscarOpciones(rowData.varianteIdVariante).then(res => {
@@ -161,8 +172,13 @@ export default function Productos ()  {
 
                         const index = findIndexById(producto.idProducto);
                         _productos[index] = _producto;
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Actualizado', life: 3000 });
                         console.log(res.data)
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Actualizado', life: 3000 });
+                        /* if(){
+
+                        }else{
+
+                        } */
 
                     }else if(res.status >= 400 && res.status<500){
                         console.log(res)
@@ -182,8 +198,14 @@ export default function Productos ()  {
                     if(res.status >= 200 && res.status<300){
 
                         _productos.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Creado', life: 3000 });
                         console.log(res.data)
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Creado', life: 3000 });
+
+                        /* if(){
+
+                        }else{
+
+                        } */
 
                     }else if(res.status >= 400 && res.status<500){
                         console.log(res)
@@ -201,12 +223,12 @@ export default function Productos ()  {
         }
     }
 
-    const editProduct = (product) => {/* <----------------- */
+    const editProduct = (product) => {
         setProducto({ ...product });
         setProductDialog(true);
     }
 
-    const confirmDeleteProduct = (product) => {/* <----------------- */
+    const confirmDeleteProduct = (product) => {
         setProducto(product);
         setDeleteProductDialog(true);
     }
@@ -231,7 +253,7 @@ export default function Productos ()  {
         });
     }
 
-    const findIndexById = (id) => {/* <----------------- */
+    const findIndexById = (id) => {
         let index = -1;
         for (let i = 0; i < productos.length; i++) {
             if (productos[i].idProducto === id) {
@@ -243,7 +265,7 @@ export default function Productos ()  {
         return index;
     }
 
-    const onInputChange = (e, name) => {/* <----------------- */
+    const onInputChange = (e, name) => {
         const val = (e.target && e.target.value) || '';
         let _product = { ...producto };
         _product[`${name}`] = val;
@@ -264,7 +286,7 @@ export default function Productos ()  {
 
         if(categorias){
 
-            let _categoria = categorias.find(val => val?.idCategoria === rowData?.categoriaIdCategoria)  // Aqui estan todos los datos de la zona 
+            let _categoria = categorias.find(val => val?.idCategoria === rowData?.categoriaIdCategoria)  
 
             return (
                 <>

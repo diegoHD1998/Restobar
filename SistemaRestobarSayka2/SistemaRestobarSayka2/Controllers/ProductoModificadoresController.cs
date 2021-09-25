@@ -25,7 +25,8 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductoModificador>>> GetProductoModificadors()
         {
-            return await _context.ProductoModificadors.ToListAsync();
+            var modificadores = await _context.ProductoModificadors.ToListAsync();
+            return Ok(modificadores);
         }
 
         // GET: api/ProductoModificadores/5
@@ -36,10 +37,10 @@ namespace SistemaRestobarSayka2.Controllers
 
             if (productoModificador == null)
             {
-                return NotFound();
+                return NotFound("ProductoModificadores No Encontrados");
             }
 
-            return productoModificador;
+            return Ok(productoModificador);
         }
 
         // PUT: api/ProductoModificadores/5
@@ -49,7 +50,7 @@ namespace SistemaRestobarSayka2.Controllers
         {
             if (id != productoModificador.ProductoIdProducto)
             {
-                return BadRequest();
+                return BadRequest("Los Ids de ProductoModificador No Coinciden");
             }
 
             _context.Entry(productoModificador).State = EntityState.Modified;
@@ -62,7 +63,7 @@ namespace SistemaRestobarSayka2.Controllers
             {
                 if (!ProductoModificadorExists(id))
                 {
-                    return NotFound();
+                    return NotFound("No se a Encontrado el ProductoModificador a Modificar");
                 }
                 else
                 {
@@ -70,7 +71,7 @@ namespace SistemaRestobarSayka2.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetProductoModificador", new { id = productoModificador.ProductoIdProducto }, productoModificador);
         }
 
         // POST: api/ProductoModificadores
@@ -87,7 +88,7 @@ namespace SistemaRestobarSayka2.Controllers
             {
                 if (ProductoModificadorExists(productoModificador.ProductoIdProducto))
                 {
-                    return Conflict();
+                    return Conflict("Conflicto Encontrado");
                 }
                 else
                 {
@@ -105,13 +106,22 @@ namespace SistemaRestobarSayka2.Controllers
             var productoModificador = await _context.ProductoModificadors.FindAsync(id);
             if (productoModificador == null)
             {
-                return NotFound();
+                return NotFound("ProductoModificador No Encontrado");
             }
 
-            _context.ProductoModificadors.Remove(productoModificador);
-            await _context.SaveChangesAsync();
+            
 
-            return NoContent();
+            try
+            {
+                _context.ProductoModificadors.Remove(productoModificador);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest("El ProductoModificador No fue Eliminado");
+            }
+
+            return Ok(id);
         }
 
         private bool ProductoModificadorExists(int id)

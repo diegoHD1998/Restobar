@@ -25,6 +25,8 @@ import Variantes from './pages/Productos/Variantes';
 import Usuarios from './pages/Usuarios/Usuarios'
 import Roles from './pages/Usuarios/Roles'
 
+import Experimento from './Experimento'
+
 
 
 
@@ -145,6 +147,7 @@ const App = () => {
                 
             ]
         },
+        { label: 'Experimento', icon: 'pi pi-fw pi-home', to: '/home/experimento' },
     ];
 
     const addClass = (element, className) => {
@@ -218,6 +221,9 @@ const App = () => {
                 {/* Mesas */}
                 <Route path="/home/lista-mesas" component={Mesas} />
                 <Route path="/home/zonas" component={Zonas} />
+
+
+                <Route path="/home/experimento" component={Experimento} />
                 
             </div>
 
