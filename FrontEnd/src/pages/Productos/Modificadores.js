@@ -24,7 +24,7 @@ export default function Modificadores ()  {
     let emptyOpcionModificador = {
         idOpcionM: null,
         nombre: '',
-        precio: 0,
+        precio: null,
         orden: null,
         modificadorIdModificador: null
     }
@@ -194,7 +194,7 @@ export default function Modificadores ()  {
     const saveOpcionModificador = async() => { 
         setSubmitted2(true);
 
-        if (opcionModificador.nombre && opcionModificador.precio) {
+        if (opcionModificador.nombre && opcionModificador.precio >=0) {
             let _OpcionModificadores = [...opcionModificadores];
             let _OpcionModificador = { ...opcionModificador };
             
@@ -371,8 +371,8 @@ export default function Modificadores ()  {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-search" className="p-button-rounded p-button-info p-mr-2" tooltip='Ver detalle opciones' tooltipOptions={{position: 'top'}} onClick={()=> abrirOpciones(rowData)} />
                 <Button icon="pi pi-plus" className="p-button-rounded p-button-secondary p-mr-2" tooltip='Agregar Opcion' tooltipOptions={{position: 'top'}} onClick={() => openNewOpcion(rowData)} />
+                <Button icon="pi pi-search" className="p-button-rounded p-button-info p-mr-2" tooltip='Ver detalle opciones' tooltipOptions={{position: 'top'}} onClick={()=> abrirOpciones(rowData)} />
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editProduct(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
@@ -505,13 +505,13 @@ export default function Modificadores ()  {
                     {/* Dialog Para ingresar una nuevo Modificador */}
                     <Dialog visible={opcionDialog} style={{ width: '450px'}} header="Opcion Modificador " modal className="p-fluid " footer={opcionDialogFooter} onHide={hideDialogOpcion}>
                         
-                        <div className="p-field" style={{ marginBottom: '40px'}} >
+                        <div className="p-field" style={{ marginBottom: '60px'}} >
                             <label htmlFor="nombre">Nombre</label>
                             <InputText id="nombre" value={opcionModificador.nombre} onChange={(e) => onInputChanceOpcionModificador(e, 'nombre')} required autoFocus className={classNames({ 'p-invalid': submitted2 && !opcionModificador.nombre })} />
                             {submitted2 && !opcionModificador.nombre && <small className="p-invalid">Nombre Requerido.</small>}
                         </div>
                         
-                        <div className="p-field" style={{ marginBottom: '40px'}}>
+                        <div className="p-field" style={{ marginBottom: '60px'}}>
                             <label htmlFor="precio">Precio</label>
                             <InputNumber id="precio" value={opcionModificador.precio} onChange={(e) => onInputNumberChange(e, 'precio')} required mode="currency" currency="CLP" locale="es-CL" className={classNames({ 'p-invalid': submitted2 && !opcionModificador.precio })} />
                             {submitted2 && !opcionModificador.precio && <small className="p-invalid">Precio Requerido.</small>}

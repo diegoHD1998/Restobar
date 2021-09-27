@@ -14,6 +14,8 @@ import ProductoService from '../../service/ProductosService/ProductoService'
 import CategoriaService from '../../service/ProductosService/CategoriaService'
 import VarianteService from '../../service/ProductosService/VarianteService'
 import OpcionVarianteService from '../../service/ProductosService/OpcionVarianteService'
+import ModificadorService from '../../service/ProductosService/ModificadorService'
+import OpcionModificadorService from '../../service/ProductosService/OpcionModificadorService'
 
 
 
@@ -37,30 +39,29 @@ export default function Productos ()  {
         'Inactivo'
     ];
 
-    let emptyModificador = {
+    let emptyProductoModificador = {
         productoIdProducto: null,
         modificadorIdModificador: null
     };
 
-
-
-    const [productos, setProductos] = useState(null); /* <----------------- */
-    const [producto, setProducto] = useState(emptyProduct);/* <----------------- */
     const [productDialog, setProductDialog] = useState(false);
+    const [dialogVisible, setDialogVisible] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
-    
+
+    const [productos, setProductos] = useState(null); 
     const [categorias, setCategorias] = useState([]);
     const [variantes, setVariantes] = useState([]);
     const [opcionesV, setOpcionesV] = useState([])
-    const [dialogVisible, setDialogVisible] = useState(false);
-    const [nombreV, setNombreV] = useState(null);
-
     const [modificadores, setModificadores] = useState([]);
-    const [opcionesM, setOPcionesM] = useState([])
+    const [opcionesM, setOpcionesM] = useState([])
+
+    const [producto, setProducto] = useState(emptyProduct);
+    const [productoModificador, setProductoModificador] = useState(emptyProductoModificador)
+    const [nombreV, setNombreV] = useState(null);
 
 
     /* const [loading, setloading] = useState(true) */
@@ -120,6 +121,50 @@ export default function Productos ()  {
             }
             
         });
+
+        const modificadorService = new ModificadorService();
+        modificadorService.readAll().then((res) => {
+            if(res){
+                if(res.status >= 200 && res.status<300){
+
+                    const _data = res.data.map(value => {
+                        /* Aqui Escribir codigo de ProductoModificador*/
+                        
+                            return {
+                                ...value,
+                                seleccionado:false,
+    
+                            }
+                        
+
+                    });
+
+                    setModificadores(_data)
+                    
+                }else{
+                    console.log('Error ')
+                }
+            }else{
+                console.log('Error de conexion con Backend, Backend esta abajo -1')
+            }
+        });
+
+        const opcionModificadorService = new OpcionModificadorService();
+        opcionModificadorService.readAll().then((res) => {
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setOpcionesM(res.data)
+                }else{
+                    console.log('Error ')
+                }
+            }else{
+                console.log('Error de conexion con Backend, Backend esta abajo -1')
+            }
+        });
+
+
+
+
     }, []);
 
     const abrirOpciones = (rowData) =>{
@@ -281,6 +326,21 @@ export default function Productos ()  {
         setProducto(_product);
     }
 
+    const onChangeSwitch = (mod) => {
+        const data = modificadores.map(value => {
+            if(value.idModificador === mod.idModificador){
+                return {
+                    ...value,
+                    seleccionado:!value.seleccionado
+                }
+            }else{
+                return {
+                    ...value
+                }
+            }
+        });
+        setModificadores(data)
+    }
 
     const ColorBodytemplate = (rowData) => {
 
@@ -338,7 +398,27 @@ export default function Productos ()  {
         );
     }
 
+    const MostrarOcionesM = (mod) => {
 
+        if(opcionesM){
+            let opciones = opcionesM.filter(value => mod.idModificador === value?.modificadorIdModificador)
+            let texto = ''
+            if(opciones){
+                opciones.forEach((value) => {
+                    if(opciones.indexOf(value) !== opciones.length - 1){
+                        texto += `${value.nombre}, `
+                    }else{
+                        texto += `${value.nombre}.`
+                    }
+                });
+                return(
+                    <>
+                        <span>{texto}</span>
+                    </>
+                )
+            }
+        }
+    }  
     const header = (/* <----------------- */
         <div className="table-header">
             <h5 className="p-m-0"><b>Administracion de Productos</b></h5>
@@ -429,12 +509,32 @@ export default function Productos ()  {
                             {submitted && !producto.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
 
-
-
-                        <div className="p-field" style={{height:'150px'}}>
+                        <div className="p-field" /* style={{height:'150px'}} */>
                             <label htmlFor="imagen">Imagen</label>
                             <InputText id="imagen" value={producto.imagen} onChange={(e) => onInputChange(e, 'imagen')} /* className={classNames({ 'p-invalid': submitted && !producto.imagen })} */ />
+                        </div>
+
+                        
+                        <div className="p-field">
+                            <label>Modificadores</label>
+                        {
+                            modificadores?.map(mod => 
                             
+                                <div key={mod.idModificador} className='p-d-flex p-jc-between p-p-2'>
+                                    <div> 
+                                        <span>
+                                            <b>{mod.nombre}: </b>
+                                        </span> 
+                                        <span>
+                                            {MostrarOcionesM(mod)}
+                                        </span> 
+                                    </div> 
+                                    <div> 
+                                        <InputSwitch checked={mod.seleccionado} onChange={()=> onChangeSwitch(mod)} /> 
+                                    </div> 
+                                </div>
+                            )
+                        }
                         </div>
                     </Dialog>
 

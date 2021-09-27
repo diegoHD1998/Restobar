@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { InputSwitch } from 'primereact/inputswitch';
-import Switch from './components/Switch';
+
 import ModificadorService from './service/ProductosService/ModificadorService';
 import OpcionModificadorService from './service/ProductosService/OpcionModificadorService'
 
@@ -74,12 +74,12 @@ const Experimento = () => {
 
         setModificadores(data)
     }
-
+/* -------------------------------------------------------------------------------------------- */
     const guardar = ()=> {
         const data = modificadores.filter((value) => value.seleccionado === true)
         console.log(data)
     }
-
+/* -------------------------------------------------------------------------------------------- */
     return (
         <div className='p-grid p-d-flex p-flex-column ' >
             {
