@@ -16,6 +16,7 @@ import VarianteService from '../../service/ProductosService/VarianteService'
 import OpcionVarianteService from '../../service/ProductosService/OpcionVarianteService'
 import ModificadorService from '../../service/ProductosService/ModificadorService'
 import OpcionModificadorService from '../../service/ProductosService/OpcionModificadorService'
+import ProductoModificadorService from '../../service/ProductosService/ProductoModificadorService';
 
 
 
@@ -53,20 +54,22 @@ export default function Productos ()  {
     const dt = useRef(null);
 
     const [productos, setProductos] = useState(null); 
-    const [categorias, setCategorias] = useState([]);
-    const [variantes, setVariantes] = useState([]);
-    const [opcionesV, setOpcionesV] = useState([])
-    const [modificadores, setModificadores] = useState([]);
-    const [opcionesM, setOpcionesM] = useState([])
+    const [categorias, setCategorias] = useState(null);
+    const [variantes, setVariantes] = useState(null);
+    const [opcionesV, setOpcionesV] = useState(null)
+    const [modificadores, setModificadores] = useState(null);
+    const [opcionesM, setOpcionesM] = useState(null)
+    const [productoModificadores, setProductoModificadores] =useState(null)
 
     const [producto, setProducto] = useState(emptyProduct);
-    const [productoModificador, setProductoModificador] = useState(emptyProductoModificador)
+    
     const [nombreV, setNombreV] = useState(null);
 
-
-    /* const [loading, setloading] = useState(true) */
+    const [loading, setLoading] = useState(true)
+    const [loadingV, setloadingV] = useState(true) 
     
     const productoService = new ProductoService(); 
+    const productoModificadorService = new ProductoModificadorService()
     const opcionVarianteService = new OpcionVarianteService();
     
 
@@ -110,6 +113,7 @@ export default function Productos ()  {
             if(res){
                 if(res.status >= 200 && res.status<300){
                     setProductos(res.data)
+                    setLoading(false)
                     
                 }else{
                     console.log('Error al cargar Datos de Productos')
@@ -138,8 +142,9 @@ export default function Productos ()  {
                         
 
                     });
-
                     setModificadores(_data)
+
+
                     
                 }else{
                     console.log('Error ')
@@ -162,18 +167,27 @@ export default function Productos ()  {
             }
         });
 
-
-
-
+        const productoModificadorService = new ProductoModificadorService();
+        productoModificadorService.readAll().then(res => {
+            if(res){
+                if(res.status >= 200 && res.status<300){
+                    setProductoModificadores(res.data)
+                    console.log(res.data)
+                }else{
+                    console.log('Error ')
+                }
+            }else{
+                console.log('Error de conexion con Backend, Backend esta abajo ')
+            }
+        })
     }, []);
 
     const abrirOpciones = (rowData) =>{
-
         opcionVarianteService.buscarOpciones(rowData.varianteIdVariante).then(res => {
             setOpcionesV(res.data)
+            setloadingV(false)
             console.log(res.data)
         });
-
         let variante = variantes.find(val => val.idVariante === rowData.varianteIdVariante)
 
         setNombreV(variante.nombre)
@@ -191,11 +205,25 @@ export default function Productos ()  {
         setProducto(emptyProduct);
         setSubmitted(false);
         setProductDialog(true);
+        const data1 = modificadores.map(value => {
+            return{
+                ...value,
+                seleccionado:false,
+            }
+        })
+        setModificadores(data1)
     }
 
     const hideDialog = () => {
         setSubmitted(false);
         setProductDialog(false);
+        const data = modificadores.map(value => {
+            return{
+                ...value,
+                seleccionado:false
+            }
+        })
+        setModificadores(data)
     }
 
     const hideDeleteProductDialog = () => {
@@ -219,11 +247,14 @@ export default function Productos ()  {
                         _productos[index] = _producto;
                         console.log(res.data)
                         toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Actualizado', life: 3000 });
-                        /* if(){
 
-                        }else{
+                        let SwitchActivos = modificadores.filter(value => value.seleccionado === true);
+                        if(SwitchActivos){
+                            GuardarModificador(producto.idProducto,SwitchActivos)
+                        }
+                        
 
-                        } */
+                        
 
                     }else if(res.status >= 400 && res.status<500){
                         console.log(res)
@@ -246,11 +277,7 @@ export default function Productos ()  {
                         console.log(res.data)
                         toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Creado', life: 3000 });
 
-                        /* if(){
-
-                        }else{
-
-                        } */
+                        
 
                     }else if(res.status >= 400 && res.status<500){
                         console.log(res)
@@ -269,9 +296,42 @@ export default function Productos ()  {
     }
 
     const editProduct = (product) => {
+
         setProducto({ ...product });
         setProductDialog(true);
+
+        /* const data1 = modificadores.map(value => {
+            return{
+                ...value,
+                seleccionado:false,
+            }
+        })
+        setModificadores(data1) */
+/* ---------------------------------------------------------------------------------------------------------------------- */
+        let _modificadores = [...modificadores]
+
+        const TablaPivote = productoModificadores.filter(value => value.productoIdProducto === product.idProducto)
+
+        if(TablaPivote){
+
+            TablaPivote.forEach((value) => {
+
+                let _modificador = modificadores.find(value1 => value1.idModificador === value.modificadorIdModificador)
+
+                let _activar = {
+                    ..._modificador,
+                    seleccionado:true
+                }
+
+                let index = findIndexByIdM(_modificador.idModificador)
+                _modificadores[index] = _activar
+            });
+            
+            setModificadores(_modificadores)
+        }
+
     }
+
 
     const confirmDeleteProduct = (product) => {
         setProducto(product);
@@ -302,6 +362,18 @@ export default function Productos ()  {
         let index = -1;
         for (let i = 0; i < productos.length; i++) {
             if (productos[i].idProducto === id) {
+                index = i;
+                break;
+            }
+        }
+
+        return index;
+    }
+
+    const findIndexByIdM = (id) => {
+        let index = -1;
+        for (let i = 0; i < modificadores.length; i++) {
+            if (modificadores[i].idModificador === id) {
                 index = i;
                 break;
             }
@@ -419,6 +491,98 @@ export default function Productos ()  {
             }
         }
     }  
+
+    const GuardarModificador = async (_idProducto, SwitchActivos) =>{
+        
+        await productoModificadorService.pmExistente(_idProducto).then(res => {
+            
+            if( res.data.length !== 0 ){ /* El array tiene datos */
+                
+                /* logica para ver si se algun ProductoModificador debe ser creado o eliminado */
+
+                
+                if(SwitchActivos){
+
+                    SwitchActivos.forEach((value) => {
+                        let pivote = res.data.find(value2 => value2.modificadorIdModificador === value.idModificador )
+    
+                        if(!pivote){
+                            /* Create */
+                            let data = {
+                                productoIdProducto: _idProducto,
+                                modificadorIdModificador: value.idModificador
+                            }
+
+                            let _productModifys = [...productoModificadores]
+
+                            productoModificadorService.create(data).then(res => {
+                                if(res){
+                                    if(res.status >= 200 && res.status<300){
+                                        console.log('El producto modificador se Guardo Exitozamente')
+                                        _productModifys.push({
+                                            productoIdProducto: res.data.productoIdProducto,
+                                            modificadorIdModificador: res.data.modificadorIdModificador
+                                        })
+                                        
+                                    }else{
+                                        console.log(res.data)
+                                    }
+                                }
+                            });
+                            setProductoModificadores(_productModifys)
+
+                        }
+                        
+                    });
+    
+                    res.data.forEach((value) => {
+                        let activo = SwitchActivos.find(value2 => value2.idModificador === value.modificadorIdModificador)
+    
+                        if(!activo){
+                            /* Delete */
+                            productoModificadorService.delete(value.productoIdProducto, value.modificadorIdModificador).then(res => {
+                                if(res){
+                                    if(res.status >= 200 && res.status<300){
+                                        console.log('El producto modificador fue eliminado')
+                                        console.log(res.data)
+                                        setProductoModificadores(productoModificadores.filter(value2 => value2.productoIdProducto !== res.data.productoIdProducto && value2.modificadorIdModificador !== res.data.modificadorIdModificador))
+                                    }else{
+                                        console.log(res.data)
+                                    }
+                                }
+                            })
+                        }
+                    })
+                }
+
+
+            }else{ /* El array esta vacio */
+                SwitchActivos.forEach((value) => {
+                    let data = {
+                        productoIdProducto: _idProducto,
+                        modificadorIdModificador: value.idModificador
+                    }
+                    productoModificadorService.create(data).then(res => {
+                        if(res){
+                            if(res.status >= 200 && res.status<300){
+                                console.log('El producto modificador se Guardo Exitozamente')
+                                console.log(res.data)
+                            }else{
+                                console.log(res.data)
+                            }
+                        }
+                    })
+                })
+            }
+        });
+
+
+
+    }
+
+
+
+
     const header = (/* <----------------- */
         <div className="table-header">
             <h5 className="p-m-0"><b>Administracion de Productos</b></h5>
@@ -458,7 +622,7 @@ export default function Productos ()  {
                     <DataTable ref={dt} header={header} value={productos} dataKey="idProducto" className="datatable-responsive" 
                         paginator rows={10} rowsPerPageOptions={[5, 10, 25]} paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Productos"
-                        globalFilter={globalFilter} emptyMessage="Productos No Encontrados."  /* loading={loading} */>
+                        globalFilter={globalFilter} emptyMessage="Productos No Encontrados."  loading={loading}>
                         
                         <Column field="nombre" header="Nombre" sortable ></Column>
                         <Column field="descripcion" header="Descripcion" sortable ></Column>
@@ -548,7 +712,7 @@ export default function Productos ()  {
 
                     <Dialog visible={dialogVisible} style={{ width: '600px'}} header={`Detalle de opciones de Variante: ${nombreV} `} modal className="p-fluid " onHide={ocultarDialog}>
 
-                        <DataTable value={opcionesV} className="datatable-responsive" emptyMessage="Variante No posee Opciones.">
+                        <DataTable value={opcionesV} className="datatable-responsive" emptyMessage="Variante No posee Opciones." loading={loadingV}>
                             <Column field="nombre" header="Nombre"></Column>
                             <Column field="precio" header="Precio" body={MonedaBodyTemplate1} ></Column>
                             <Column field="orden" header="Orden"></Column>

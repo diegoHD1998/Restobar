@@ -100,10 +100,10 @@ namespace SistemaRestobarSayka2.Controllers
         }
 
         // DELETE: api/ProductoModificadores/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProductoModificador(int id)
+        [HttpDelete("{idP}/{idM}")]
+        public async Task<IActionResult> DeleteProductoModificador(int idP,int idM)
         {
-            var productoModificador = await _context.ProductoModificadors.FindAsync(id);
+            var productoModificador = await _context.ProductoModificadors.Where(o => o.ProductoIdProducto == idP && o.ModificadorIdModificador == idM).FirstAsync();
             if (productoModificador == null)
             {
                 return NotFound("ProductoModificador No Encontrado");
@@ -121,8 +121,18 @@ namespace SistemaRestobarSayka2.Controllers
                 return BadRequest("El ProductoModificador No fue Eliminado");
             }
 
-            return Ok(id);
+            return Ok(productoModificador);
         }
+
+        [HttpGet("pm-existentes/{id}")]
+        public async Task<ActionResult<IEnumerable<ProductoModificador>>> ProductoWithModificador(int id)
+        {
+            var modificadores = await _context.ProductoModificadors.Where(o => o.ProductoIdProducto == id).ToListAsync();
+            return Ok(modificadores);
+        }
+
+
+
 
         private bool ProductoModificadorExists(int id)
         {
