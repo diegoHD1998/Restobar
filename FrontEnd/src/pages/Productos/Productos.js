@@ -20,8 +20,6 @@ import ProductoModificadorService from '../../service/ProductosService/ProductoM
 
 
 
-
-
 export default function Productos ()  {
 
     let emptyProduct = {
@@ -172,7 +170,7 @@ export default function Productos ()  {
             if(res){
                 if(res.status >= 200 && res.status<300){
                     setProductoModificadores(res.data)
-                    console.log(res.data)
+                    
                 }else{
                     console.log('Error ')
                 }
@@ -186,7 +184,7 @@ export default function Productos ()  {
         opcionVarianteService.buscarOpciones(rowData.varianteIdVariante).then(res => {
             setOpcionesV(res.data)
             setloadingV(false)
-            console.log(res.data)
+            
         });
         let variante = variantes.find(val => val.idVariante === rowData.varianteIdVariante)
 
@@ -252,9 +250,6 @@ export default function Productos ()  {
                         if(SwitchActivos){
                             GuardarModificador(producto.idProducto,SwitchActivos)
                         }
-                        
-
-                        
 
                     }else if(res.status >= 400 && res.status<500){
                         console.log(res)
@@ -296,28 +291,22 @@ export default function Productos ()  {
     }
 
     const editProduct = (product) => {
-
+        
         setProducto({ ...product });
         setProductDialog(true);
 
-        /* const data1 = modificadores.map(value => {
-            return{
-                ...value,
-                seleccionado:false,
-            }
-        })
-        setModificadores(data1) */
-/* ---------------------------------------------------------------------------------------------------------------------- */
         let _modificadores = [...modificadores]
-
+        
+        /* console.log(product)
+        console.log(productoModificadores) */
         const TablaPivote = productoModificadores.filter(value => value.productoIdProducto === product.idProducto)
-
+        /* console.log(TablaPivote) */
         if(TablaPivote){
 
             TablaPivote.forEach((value) => {
 
                 let _modificador = modificadores.find(value1 => value1.idModificador === value.modificadorIdModificador)
-
+                
                 let _activar = {
                     ..._modificador,
                     seleccionado:true
@@ -325,14 +314,16 @@ export default function Productos ()  {
 
                 let index = findIndexByIdM(_modificador.idModificador)
                 _modificadores[index] = _activar
+                /* console.log(_modificadores[index]) */
             });
             
-            setModificadores(_modificadores)
         }
+        setModificadores(_modificadores)
+        
 
     }
 
-
+    
     const confirmDeleteProduct = (product) => {
         setProducto(product);
         setDeleteProductDialog(true);
@@ -374,6 +365,18 @@ export default function Productos ()  {
         let index = -1;
         for (let i = 0; i < modificadores.length; i++) {
             if (modificadores[i].idModificador === id) {
+                index = i;
+                break;
+            }
+        }
+
+        return index;
+    }
+
+    const findIndexByIdPivote = (idP, idM) => {
+        let index = -1;
+        for (let i = 0; i < productoModificadores.length; i++) {
+            if (productoModificadores[i].productoIdProducto === idP && productoModificadores[i].modificadorIdModificador === idM) {
                 index = i;
                 break;
             }
@@ -498,9 +501,6 @@ export default function Productos ()  {
             
             if( res.data.length !== 0 ){ /* El array tiene datos */
                 
-                /* logica para ver si se algun ProductoModificador debe ser creado o eliminado */
-
-                
                 if(SwitchActivos){
 
                     SwitchActivos.forEach((value) => {
@@ -535,44 +535,55 @@ export default function Productos ()  {
                         
                     });
     
-                    res.data.forEach((value) => {
-                        let activo = SwitchActivos.find(value2 => value2.idModificador === value.modificadorIdModificador)
-    
-                        if(!activo){
-                            /* Delete */
-                            productoModificadorService.delete(value.productoIdProducto, value.modificadorIdModificador).then(res => {
-                                if(res){
-                                    if(res.status >= 200 && res.status<300){
-                                        console.log('El producto modificador fue eliminado')
-                                        console.log(res.data)
-                                        setProductoModificadores(productoModificadores.filter(value2 => value2.productoIdProducto !== res.data.productoIdProducto && value2.modificadorIdModificador !== res.data.modificadorIdModificador))
-                                    }else{
-                                        console.log(res.data)
-                                    }
-                                }
-                            })
-                        }
-                    })
                 }
+
+                res.data.forEach((value) => {
+                    let activo = SwitchActivos.find(value2 => value2.idModificador === value.modificadorIdModificador )
+
+                    if(!activo){
+                        let _pivotes = [...productoModificadores]
+                        let index = findIndexByIdPivote(value.productoIdProducto,value.modificadorIdModificador)
+                        _pivotes.splice(index,1)
+                       
+                        
+                        /* Delete */
+                        productoModificadorService.delete(value.productoIdProducto, value.modificadorIdModificador).then(res => {
+                            if(res){
+                                if(res.status >= 200 && res.status<300){
+
+                                    console.log('El producto modificador fue eliminado')
+                                    console.log(res.data)
+                                    
+                                    setProductoModificadores(_pivotes)
+                                }else{
+                                    console.log(res.data)
+                                }
+                            }
+                        })
+                    }
+                })
 
 
             }else{ /* El array esta vacio */
-                SwitchActivos.forEach((value) => {
-                    let data = {
-                        productoIdProducto: _idProducto,
-                        modificadorIdModificador: value.idModificador
-                    }
-                    productoModificadorService.create(data).then(res => {
-                        if(res){
-                            if(res.status >= 200 && res.status<300){
-                                console.log('El producto modificador se Guardo Exitozamente')
-                                console.log(res.data)
-                            }else{
-                                console.log(res.data)
-                            }
+                if(SwitchActivos){
+
+                    SwitchActivos.forEach((value) => {
+                        let data = {
+                            productoIdProducto: _idProducto,
+                            modificadorIdModificador: value.idModificador
                         }
-                    })
-                })
+                        productoModificadorService.create(data).then(res => {
+                            if(res){
+                                if(res.status >= 200 && res.status<300){
+                                    console.log('El producto modificador se Guardo Exitozamente')
+                                    console.log(res.data)
+                                }else{
+                                    console.log(res.data)
+                                }
+                            }
+                        });
+                    });
+                }
             }
         });
 
