@@ -38,11 +38,6 @@ export default function Productos ()  {
         'Inactivo'
     ];
 
-    let emptyProductoModificador = {
-        productoIdProducto: null,
-        modificadorIdModificador: null
-    };
-
     const [productDialog, setProductDialog] = useState(false);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -119,7 +114,7 @@ export default function Productos ()  {
             }else{
                 console.log('Error de conexion con Backend, Backend esta abajo -3')
                 toast.current.show({ severity: 'error', summary: 'Backend No Operativo', detail: `El servidor no responde a las peticiones solicitadas `, life: 20000 });
-                /* setloading(false) */
+                setLoading(false)
             }
             
         });
@@ -272,7 +267,10 @@ export default function Productos ()  {
                         console.log(res.data)
                         toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Creado', life: 3000 });
 
-                        
+                        let SwitchActivos = modificadores.filter(value => value.seleccionado === true);
+                        if(SwitchActivos){
+                            GuardarModificador(res.data.idProducto,SwitchActivos)
+                        }
 
                     }else if(res.status >= 400 && res.status<500){
                         console.log(res)
@@ -297,10 +295,10 @@ export default function Productos ()  {
 
         let _modificadores = [...modificadores]
         
-        /* console.log(product)
-        console.log(productoModificadores) */
+        console.log(product)
+        console.log(productoModificadores)
         const TablaPivote = productoModificadores.filter(value => value.productoIdProducto === product.idProducto)
-        /* console.log(TablaPivote) */
+        console.log(TablaPivote)
         if(TablaPivote){
 
             TablaPivote.forEach((value) => {
@@ -314,7 +312,7 @@ export default function Productos ()  {
 
                 let index = findIndexByIdM(_modificador.idModificador)
                 _modificadores[index] = _activar
-                /* console.log(_modificadores[index]) */
+                console.log(_modificadores[index])
             });
             
         }
@@ -566,7 +564,8 @@ export default function Productos ()  {
 
             }else{ /* El array esta vacio */
                 if(SwitchActivos){
-
+                    
+                    let _productoModificadores = [...productoModificadores]
                     SwitchActivos.forEach((value) => {
                         let data = {
                             productoIdProducto: _idProducto,
@@ -577,12 +576,16 @@ export default function Productos ()  {
                                 if(res.status >= 200 && res.status<300){
                                     console.log('El producto modificador se Guardo Exitozamente')
                                     console.log(res.data)
+                                    _productoModificadores.push(res.data)
+
                                 }else{
                                     console.log(res.data)
                                 }
                             }
                         });
+                        
                     });
+                    setProductoModificadores(_productoModificadores)
                 }
             }
         });

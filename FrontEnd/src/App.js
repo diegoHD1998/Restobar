@@ -23,6 +23,7 @@ import Variantes from './pages/Productos/Variantes';
 
 import Usuarios from './pages/Usuarios/Usuarios'
 import Roles from './pages/Usuarios/Roles'
+/* import ExperimentoPedidos from './pages/ExperimentoPedidos' */
 
 import PrimeReact from 'primereact/api';
 
@@ -160,7 +161,7 @@ const App = () => {
         return sidebarActive;
     };
 
-    const logo = layoutColorMode === 'dark' ? 'assets/layout/images/logo-white.svg' : 'assets/layout/images/logo.svg';
+    const logo = layoutColorMode === 'dark' ? '/assets/layout/images/logo-white.svg' : '/assets/layout/images/logo.svg';
 
     const wrapperClass = classNames('layout-wrapper', {
         'layout-overlay': layoutMode === 'overlay',
@@ -181,7 +182,7 @@ const App = () => {
 
             <CSSTransition classNames="layout-sidebar" timeout={{ enter: 200, exit: 200 }} in={isSidebarVisible()} unmountOnExit>
                 <div ref={sidebar} className={sidebarClassName} onClick={onSidebarClick}>
-                    <div className="layout-logo" style={{cursor: 'pointer'}} onClick={() => history.push('/')}>
+                    <div className="layout-logo" style={{cursor: 'pointer'}} onClick={() => history.push('/home')}>
                         <img alt="Logo" src={logo} />
                     </div>
                     <AppProfile />
@@ -213,6 +214,8 @@ const App = () => {
                 {/* Mesas */}
                 <Route path="/home/lista-mesas" component={Mesas} />
                 <Route path="/home/zonas" component={Zonas} />
+
+                {/* <Route path="/home/experimento" component={ExperimentoPedidos}/> */}
                 
             </div>
 

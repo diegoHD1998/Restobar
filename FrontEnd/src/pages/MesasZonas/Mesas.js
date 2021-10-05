@@ -249,7 +249,7 @@ export default function Mesas ()  {
                         dataKey="idMesa" paginator rows={10} rowsPerPageOptions={[5, 10, 25]} className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Zonas"
-                        globalFilter={globalFilter} emptyMessage="Zonas No Encontradas." header={header} loading={loading}>
+                        globalFilter={globalFilter} emptyMessage="Mesas No Encontradas." header={header} loading={loading}>
                         
                         <Column field="nombre" header="Nombre" sortable ></Column>
                         <Column field="zonaIdZona" header="Zona" body={ColorBodytemplate} sortable ></Column>
