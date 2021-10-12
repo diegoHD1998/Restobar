@@ -29,6 +29,20 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(categorias);
         }
 
+        [HttpGet("categoriasActivas")]
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasActivas()
+        {
+            var categorias = await _context.Categoria.Where(c => c.Estado == "Activo").ToListAsync();
+
+            if (categorias == null)
+            {
+                return NotFound("Categorias Activas No Encontradas");
+            }
+
+            return Ok(categorias);
+        }
+
+
         // GET: api/Categorias/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Categoria>> GetCategoria(int id)

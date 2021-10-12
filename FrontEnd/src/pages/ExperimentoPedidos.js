@@ -4,18 +4,22 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { DataScroller } from 'primereact/datascroller';
+import {InputNumber} from 'primereact/inputnumber'
+import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
-import { Row } from 'primereact/row';
 import { Dialog } from 'primereact/dialog';
-import { Toast } from 'primereact/toast';
+import { Row } from 'primereact/row';
+/* import { Toast } from 'primereact/toast'; */
 
 import ProductoService from '../service/ProductosService/ProductoService';
 import CategoriaService from '../service/ProductosService/CategoriaService';
-import VarienteService from '../service/ProductosService/VarianteService';
+/* import VarienteService from '../service/ProductosService/VarianteService'; */
 import OpcionVarienteService from '../service/ProductosService/OpcionVarianteService';
-import ModificadorService from '../service/ProductosService/ModificadorService';
+/* import ModificadorService from '../service/ProductosService/ModificadorService'; */
 import OpcionModificadorService from '../service/ProductosService/OpcionModificadorService';
-import { NULL } from 'node-sass';
+
+import ProductoModificadorService from '../service/ProductosService/ProductoModificadorService';
+
 
 
 const DataTableColGroupDemo = () => {
@@ -25,10 +29,11 @@ const DataTableColGroupDemo = () => {
         productoIdProducto: null,
         pedidoIdPedido: null,
         cantidad: 1,
-        total: null,
-        hora: '',
-        precioUnidad: null,
-        opcionVariante:''
+        precio: 0,
+        modificadorPrecio: 0,
+        total: 0,
+        fecha:null,
+        hora: null,
     }
 
     let emptyProducto = {
@@ -44,47 +49,43 @@ const DataTableColGroupDemo = () => {
 
     const [productoPedido, setProductoPedido] = useState(empty)
     const [producto, setProducto] = useState(emptyProducto)
+   /*  const [variante, setVariante] = useState(null) */
 
     const [productos, setProductos] = useState(null)
     const [categorias, setCategorias] = useState(null)
-    const [variantes, setVariantes] = useState(null)
+    const [newListProducts, setNewListProducts] = useState(null)
+    const [categoriaSelected, setCategoriaSelected] = useState(null)
+
+
+    /* const [variantes, setVariantes] = useState(null) */
     const [opcionVariantes, setOpcionVariantes] = useState(null)
-    const [modificadores, setModificadores] = useState(null)
-    const [opcionModificadores, setOpcionModificadores] = useState(null)
-
+    const [opcionesVariantesProducto, setOpcionesVariantesProducto] = useState(null)
     
-
-
-    const pedidos = [
-        {idPedido:501, fecha:'04-10-2021', estado: 'Activo', usuarioIdUsuario:1, mesaIdMesa:2}
-    ]
+    const [productoModificadores, setProductoModificadores] = useState(null)
+    /* const [modificadores, setModificadores] = useState(null) */
+    const [opcionModificadores, setOpcionModificadores] = useState(null)
+    const [opcionesModificadoresProducto, setOpcionesModificadoresProducto] = useState(null)
+    
+    const [selectedCustomer1, setSelectedCustomer1] = useState(null);
+    const dt = useRef(null);
+    
+    const pedido = {idPedido:501, fecha:'04-10-2021', estado: 'Activo', usuarioIdUsuario:1, mesaIdMesa:2}
 
     const productoPedidos = [
-        {productoIdProducto: 1, pedidoIdPedido:501, cantidad: 5, total:1000 , hora:'10:44:12'},
-        {productoIdProducto: 2, pedidoIdPedido:501, cantidad: 2, total:1000 , hora:'10:44:12'},
-        {productoIdProducto: 3, pedidoIdPedido:501, cantidad: 1, total:1000 , hora:'10:44:12'},
-        {productoIdProducto: 4, pedidoIdPedido:501, cantidad: 7, total:1000 , hora:'10:44:12'},
-        {productoIdProducto: 5, pedidoIdPedido:501, cantidad: 7, total:1000 , hora:'10:44:12'},
+        {productoIdProducto: 4, pedidoIdPedido:501, cantidad: 1, precio: 6000, modificadorPrecio: null, total:6000, fecha:null, hora:null},
+        {productoIdProducto: 5, pedidoIdPedido:501, cantidad: 2, precio: 10000, modificadorPrecio: null, total:20000, fecha:null, hora:null},
+        {productoIdProducto: 6, pedidoIdPedido:501, cantidad: 1, precio: 6000, modificadorPrecio: null, total:6000, fecha:null, hora:null},
+        {productoIdProducto: 7, pedidoIdPedido:501, cantidad: 3, precio: 500, modificadorPrecio: null, total:1500, fecha:null, hora:null},
     ];
     
     const [dialogVisible, setDialogVisible] = useState(false);
+    const [dialogVisible2, setDialogVisible2] = useState(false);
+    const [dialogVisible3, setDialogVisible3] = useState(false);
+
     const [submitted, setSubmitted] = useState(false);
 
     useEffect(() => {
         
-        const productoService = new ProductoService();
-        productoService.readAll().then(res => {
-            if(res){
-                if(res.status >= 200 && res.status < 300){
-                    setProductos(res.data)
-                }else{
-                    console.log('Error al cargar Datos de Producto')
-                }
-            }else{
-                console.log('Error de conexion con Backend, Backend esta abajo')
-            }
-        });
-
         const categoriaService = new CategoriaService();
         categoriaService.readAll().then(res => {
             if(res){
@@ -96,13 +97,13 @@ const DataTableColGroupDemo = () => {
             }else{
                 console.log('Error de conexion con Backend, Backend esta abajo')
             }
-        });
-
-        const varianteService = new VarienteService();
-        varianteService.readAll().then(res => {
+        });    
+        const productoService = new ProductoService();
+        productoService.readAll().then(res => {
             if(res){
                 if(res.status >= 200 && res.status < 300){
-                    setVariantes(res.data)
+                    setProductos(res.data)
+                    setNewListProducts(res.data)
                 }else{
                     console.log('Error al cargar Datos de Producto')
                 }
@@ -110,8 +111,7 @@ const DataTableColGroupDemo = () => {
                 console.log('Error de conexion con Backend, Backend esta abajo')
             }
         });
-
-
+        
         const opcionVarianteService = new OpcionVarienteService();
         opcionVarianteService.readAll().then(res => {
             if(res){
@@ -124,47 +124,132 @@ const DataTableColGroupDemo = () => {
                 console.log('Error de conexion con Backend, Backend esta abajo')
             }
         });
-        
+
+        const productoModificadorService= new ProductoModificadorService();
+        productoModificadorService.readAll().then(res => {
+            if(res){
+                if(res.status >= 200 && res.status < 300){
+                    setProductoModificadores(res.data)
+                }else{
+                    console.log('Error al cargar Datos de Producto')
+                }
+            }else{
+                console.log('Error de conexion con Backend, Backend esta abajo')
+            }
+        });
+
+        const opcionModificadorService = new OpcionModificadorService();
+        opcionModificadorService.readAll().then(res => {
+            if(res){
+                if(res.status >= 200 && res.status < 300){
+                    setOpcionModificadores(res.data)
+                }else{
+                    console.log('Error al cargar Datos de Producto')
+                }
+            }else{
+                console.log('Error de conexion con Backend, Backend esta abajo')
+            }
+        });
+
         
     }, [])
+    
+    const buscarProductoModificadores = (id) => {
+        const _productoModificadores = productoModificadores.filter(value => value.productoIdProducto === id);
+        
+        if(_productoModificadores.length !== 0 ){
+            return(_productoModificadores)
+        }else{
+            return(null)
+        }
 
+    }
+
+    const cambiarSelect = (value) => {
+        setSelectedCustomer1(value)
+        selectProducto(value)
+    }
+
+    const selectProducto = (_producto) => {
+        console.log(_producto)
+        setProducto(_producto);
+        
+        let _productoModificadores = buscarProductoModificadores(_producto.idProducto)
+        if(_producto.varianteIdVariante !== null){
+
+            let _opcionesV = opcionVariantes.filter(value => value.varianteIdVariante === _producto.varianteIdVariante)
+            setOpcionesVariantesProducto(_opcionesV)
+            setDialogVisible(true);
+
+        }else if(_productoModificadores !== null){
+    
+            let _opcionesM = [];
+            _productoModificadores.forEach((value1) => {
+                
+                opcionModificadores.forEach((value2) => {
+
+                    if(value1.modificadorIdModificador === value2.modificadorIdModificador)
+                    return _opcionesM.push(value2);
+                })
+            });
+
+            let _ProductoPedido ={
+                ...empty,
+                precio: _producto.precio
+            }
+
+            setOpcionesModificadoresProducto(_opcionesM);
+            setProductoPedido(_ProductoPedido);
+            setDialogVisible2(true);
+        }else{
+
+            let _ProductoPedido ={
+                ...empty,
+                precio: _producto.precio
+            }
+            setProductoPedido(_ProductoPedido)
+            setDialogVisible3(true)
+        }
+
+
+    }
 
     const hideDialog = () => {
         setSubmitted(false);
         setDialogVisible(false);
         setProducto(emptyProducto)
-
+        setProductoPedido(empty)
+        setOpcionesVariantesProducto(null)
+        setSelectedCustomer1(null)
     }
 
+    const hideDialog2 = () => {
+        setSubmitted(false);
+        setDialogVisible2(false)
+        setProducto(emptyProducto)
+        setProductoPedido(empty)
+        setSelectedCustomer1(null)
+    }
 
-    const BodyTemplate = (_productoPedido) => {
+    const hideDialog3 = () => {
+        setSubmitted(false);
+        setDialogVisible3(false)
+        setProducto(emptyProducto)
+        setProductoPedido(empty)
+        setSelectedCustomer1(null)
+    }
 
-        let producto = productos.find(value => value.idProducto === _productoPedido.productoIdProducto )
+    const saveProductoPedido = async() => {
 
-        let total = 0
-        let cantidad = _productoPedido.cantidad
-        
-        if(producto.varianteIdVariante){
-            let precio = _productoPedido
+        if(productoPedido.modificadorPrecio !== null){
+
+        }else{
             
-            
-        }else{  
-            total = cantidad * producto.precio
         }
-        
 
-        return `${formatCurrency(total)}`;
     }
 
-    const formatCurrency = (value) => {
-        return value.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
-    }
-
-    const thisYearTotal = () => {
-        
-        let total = productoPedidos.reduce((acc, el) => acc + (el.precio * el.cantidad), 0)
-        return formatCurrency(total);
-    }
+    
 
     const guardarPedido = async() =>{
         setSubmitted(true);
@@ -173,21 +258,87 @@ const DataTableColGroupDemo = () => {
 
         }
     }
-
-    const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || '';
-        let _product = { ...producto };
-        _product[`${name}`] = val;
-
-        setProducto(_product);
-    }
     
+    const onCategoriaChange = (e) => {
+        dt.current.filter(e.value, 'categoriaIdCategoria', 'equals');
+        setCategoriaSelected(e.value);
+    }
+
     const onInputNumberChange = (e, name) => {
         const val = e.value || 0;
         let _productoPedido = {...productoPedido};
         _productoPedido[`${name}`] = val;
-
+        console.log(val)
         setProductoPedido(_productoPedido);
+    }
+
+    const onInputNumberChange2 = (value, name) => {
+        const val = value || 0;
+        let _productoPedido = {...productoPedido};
+        _productoPedido[`${name}`] = val;
+        console.log(val)
+        setProductoPedido(_productoPedido);
+    }
+    const actionBodyTemplate = () => {
+        return (
+            <div className="actions">
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" />
+            </div>
+        );
+    }
+    const PrecioBodyTemplate = (rowData) => {
+        return rowData.precio.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
+    }
+    
+    const TotalBodyTemplate = (rowData) => {
+        return rowData.total.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
+    }
+    
+    const formatCurrency = (value) => {
+        return value.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
+    }
+    const TotalPagoBodyTemplate = () => {
+        
+        const _productoPedidoActual = productoPedidos.filter(value => value.pedidoIdPedido === pedido.idPedido)
+        
+        let total = _productoPedidoActual.reduce((acc, el) => acc + el.total, 0)
+        
+        return formatCurrency(total);
+    }
+
+    const categoriaItemTemplate = (option) => {
+        return <span>{option.nombre}</span>
+    }
+    
+    const ProductoTemplate = (rowData) => {
+        if(categorias){
+            let _categoria = categorias?.find(value => value?.idCategoria === rowData?.categoriaIdCategoria)
+            let _variantes = opcionVariantes?.filter(value => value?.varianteIdVariante === rowData.varianteIdVariante)
+            let cont = 0
+            _variantes?.forEach(element => {
+                if(element)
+                cont = cont + 1  
+            });
+            
+            return(
+    
+                <>
+                    <div className="ProductoItem" >
+    
+                            <img src={`/assets/demo/images/product/black-watch.jpg`} alt={rowData.nombre} />
+    
+                            <div className="detalle-producto">
+                                <div className="nombreProducto">{rowData.nombre}</div>
+                                <i className="pi pi-tag categoriaProductoIcon"></i><span className="categoriaProducto">{_categoria.nombre}</span>
+                            </div>
+    
+                            <div className="accion-producto">
+                                <span className="precio-producto">{rowData.precio ? formatCurrency(rowData.precio) : <span className='variante-producto' >{`${cont} variantes`}</span>}</span>
+                            </div>
+                    </div>
+                </>
+            )
+        }
     }
 
     let headerGroup = <ColumnGroup>
@@ -198,90 +349,143 @@ const DataTableColGroupDemo = () => {
                         <Row>
                             <Column header="Cantidad" />
                             <Column header="Precio"/>
-                            <Column />
+                            <Column header="Total" />
+                            <Column/>
                         </Row>
                     </ColumnGroup>;
 
     let footerGroup = <ColumnGroup>
                         <Row>
-                            <Column footer="Total a Pagar:" colSpan={2} footerStyle={{textAlign:'right'}}/>
-                            <Column /* footer={thisYearTotal}  */ />
+                            <Column footer="Total a Pagar:" colSpan={3} footerStyle={{textAlign:'right'}}/>
+                            <Column footer={TotalPagoBodyTemplate}/>
                             <Column/>
                         </Row>
                         </ColumnGroup>;
 
-    const actionBodyTemplate = () => {
-        return (
-            <div className="actions">
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" />
-            </div>
-        );
-    }
 
     const dialogFooter = (
         <>
             <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
-            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={} />
+            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={()=>console.log(productoPedido)} />
         </>
     );
 
-    const itemTemplate = (producto) => {
+    const dialogFooter2 = (
+        <>
+            <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog2} />
+            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={()=>console.log(productoPedido)} />
+        </>
+    );
 
-        let categoria = categorias.find(value => value.idCategoria === producto.categoriaIdCategoria)
-
-        return (
-            <div className="product-item" onClick={()=> setProducto(producto)} >
-                <img src={`/assets/demo/images/product/black-watch.jpg`} alt={producto.nombre} />
-                <div className="product-detail">
-                    <div className="product-name">{producto.nombre}</div>
-                    
-                    <i className="pi pi-tag product-category-icon"></i><span className="product-category">{categoria}</span>
-                </div>
-                <div className="product-action">
-                    <span className="product-price">{formatCurrency(producto.precio)}</span>
-                </div>
-            </div>
-        );
-    }
+    const dialogFooter3 = (
+        <>
+            <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog3} />
+            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={()=>console.log(productoPedido)} />
+        </>
+    );
     
+    const header = (
+        <div className='p-d-flex p-jc-between' >
+            <div>
+                <h4><b>Lista de Productos</b></h4>
+            </div>
 
+            <div>
+                <Dropdown value={categoriaSelected} options={categorias} optionLabel='nombre' optionValue='idCategoria' placeholder='Categoria' itemTemplate={categoriaItemTemplate} onChange={(e)=>onCategoriaChange(e)} className='p-column-filter' showClear />
+            </div>
+        </div>
+    )
 
     return (
         <div className='p-grid p-d-flex' >
             
 
             <div className='p-col-12 p-md-6 '>
-                <DataTable value={productoPedidos} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup}>
-                    <Column field="nombre" />
+                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
+                    <Column field="productoIdProducto" />
                     <Column field="cantidad" style={{padding:'0px 0px 0px 40px'}} />
-                    <Column field="total"  body={BodyTemplate} />
+                    <Column field="precio" body={PrecioBodyTemplate} />
+                    <Column field="total" body={TotalBodyTemplate}/>
                     <Column body={actionBodyTemplate}/>
                 </DataTable>
             </div>
 
-            <div className='datascroller-demo p-col-12 p-md-6 '>
-                <DataScroller value={productos} itemTemplate={itemTemplate} rows={6} inline scrollHeight="400px" header="Productos" emptyMessage='No hay Productos Disponibles' />            
+            <div className='TablaProductos p-col-12 p-md-6 '>
+                <DataTable ref={dt} dataKey='idProducto' value={productos} header={header} scrollable scrollHeight='400px'  
+                 selection={selectedCustomer1} onSelectionChange={e => cambiarSelect(e.value)}  selectionMode="single" emptyMessage='No hay Productos Disponibles'>
+                    <Column field='categoriaIdCategoria' headerStyle={{display:'none'}} body={ProductoTemplate} />
+                </DataTable>
             </div>
 
-            <Dialog visible={dialogVisible} style={{width:'600px'}} header='Agregar Producto' modal className='p-fluid' footer={} onHide={hideDialog} >
-                <div className= 'p-field p-col-12'>
+
+            <Dialog visible={dialogVisible} style={{width:'600px'}} header={`${producto.nombre.toUpperCase()}: ${formatCurrency(productoPedido.precio)}`} modal className='p-fluid' footer={dialogFooter} onHide={hideDialog} >
+                
+                <div className= 'p-grid p-d-flex p-col-12'>
                     {
-                        opcionVariantes?.map((value1) => {
-                            if (value1.varianteIdVariante === producto.varianteIdVariante) {
-                                return(
-                                    <div>
-                                        <Button label={value1.nombre} value={value1.precio} onChange={(e) => onInputNumberChange(e, 'precioUnidad')} className="p-button-outlined p-button-success" />
-                                    </div>
-                                )
-                            }
+                        opcionesVariantesProducto?.map((value1) => {
+                            return(
+                                <div key={value1.idOpcionV} className='p-mr-2 p-my-2 '>
+                                    <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChange2(value1.precio,'precio')}/>
+                                </div>
+                            )
                         })
                     }
                 </div>
 
-                <div className="p-field p-col-12 p-md-3">
+                <div className="p-field p-col-12">
                     <label htmlFor="horizontal">Cantidad</label>
-                    <InputNumber inputId="horizontal" min={0} value={productoPedido.cantidad} onChange={(e) => onInputNumberChange(e, 'cantidad')} showButtons buttonLayout="horizontal" step={1}
+                    <InputNumber inputId="horizontal" min={1} value={productoPedido.cantidad} onChange={(e) => onInputNumberChange(e, 'cantidad')} showButtons buttonLayout="horizontal" step={1}
                         decrementButtonClassName="p-button-info" incrementButtonClassName="p-button-info" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"/>
+                </div>
+
+                <div className="p-field p-col-12">
+                    <span style={{fontSize:'25px'}} > <b>{`TOTAL: ${formatCurrency(productoPedido.precio * productoPedido.cantidad)}`}</b> </span>
+                </div>
+
+            </Dialog>
+
+
+
+
+            <Dialog visible={dialogVisible2} style={{width:'600px'}} header={`${producto.nombre.toUpperCase()}: ${formatCurrency(productoPedido.precio)}`} modal className='p-fluid' footer={dialogFooter2} onHide={hideDialog2} >
+                
+                <div className= 'p-grid p-d-flex p-col-12'>
+                    {
+                        opcionesModificadoresProducto?.map((value1) => 
+                            
+                            <div key={value1.idOpcionM} className='p-mr-2 p-my-2 '>
+                                <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChange2(value1.precio,'modificadorPrecio')}/>
+                            </div>
+                            
+                        )
+                    }
+                </div>
+
+                <div className="p-field p-col-12 ">
+                    <label htmlFor="horizontal">Cantidad</label>
+                    <InputNumber inputId="horizontal" min={1} value={productoPedido.cantidad} onChange={(e) => onInputNumberChange(e, 'cantidad')} showButtons buttonLayout="horizontal" step={1}
+                        decrementButtonClassName="p-button-info" incrementButtonClassName="p-button-info" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"/>
+                </div>
+
+                <div className="p-field p-col-12">
+                    <span style={{fontSize:'25px'}} > <b>{`TOTAL: ${formatCurrency((productoPedido.precio * productoPedido.cantidad) + (productoPedido.modificadorPrecio * productoPedido.cantidad))}`}</b> </span>
+                </div>
+
+            </Dialog>
+
+
+
+
+            <Dialog visible={dialogVisible3} style={{width:'400px'}} header={`${producto.nombre.toUpperCase()}: ${formatCurrency(productoPedido.precio)} `} modal className='p-fluid' footer={dialogFooter3} onHide={hideDialog3} >
+
+                <div className="p-field p-col-12">
+                    <label htmlFor="horizontal">Cantidad</label>
+                    <InputNumber inputId="horizontal" min={1} value={productoPedido.cantidad} onChange={(e) => onInputNumberChange(e, 'cantidad')} showButtons buttonLayout="horizontal" step={1}
+                        decrementButtonClassName="p-button-info" incrementButtonClassName="p-button-info" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"/>
+                </div>
+
+                <div className="p-field p-col-12">
+                    <span style={{fontSize:'25px'}} > <b>{`TOTAL: ${formatCurrency(productoPedido.precio * productoPedido.cantidad)}`}</b> </span>
                 </div>
 
             </Dialog>

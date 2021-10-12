@@ -69,7 +69,7 @@ export default function Productos ()  {
     useEffect(() => {
 
         const categoriaService = new CategoriaService(); 
-        categoriaService.readAll().then((res) => {
+        categoriaService.readCategoriasActivas().then((res) => {
             if(res){
                 if(res.status >= 200 && res.status<300){
                     setCategorias(res.data)
@@ -438,16 +438,16 @@ export default function Productos ()  {
             if(_variante !== undefined){
                 return(
                     <>
-                        <Button label={`${_variante?.nombre}`} icon="pi pi-search" /* iconPos='right' */ className="p-button-info p-button-rounded" style={{fontSize:'10px'}} onClick={()=> abrirOpciones(rowData)} />
+                        <Button label={`${_variante?.nombre}`} icon="pi pi-search" iconPos='right' className="p-button-info p-button-rounded" style={{fontSize:'10px'}} onClick={()=> abrirOpciones(rowData)} />
                     </>
                 )
-            }else{
+            }/* else{
                 return(
                     <>
                         <span>No aplica</span>
                     </>
                 )
-            }
+            } */
             
         }
     }
@@ -510,9 +510,10 @@ export default function Productos ()  {
                                 productoIdProducto: _idProducto,
                                 modificadorIdModificador: value.idModificador
                             }
-
+                            
                             let _productModifys = [...productoModificadores]
 
+                            
                             productoModificadorService.create(data).then(res => {
                                 if(res){
                                     if(res.status >= 200 && res.status<300){
@@ -571,6 +572,7 @@ export default function Productos ()  {
                             productoIdProducto: _idProducto,
                             modificadorIdModificador: value.idModificador
                         }
+                        
                         productoModificadorService.create(data).then(res => {
                             if(res){
                                 if(res.status >= 200 && res.status<300){
@@ -633,18 +635,18 @@ export default function Productos ()  {
                     <Toast ref={toast} />
                     <Button label="Nuevo" icon="pi pi-plus" className="p-button-success p-button-rounded p-mb-3" onClick={openNew} />
 
-                    <DataTable ref={dt} header={header} value={productos} dataKey="idProducto" className="datatable-responsive" 
+                    <DataTable ref={dt} header={header} value={productos} dataKey="idProducto" /* sortMode="single" */ sortField="nombre" sortOrder={1} className="datatable-responsive" 
                         paginator rows={10} rowsPerPageOptions={[5, 10, 25]} paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} Productos"
                         globalFilter={globalFilter} emptyMessage="Productos No Encontrados."  loading={loading}>
                         
-                        <Column field="nombre" header="Nombre" sortable ></Column>
-                        <Column field="descripcion" header="Descripcion" sortable ></Column>
-                        <Column field="precio" body={MonedaBodyTemplate} header="Precio" sortable ></Column>
-                        <Column field="imagen" header="Imagen" sortable ></Column>
-                        <Column field="estado" body={statusBodyTemplate} header="Estado" sortable ></Column>
-                        <Column field="varianteIdVariante" body={VarianteBodyTemplate} header="Variante" sortable ></Column>
-                        <Column field="categoriaIdCategoria" body={ColorBodytemplate} header="Categoria" sortable ></Column>
+                        <Column field="nombre" header="Nombre" ></Column>
+                        <Column field="descripcion" header="Descripcion" ></Column>
+                        <Column field="precio" body={MonedaBodyTemplate} header="Precio" ></Column>
+                        <Column field="imagen" header="Imagen" ></Column>
+                        <Column field="estado" body={statusBodyTemplate} header="Estado" ></Column>
+                        <Column field="varianteIdVariante" body={VarianteBodyTemplate} header="Variante" ></Column>
+                        <Column field="categoriaIdCategoria" body={ColorBodytemplate} header="Categoria" ></Column>
                         <Column body={actionBodyTemplate}></Column>
 
                     </DataTable>

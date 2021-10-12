@@ -23,7 +23,7 @@ import Variantes from './pages/Productos/Variantes';
 
 import Usuarios from './pages/Usuarios/Usuarios'
 import Roles from './pages/Usuarios/Roles'
-/* import ExperimentoPedidos from './pages/ExperimentoPedidos' */
+import ExperimentoPedidos from './pages/ExperimentoPedidos'
 
 import PrimeReact from 'primereact/api';
 
@@ -215,7 +215,7 @@ const App = () => {
                 <Route path="/home/lista-mesas" component={Mesas} />
                 <Route path="/home/zonas" component={Zonas} />
 
-                {/* <Route path="/home/experimento" component={ExperimentoPedidos}/> */}
+                <Route path="/home/experimento" component={ExperimentoPedidos}/>
                 
             </div>
 

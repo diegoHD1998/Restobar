@@ -14,7 +14,7 @@ export default function Mesas ()  {
 
     let emptyProduct = {
         idMesa: null,
-        nombre: '',
+        nombre: 'Mesa ',
         zonaIdZona: null
     };
 

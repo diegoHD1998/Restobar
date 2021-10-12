@@ -239,6 +239,7 @@ namespace SistemaRestobarSayka2.Data
 
             modelBuilder.Entity<ProductoModificador>(entity =>
             {
+
                 entity.HasKey(e => new { e.ProductoIdProducto, e.ModificadorIdModificador });
 
                 entity.ToTable("ProductoModificador");
@@ -264,6 +265,7 @@ namespace SistemaRestobarSayka2.Data
 
             modelBuilder.Entity<ProductoPedido>(entity =>
             {
+
                 entity.HasKey(e => new { e.ProductoIdProducto, e.PedidoIdPedido });
 
                 entity.ToTable("ProductoPedido");
@@ -273,6 +275,8 @@ namespace SistemaRestobarSayka2.Data
                 entity.Property(e => e.ProductoIdProducto).HasColumnName("Producto_Id_producto");
 
                 entity.Property(e => e.PedidoIdPedido).HasColumnName("Pedido_Id_pedido");
+
+                entity.Property(e => e.Fecha).HasColumnType("datetime");
 
                 entity.Property(e => e.Hora).HasColumnType("datetime");
 

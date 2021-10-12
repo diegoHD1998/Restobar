@@ -29,7 +29,7 @@ export default function Categorias ()  {
     ];
 
     let tipoCategoria = [
-        'Bebible',
+        'Bebestible',
         'Comestible',
         'Otro'
     ];

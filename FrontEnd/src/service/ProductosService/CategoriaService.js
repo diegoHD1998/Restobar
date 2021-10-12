@@ -10,6 +10,11 @@ export default class CategoriaService {
         .catch(err => err.response)
     }
 
+    async readCategoriasActivas(){
+        return await axios.get(`${baseUrl}/categoriasActivas`).then(res => res)
+        .catch(err => err.response)
+    }
+
     async create(categoria){
         return await axios.post(baseUrl,categoria).then(res => res)
         .catch(err => err.response)

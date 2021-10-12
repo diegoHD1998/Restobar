@@ -512,13 +512,13 @@ export default function Variantes ()  {
                     {/* Dialog Para ingresar una nueva opcionVariante */}
                     <Dialog visible={opcionDialog} style={{ width: '450px'}} header="Opcion Variante " modal className="p-fluid " footer={opcionDialogFooter} onHide={hideDialogOpcion}>
                         
-                        <div className="p-field" style={{ marginBottom: '40px'}} >
+                        <div className="p-field" style={{ marginBottom: '60px'}} >
                             <label htmlFor="nombre">Nombre</label>
                             <InputText id="nombre" value={opcionVariante.nombre} onChange={(e) => onInputChanceOpcionVariante(e, 'nombre')} required autoFocus className={classNames({ 'p-invalid': submitted2 && !opcionVariante.nombre })} />
                             {submitted2 && !opcionVariante.nombre && <small className="p-invalid">Nombre Requerido.</small>}
                         </div>
                         
-                        <div className="p-field" style={{ marginBottom: '40px'}}>
+                        <div className="p-field" style={{ marginBottom: '60px'}}>
                             <label htmlFor="precio">Precio</label>
                             <InputNumber id="precio" value={opcionVariante.precio} onChange={(e) => onInputNumberChange(e, 'precio')} required mode="currency" currency="CLP" locale="es-CL" className={classNames({ 'p-invalid': submitted2 && !opcionVariante.precio })} />
                             {submitted2 && !opcionVariante.precio && <small className="p-invalid">Precio Requerido.</small>}
