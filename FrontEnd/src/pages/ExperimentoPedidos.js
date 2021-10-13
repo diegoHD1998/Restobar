@@ -27,8 +27,10 @@ const DataTableColGroupDemo = () => {
     let empty = {
         productoIdProducto: null,
         pedidoIdPedido: null,
+        nombre:'',
         cantidad: 1,
         precio: 0,
+        nombreReferencia:'',
         modificadorPrecio: 0,
         total: 0,
         fecha:null,
@@ -71,10 +73,10 @@ const DataTableColGroupDemo = () => {
     const pedido = {idPedido:501, fecha:'04-10-2021', estado: 'Activo', usuarioIdUsuario:1, mesaIdMesa:2}
 
     const productoPedidos = [
-        {productoIdProducto: 4, pedidoIdPedido:501, cantidad: 1, precio: 6000, modificadorPrecio: null, total:6000, fecha:null, hora:null},
-        {productoIdProducto: 5, pedidoIdPedido:501, cantidad: 2, precio: 10000, modificadorPrecio: null, total:20000, fecha:null, hora:null},
-        {productoIdProducto: 6, pedidoIdPedido:501, cantidad: 1, precio: 6000, modificadorPrecio: null, total:6000, fecha:null, hora:null},
-        {productoIdProducto: 7, pedidoIdPedido:501, cantidad: 3, precio: 500, modificadorPrecio: null, total:1500, fecha:null, hora:null},
+        {productoIdProducto: 4, pedidoIdPedido:501, nombre:'', cantidad: 1, precio: 6000, nombreReferencia:'', modificadorPrecio: null, total:6000, fecha:null, hora:null},
+        {productoIdProducto: 5, pedidoIdPedido:501, nombre:'', cantidad: 2, precio: 10000, nombreReferencia:'', modificadorPrecio: null, total:20000, fecha:null, hora:null},
+        {productoIdProducto: 6, pedidoIdPedido:501, nombre:'', cantidad: 1, precio: 6000, nombreReferencia:'', modificadorPrecio: null, total:6000, fecha:null, hora:null},
+        {productoIdProducto: 7, pedidoIdPedido:501, nombre:'', cantidad: 3, precio: 500, nombreReferencia:'', modificadorPrecio: null, total:1500, fecha:null, hora:null},
     ];
     
     const [dialogVisible, setDialogVisible] = useState(false);
