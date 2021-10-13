@@ -10,6 +10,11 @@ export default class ProductoService {
         .catch(err => err.response)
     }
 
+    async readProductosActivos(){
+        return await axios.get(`${baseUrl}/productosActivos`).then(res => res)
+        .catch(err => err.response)
+    }
+
     async create(producto){
         return await axios.post(baseUrl,producto).then(res => res)
         .catch(err => err.response)

@@ -29,6 +29,20 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(productos);
         }
 
+        // GET: api/Productos/productosActivos
+        [HttpGet("productosActivos")]
+        public async Task<ActionResult<IEnumerable<Producto>>> GetproductosActivos()
+        {
+            var productos = await _context.Productos.Where(p => p.Estado == "Activo").ToListAsync();
+
+            if (productos == null)
+            {
+                return NotFound("Productos Activos No Encontrados");
+            }
+
+            return Ok(productos);
+        }
+
         // GET: api/Productos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Producto>> GetProducto(int id)

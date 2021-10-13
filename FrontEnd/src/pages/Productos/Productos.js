@@ -53,14 +53,12 @@ export default function Productos ()  {
     const [modificadores, setModificadores] = useState(null);
     const [opcionesM, setOpcionesM] = useState(null)
     const [productoModificadores, setProductoModificadores] =useState(null)
-
     const [producto, setProducto] = useState(emptyProduct);
-    
     const [nombreV, setNombreV] = useState(null);
-
     const [loading, setLoading] = useState(true)
     const [loadingV, setloadingV] = useState(true) 
-    
+    const [categoriaSelected, setCategoriaSelected] = useState(null)
+
     const productoService = new ProductoService(); 
     const productoModificadorService = new ProductoModificadorService()
     const opcionVarianteService = new OpcionVarianteService();
@@ -399,6 +397,11 @@ export default function Productos ()  {
         setProducto(_product);
     }
 
+    const onCategoriaChange =(e) => {
+        dt.current.filter(e.value, 'categoriaIdCategoria', 'equals');
+        setCategoriaSelected(e.value);
+    }
+
     const onChangeSwitch = (mod) => {
         const data = modificadores.map(value => {
             if(value.idModificador === mod.idModificador){
@@ -454,7 +457,7 @@ export default function Productos ()  {
 
     const MonedaBodyTemplate = (rowData) => {
 
-        return rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
+        return rowData.precio ? rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0}) : '';
 
     }
 
@@ -602,10 +605,13 @@ export default function Productos ()  {
     const header = (/* <----------------- */
         <div className="table-header">
             <h5 className="p-m-0"><b>Administracion de Productos</b></h5>
-            <span className="p-input-icon-left">
-                <i className="pi pi-search" />
-                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
-            </span>
+            <div>
+                <Dropdown value={categoriaSelected} options={categorias} optionLabel='nombre' optionValue='idCategoria' placeholder='Buscar por Categoria' onChange={(e)=>onCategoriaChange(e)} className='p-column-filter' showClear />
+                <span className="p-input-icon-left p-ml-2">
+                    <i className="pi pi-search" />
+                    <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar por Nombre" />
+                </span>
+            </div>
         </div>
     );
 
@@ -627,6 +633,9 @@ export default function Productos ()  {
         return rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
         
     }
+
+    const CategoriaFilter = <Dropdown value={categoriaSelected} options={categorias} optionLabel='nombre' optionValue='idCategoria' placeholder='Categoria' onChange={(e)=>onCategoriaChange(e)} className='p-column-filter' showClear />
+
     return (
         
         <div className="p-grid crud-demo">

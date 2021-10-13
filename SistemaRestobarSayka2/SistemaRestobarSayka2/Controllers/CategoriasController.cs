@@ -29,6 +29,7 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(categorias);
         }
 
+        // GET api/Categorias/categoriasActivas
         [HttpGet("categoriasActivas")]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasActivas()
         {

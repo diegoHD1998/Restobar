@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
-import { DataScroller } from 'primereact/datascroller';
 import {InputNumber} from 'primereact/inputnumber'
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -49,11 +48,11 @@ const DataTableColGroupDemo = () => {
 
     const [productoPedido, setProductoPedido] = useState(empty)
     const [producto, setProducto] = useState(emptyProducto)
-   /*  const [variante, setVariante] = useState(null) */
+    const [opcionVariante, setOpcionVariante] = useState(null)
 
     const [productos, setProductos] = useState(null)
     const [categorias, setCategorias] = useState(null)
-    const [newListProducts, setNewListProducts] = useState(null)
+
     const [categoriaSelected, setCategoriaSelected] = useState(null)
 
 
@@ -66,7 +65,7 @@ const DataTableColGroupDemo = () => {
     const [opcionModificadores, setOpcionModificadores] = useState(null)
     const [opcionesModificadoresProducto, setOpcionesModificadoresProducto] = useState(null)
     
-    const [selectedCustomer1, setSelectedCustomer1] = useState(null);
+    const [selected, setSelected] = useState(null);
     const dt = useRef(null);
     
     const pedido = {idPedido:501, fecha:'04-10-2021', estado: 'Activo', usuarioIdUsuario:1, mesaIdMesa:2}
@@ -87,7 +86,7 @@ const DataTableColGroupDemo = () => {
     useEffect(() => {
         
         const categoriaService = new CategoriaService();
-        categoriaService.readAll().then(res => {
+        categoriaService.readCategoriasActivas().then(res => {
             if(res){
                 if(res.status >= 200 && res.status < 300){
                     setCategorias(res.data)
@@ -99,11 +98,10 @@ const DataTableColGroupDemo = () => {
             }
         });    
         const productoService = new ProductoService();
-        productoService.readAll().then(res => {
+        productoService.readProductosActivos().then(res => {
             if(res){
                 if(res.status >= 200 && res.status < 300){
                     setProductos(res.data)
-                    setNewListProducts(res.data)
                 }else{
                     console.log('Error al cargar Datos de Producto')
                 }
@@ -166,7 +164,7 @@ const DataTableColGroupDemo = () => {
     }
 
     const cambiarSelect = (value) => {
-        setSelectedCustomer1(value)
+        setSelected(value)
         selectProducto(value)
     }
 
@@ -220,7 +218,8 @@ const DataTableColGroupDemo = () => {
         setProducto(emptyProducto)
         setProductoPedido(empty)
         setOpcionesVariantesProducto(null)
-        setSelectedCustomer1(null)
+        setSelected(null)
+        setOpcionVariante(null)
     }
 
     const hideDialog2 = () => {
@@ -228,7 +227,7 @@ const DataTableColGroupDemo = () => {
         setDialogVisible2(false)
         setProducto(emptyProducto)
         setProductoPedido(empty)
-        setSelectedCustomer1(null)
+        setSelected(null)
     }
 
     const hideDialog3 = () => {
@@ -236,7 +235,7 @@ const DataTableColGroupDemo = () => {
         setDialogVisible3(false)
         setProducto(emptyProducto)
         setProductoPedido(empty)
-        setSelectedCustomer1(null)
+        setSelected(null)
     }
 
     const saveProductoPedido = async() => {
@@ -272,7 +271,16 @@ const DataTableColGroupDemo = () => {
         setProductoPedido(_productoPedido);
     }
 
-    const onInputNumberChange2 = (value, name) => {
+    const onInputNumberChangeV = (value, name, opcionV) => {
+        const val = value || 0;
+        let _productoPedido = {...productoPedido};
+        _productoPedido[`${name}`] = val;
+        console.log(val)
+        setProductoPedido(_productoPedido);
+        setOpcionVariante(opcionV)
+    }
+
+    const onInputNumberChangeM = (value, name) => {
         const val = value || 0;
         let _productoPedido = {...productoPedido};
         _productoPedido[`${name}`] = val;
@@ -282,7 +290,7 @@ const DataTableColGroupDemo = () => {
     const actionBodyTemplate = () => {
         return (
             <div className="actions">
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-button-outlined " />
             </div>
         );
     }
@@ -321,7 +329,6 @@ const DataTableColGroupDemo = () => {
             });
             
             return(
-    
                 <>
                     <div className="ProductoItem" >
     
@@ -329,7 +336,7 @@ const DataTableColGroupDemo = () => {
     
                             <div className="detalle-producto">
                                 <div className="nombreProducto">{rowData.nombre}</div>
-                                <i className="pi pi-tag categoriaProductoIcon"></i><span className="categoriaProducto">{_categoria.nombre}</span>
+                                <i style={{color:`#${_categoria.color}`}} className="pi pi-tag categoriaProductoIcon"></i><span className="categoriaProducto">{_categoria.nombre}</span>
                             </div>
     
                             <div className="accion-producto">
@@ -341,14 +348,29 @@ const DataTableColGroupDemo = () => {
         }
     }
 
+    const productoBodyTemplate = (rowData)=>{
+
+        if(productos){
+
+            const _producto = productos?.find(value => value.idProducto === rowData.productoIdProducto)
+            return(
+                <>
+                    <span>
+                        {_producto?.nombre}
+                    </span>
+                </>
+            )
+        }
+    }
+
     let headerGroup = <ColumnGroup>
                         <Row>
                             <Column header="Productos" rowSpan={3} />
                         </Row>
                         
                         <Row>
-                            <Column header="Cantidad" />
                             <Column header="Precio"/>
+                            <Column header="Cantidad" />
                             <Column header="Total" />
                             <Column/>
                         </Row>
@@ -391,9 +413,18 @@ const DataTableColGroupDemo = () => {
             </div>
 
             <div>
-                <Dropdown value={categoriaSelected} options={categorias} optionLabel='nombre' optionValue='idCategoria' placeholder='Categoria' itemTemplate={categoriaItemTemplate} onChange={(e)=>onCategoriaChange(e)} className='p-column-filter' showClear />
+                <Dropdown value={categoriaSelected} options={categorias} optionLabel='nombre' optionValue='idCategoria' placeholder='Buscar Categoria' itemTemplate={categoriaItemTemplate} onChange={(e)=>onCategoriaChange(e)} className='p-column-filter' showClear />
             </div>
         </div>
+    )
+
+    const header1 = (
+        
+        <div>
+            <span><b> {`${producto.nombre.toUpperCase()} ${opcionVariante ? opcionVariante.nombre : ''} : `}</b> </span>
+            <span>{`${formatCurrency(productoPedido.precio)}`}</span>
+        </div>
+    
     )
 
     return (
@@ -401,10 +432,10 @@ const DataTableColGroupDemo = () => {
             
 
             <div className='p-col-12 p-md-6 '>
-                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
-                    <Column field="productoIdProducto" />
-                    <Column field="cantidad" style={{padding:'0px 0px 0px 40px'}} />
+                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={'Mesa 2'} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
+                    <Column field="productoIdProducto" body={productoBodyTemplate} />
                     <Column field="precio" body={PrecioBodyTemplate} />
+                    <Column field="cantidad" style={{padding:'0px 0px 0px 40px'}} />
                     <Column field="total" body={TotalBodyTemplate}/>
                     <Column body={actionBodyTemplate}/>
                 </DataTable>
@@ -412,20 +443,20 @@ const DataTableColGroupDemo = () => {
 
             <div className='TablaProductos p-col-12 p-md-6 '>
                 <DataTable ref={dt} dataKey='idProducto' value={productos} header={header} scrollable scrollHeight='400px'  
-                 selection={selectedCustomer1} onSelectionChange={e => cambiarSelect(e.value)}  selectionMode="single" emptyMessage='No hay Productos Disponibles'>
+                 selection={selected} onSelectionChange={e => cambiarSelect(e.value)}  selectionMode="single" emptyMessage='No hay Productos Disponibles'>
                     <Column field='categoriaIdCategoria' headerStyle={{display:'none'}} body={ProductoTemplate} />
                 </DataTable>
             </div>
 
 
-            <Dialog visible={dialogVisible} style={{width:'600px'}} header={`${producto.nombre.toUpperCase()}: ${formatCurrency(productoPedido.precio)}`} modal className='p-fluid' footer={dialogFooter} onHide={hideDialog} >
+            <Dialog visible={dialogVisible} style={{width:'600px'}} header={header1} modal className='p-fluid' footer={dialogFooter} onHide={hideDialog} >
                 
                 <div className= 'p-grid p-d-flex p-col-12'>
                     {
                         opcionesVariantesProducto?.map((value1) => {
                             return(
                                 <div key={value1.idOpcionV} className='p-mr-2 p-my-2 '>
-                                    <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChange2(value1.precio,'precio')}/>
+                                    <Button className="p-button-outlined p-button-success BotonPedido" label={value1.nombre} onClick={()=>onInputNumberChangeV(value1.precio, 'precio', value1)}/>
                                 </div>
                             )
                         })
@@ -439,7 +470,9 @@ const DataTableColGroupDemo = () => {
                 </div>
 
                 <div className="p-field p-col-12">
-                    <span style={{fontSize:'25px'}} > <b>{`TOTAL: ${formatCurrency(productoPedido.precio * productoPedido.cantidad)}`}</b> </span>
+                    <div>
+                        <span style={{fontSize:'25px'}} > <b>{`TOTAL: ${formatCurrency(productoPedido.precio * productoPedido.cantidad)}`}</b> </span>
+                    </div>
                 </div>
 
             </Dialog>
@@ -454,7 +487,7 @@ const DataTableColGroupDemo = () => {
                         opcionesModificadoresProducto?.map((value1) => 
                             
                             <div key={value1.idOpcionM} className='p-mr-2 p-my-2 '>
-                                <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChange2(value1.precio,'modificadorPrecio')}/>
+                                <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChangeM(value1.precio,'modificadorPrecio')}/>
                             </div>
                             
                         )
