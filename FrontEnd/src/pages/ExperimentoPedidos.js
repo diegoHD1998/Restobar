@@ -18,7 +18,7 @@ import OpcionVarienteService from '../service/ProductosService/OpcionVarianteSer
 import OpcionModificadorService from '../service/ProductosService/OpcionModificadorService';
 
 import ProductoModificadorService from '../service/ProductosService/ProductoModificadorService';
-
+import ProductoPedidoService from '../service/PedidoService/ProductoPedidoService';
 
 
 const DataTableColGroupDemo = () => {
@@ -47,23 +47,31 @@ const DataTableColGroupDemo = () => {
         categoriaIdCategoria:null,
         varianteIdVariante:null
     }
+    const _productoPedidos = [
+        {productoIdProducto: 4, pedidoIdPedido:501, nombre:'', cantidad: 1, precio: 6000, nombreReferencia:'', modificadorPrecio: null, total:6000, fecha:null, hora:null},
+        {productoIdProducto: 5, pedidoIdPedido:501, nombre:'', cantidad: 2, precio: 10000, nombreReferencia:'', modificadorPrecio: null, total:20000, fecha:null, hora:null},
+        {productoIdProducto: 6, pedidoIdPedido:501, nombre:'', cantidad: 1, precio: 6000, nombreReferencia:'', modificadorPrecio: null, total:6000, fecha:null, hora:null},
+        {productoIdProducto: 7, pedidoIdPedido:501, nombre:'', cantidad: 3, precio: 500, nombreReferencia:'', modificadorPrecio: null, total:1500, fecha:null, hora:null},
+    ];
 
     const [productoPedido, setProductoPedido] = useState(empty)
     const [producto, setProducto] = useState(emptyProducto)
     const [opcionVariante, setOpcionVariante] = useState(null)
+    const [opcionModificador, setOpcionModificador] = useState(null)
 
     const [productos, setProductos] = useState(null)
     const [categorias, setCategorias] = useState(null)
+    const [productoPedidos, setProductoPedidos] = useState(_productoPedidos)
 
     const [categoriaSelected, setCategoriaSelected] = useState(null)
 
 
-    /* const [variantes, setVariantes] = useState(null) */
+    
     const [opcionVariantes, setOpcionVariantes] = useState(null)
     const [opcionesVariantesProducto, setOpcionesVariantesProducto] = useState(null)
     
     const [productoModificadores, setProductoModificadores] = useState(null)
-    /* const [modificadores, setModificadores] = useState(null) */
+    
     const [opcionModificadores, setOpcionModificadores] = useState(null)
     const [opcionesModificadoresProducto, setOpcionesModificadoresProducto] = useState(null)
     
@@ -72,18 +80,14 @@ const DataTableColGroupDemo = () => {
     
     const pedido = {idPedido:501, fecha:'04-10-2021', estado: 'Activo', usuarioIdUsuario:1, mesaIdMesa:2}
 
-    const productoPedidos = [
-        {productoIdProducto: 4, pedidoIdPedido:501, nombre:'', cantidad: 1, precio: 6000, nombreReferencia:'', modificadorPrecio: null, total:6000, fecha:null, hora:null},
-        {productoIdProducto: 5, pedidoIdPedido:501, nombre:'', cantidad: 2, precio: 10000, nombreReferencia:'', modificadorPrecio: null, total:20000, fecha:null, hora:null},
-        {productoIdProducto: 6, pedidoIdPedido:501, nombre:'', cantidad: 1, precio: 6000, nombreReferencia:'', modificadorPrecio: null, total:6000, fecha:null, hora:null},
-        {productoIdProducto: 7, pedidoIdPedido:501, nombre:'', cantidad: 3, precio: 500, nombreReferencia:'', modificadorPrecio: null, total:1500, fecha:null, hora:null},
-    ];
     
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogVisible2, setDialogVisible2] = useState(false);
     const [dialogVisible3, setDialogVisible3] = useState(false);
 
     const [submitted, setSubmitted] = useState(false);
+
+    const productoPedidoService = new ProductoPedidoService()
 
     useEffect(() => {
         
@@ -178,7 +182,13 @@ const DataTableColGroupDemo = () => {
         if(_producto.varianteIdVariante !== null){
 
             let _opcionesV = opcionVariantes.filter(value => value.varianteIdVariante === _producto.varianteIdVariante)
+            let _ProductoPedido ={
+                ...empty,
+                productoIdProducto: _producto.idProducto,
+                pedidoIdPedido:501 // aqui cambiar el Id de pedido con el de la mesa
+            }
             setOpcionesVariantesProducto(_opcionesV)
+            setProductoPedido(_ProductoPedido);
             setDialogVisible(true);
 
         }else if(_productoModificadores !== null){
@@ -195,6 +205,8 @@ const DataTableColGroupDemo = () => {
 
             let _ProductoPedido ={
                 ...empty,
+                productoIdProducto: _producto.idProducto,
+                pedidoIdPedido:501, // aqui cambiar el Id de pedido con el de la mesa
                 precio: _producto.precio
             }
 
@@ -205,6 +217,8 @@ const DataTableColGroupDemo = () => {
 
             let _ProductoPedido ={
                 ...empty,
+                productoIdProducto: _producto.idProducto,
+                pedidoIdPedido:501, // aqui cambiar el Id de pedido con el de la mesa
                 precio: _producto.precio
             }
             setProductoPedido(_ProductoPedido)
@@ -220,8 +234,8 @@ const DataTableColGroupDemo = () => {
         setProducto(emptyProducto)
         setProductoPedido(empty)
         setOpcionesVariantesProducto(null)
-        setSelected(null)
         setOpcionVariante(null)
+        setSelected(null)
     }
 
     const hideDialog2 = () => {
@@ -229,6 +243,7 @@ const DataTableColGroupDemo = () => {
         setDialogVisible2(false)
         setProducto(emptyProducto)
         setProductoPedido(empty)
+        setOpcionModificador(null)
         setSelected(null)
     }
 
@@ -241,23 +256,68 @@ const DataTableColGroupDemo = () => {
     }
 
     const saveProductoPedido = async() => {
-
-        if(productoPedido.modificadorPrecio !== null){
-
-        }else{
-            
-        }
-
-    }
-
-    
-
-    const guardarPedido = async() =>{
         setSubmitted(true);
-        if(true){
+
+        if(productoPedido.precio && productoPedido.cantidad){
+            let _productoPedidos = [...productoPedidos]
+
+            let hoy = new Date();
+
+            let fechaActual = `${hoy.getDate()}-${hoy.getMonth() + 1}-${hoy.getFullYear()}`
+            let horaActual = `${hoy.getHours()}:${hoy.getMinutes()}:${hoy.getSeconds()}`
+
+            if(opcionVariante){ //Desarrollo guardar Variante
+
+                
+                let _ProductoPedido ={
+                    ...productoPedido,
+                    nombreReferencia: opcionVariante.nombre,
+                    total: productoPedido.precio * productoPedido.cantidad,
+                    fecha: fechaActual,
+                    hora: horaActual,
+                }
+                _productoPedidos.push(_ProductoPedido)
+                console.log(_ProductoPedido)
+                /* await productoPedidoService.create(_ProductoPedido).then(res => {
+                    if(res){
+                        if(res.status >= 200 && res.status<300){
+
+                            productoPedidos.push(res.data)
+                            console.log(res.data)
+
+                        }else if(res.status >= 400 && res.status<500){
+                            console.log(res)
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+                        }else{
+                            console.log(res)
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Update de Producto, Status no controlado`, life: 5000 });
+                        }
+                    }
+                }) */
+
+
+
+
+            }else if(productoPedido.modificadorPrecio || opcionModificador){ //Desarrollo guardar modificador
+                console.log('Esta Opcion tiene modificadores')
+            }
             
+            
+            //Poner aqui todos los SETs finales
+            setProductoPedidos(_productoPedidos) 
+            setDialogVisible(false)
+            setDialogVisible2(false)
+            setDialogVisible3(false)
+            setProducto(emptyProducto)
+            setProductoPedido(empty)
+            setOpcionesVariantesProducto(null)
+            setOpcionVariante(null)
+            setOpcionModificador(null)
+            setSelected(null)
 
         }
+
+
     }
     
     const onCategoriaChange = (e) => {
@@ -277,17 +337,16 @@ const DataTableColGroupDemo = () => {
         const val = value || 0;
         let _productoPedido = {...productoPedido};
         _productoPedido[`${name}`] = val;
-        console.log(val)
         setProductoPedido(_productoPedido);
         setOpcionVariante(opcionV)
     }
 
-    const onInputNumberChangeM = (value, name) => {
+    const onInputNumberChangeM = (value, name, opcionM) => {
         const val = value || 0;
         let _productoPedido = {...productoPedido};
         _productoPedido[`${name}`] = val;
-        console.log(val)
         setProductoPedido(_productoPedido);
+        setOpcionModificador(opcionM)
     }
     const actionBodyTemplate = () => {
         return (
@@ -365,32 +424,12 @@ const DataTableColGroupDemo = () => {
         }
     }
 
-    let headerGroup = <ColumnGroup>
-                        <Row>
-                            <Column header="Productos" rowSpan={3} />
-                        </Row>
-                        
-                        <Row>
-                            <Column header="Precio"/>
-                            <Column header="Cantidad" />
-                            <Column header="Total" />
-                            <Column/>
-                        </Row>
-                    </ColumnGroup>;
-
-    let footerGroup = <ColumnGroup>
-                        <Row>
-                            <Column footer="Total a Pagar:" colSpan={3} footerStyle={{textAlign:'right'}}/>
-                            <Column footer={TotalPagoBodyTemplate}/>
-                            <Column/>
-                        </Row>
-                        </ColumnGroup>;
 
 
     const dialogFooter = (
         <>
             <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
-            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={()=>console.log(productoPedido)} />
+            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={saveProductoPedido} />
         </>
     );
 
@@ -423,19 +462,52 @@ const DataTableColGroupDemo = () => {
     const header1 = (
         
         <div>
-            <span><b> {`${producto.nombre.toUpperCase()} ${opcionVariante ? opcionVariante.nombre : ''} : `}</b> </span>
-            <span>{`${formatCurrency(productoPedido.precio)}`}</span>
+            <span><b> {`${producto.nombre.toUpperCase()} ${opcionVariante ? opcionVariante.nombre : ''}: `}</b> </span>
+            <span><b>{`${ productoPedido.precio ? formatCurrency(productoPedido.precio) : ''}`}</b></span>
+        </div>
+    
+    )
+    const header2 = (
+        
+        <div>
+            <span><b> {`${producto.nombre.toUpperCase()} ${opcionModificador ? opcionModificador.nombre : ''} : ${formatCurrency(productoPedido.precio)}`}</b> </span>
+        </div>
+    
+    )
+    const header3 = (
+        
+        <div>
+            <span><b> {`${producto.nombre.toUpperCase()}: ${formatCurrency(productoPedido.precio)} `}</b> </span>
+            
         </div>
     
     )
 
+    let headerGroup = <ColumnGroup>                    
+                        <Row>
+                            <Column header="Productos"/>
+                            <Column header=""/>
+                            <Column header="Precio"/>
+                            <Column header="Cantidad" />
+                            <Column header="Total" />
+                            <Column/>
+                        </Row>
+                    </ColumnGroup>;
+
+    let footerGroup = <ColumnGroup>
+                        <Row>
+                            <Column footer="Total a Pagar:" colSpan={4} footerStyle={{textAlign:'right'}}/>
+                            <Column footer={TotalPagoBodyTemplate}/>
+                            <Column/>
+                        </Row>
+                        </ColumnGroup>;
+
     return (
         <div className='p-grid p-d-flex' >
-            
-
             <div className='p-col-12 p-md-6 '>
                 <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={'Mesa 2'} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
                     <Column field="productoIdProducto" body={productoBodyTemplate} />
+                    <Column field="nombreReferencia" />
                     <Column field="precio" body={PrecioBodyTemplate} />
                     <Column field="cantidad" style={{padding:'0px 0px 0px 40px'}} />
                     <Column field="total" body={TotalBodyTemplate}/>
@@ -444,7 +516,7 @@ const DataTableColGroupDemo = () => {
             </div>
 
             <div className='TablaProductos p-col-12 p-md-6 '>
-                <DataTable ref={dt} dataKey='idProducto' value={productos} header={header} scrollable scrollHeight='400px'  
+                <DataTable ref={dt} dataKey='idProducto' value={productos} header={header} scrollable scrollHeight='330px'  
                  selection={selected} onSelectionChange={e => cambiarSelect(e.value)}  selectionMode="single" emptyMessage='No hay Productos Disponibles'>
                     <Column field='categoriaIdCategoria' headerStyle={{display:'none'}} body={ProductoTemplate} />
                 </DataTable>
@@ -482,14 +554,14 @@ const DataTableColGroupDemo = () => {
 
 
 
-            <Dialog visible={dialogVisible2} style={{width:'600px'}} header={`${producto.nombre.toUpperCase()}: ${formatCurrency(productoPedido.precio)}`} modal className='p-fluid' footer={dialogFooter2} onHide={hideDialog2} >
+            <Dialog visible={dialogVisible2} style={{width:'600px'}} header={header2} modal className='p-fluid' footer={dialogFooter2} onHide={hideDialog2} >
                 
                 <div className= 'p-grid p-d-flex p-col-12'>
                     {
                         opcionesModificadoresProducto?.map((value1) => 
                             
                             <div key={value1.idOpcionM} className='p-mr-2 p-my-2 '>
-                                <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChangeM(value1.precio,'modificadorPrecio')}/>
+                                <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChangeM(value1.precio,'modificadorPrecio',value1)}/>
                             </div>
                             
                         )
@@ -511,7 +583,7 @@ const DataTableColGroupDemo = () => {
 
 
 
-            <Dialog visible={dialogVisible3} style={{width:'400px'}} header={`${producto.nombre.toUpperCase()}: ${formatCurrency(productoPedido.precio)} `} modal className='p-fluid' footer={dialogFooter3} onHide={hideDialog3} >
+            <Dialog visible={dialogVisible3} style={{width:'400px'}} header={header3} modal className='p-fluid' footer={dialogFooter3} onHide={hideDialog3} >
 
                 <div className="p-field p-col-12">
                     <label htmlFor="horizontal">Cantidad</label>

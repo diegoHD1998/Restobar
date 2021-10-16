@@ -25,7 +25,8 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
-            return await _context.Usuarios.ToListAsync();
+            var usuarios = await _context.Usuarios.ToListAsync();
+            return Ok(usuarios);
         }
 
         // GET: api/Usuarios/5
@@ -36,10 +37,10 @@ namespace SistemaRestobarSayka2.Controllers
 
             if (usuario == null)
             {
-                return NotFound();
+                return NotFound("Usuario No Encontrado");
             }
 
-            return usuario;
+            return Ok(usuario);
         }
 
         // PUT: api/Usuarios/5
@@ -49,7 +50,7 @@ namespace SistemaRestobarSayka2.Controllers
         {
             if (id != usuario.IdUsuario)
             {
-                return BadRequest();
+                return BadRequest("Los Ids de Usuario No Coinciden");
             }
 
             _context.Entry(usuario).State = EntityState.Modified;
@@ -62,7 +63,7 @@ namespace SistemaRestobarSayka2.Controllers
             {
                 if (!UsuarioExists(id))
                 {
-                    return NotFound();
+                    return NotFound("No se a Encontrado el Usuario a modificar");
                 }
                 else
                 {
@@ -70,7 +71,7 @@ namespace SistemaRestobarSayka2.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetUsuario", new { id = usuario.IdUsuario }, usuario);
         }
 
         // POST: api/Usuarios
@@ -78,8 +79,15 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpPost]
         public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
         {
-            _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Usuarios.Add(usuario);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest("El Usuario No fue Guardado");
+            }
 
             return CreatedAtAction("GetUsuario", new { id = usuario.IdUsuario }, usuario);
         }
@@ -91,13 +99,21 @@ namespace SistemaRestobarSayka2.Controllers
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null)
             {
-                return NotFound();
+                return NotFound("Usuario No Encontrado");
             }
 
-            _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Usuarios.Remove(usuario);
+                await _context.SaveChangesAsync();
 
-            return NoContent();
+            }
+            catch
+            {
+                return BadRequest("El Usuario No fue Eliminado");
+            }
+
+            return Ok(id);
         }
 
         private bool UsuarioExists(int id)

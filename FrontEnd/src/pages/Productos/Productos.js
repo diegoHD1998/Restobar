@@ -634,8 +634,6 @@ export default function Productos ()  {
         
     }
 
-    const CategoriaFilter = <Dropdown value={categoriaSelected} options={categorias} optionLabel='nombre' optionValue='idCategoria' placeholder='Categoria' onChange={(e)=>onCategoriaChange(e)} className='p-column-filter' showClear />
-
     return (
         
         <div className="p-grid crud-demo">

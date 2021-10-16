@@ -87,7 +87,7 @@ namespace SistemaRestobarSayka2.Controllers
             {
                 if (ProductoPedidoExists(productoPedido.ProductoIdProducto))
                 {
-                    return Conflict();
+                    return Conflict("Producto Pedido No Guardado");
                 }
                 else
                 {
