@@ -21,11 +21,14 @@ import Categorias from './pages/Productos/Categorias';
 import Productos from './pages/Productos/Productos';
 import Variantes from './pages/Productos/Variantes';
 
-import Usuarios from './pages/Usuarios/Usuarios'
 import Roles from './pages/Usuarios/Roles'
 import ExperimentoPedidos from './pages/ExperimentoPedidos'
 
 import PrimeReact from 'primereact/api';
+import Admins from './pages/Usuarios/Admins';
+import Meseros from './pages/Usuarios/Meseros';
+import Bartenders from './pages/Usuarios/Bartenders';
+import Cocineros from './pages/Usuarios/Cocineros';
 
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -126,7 +129,11 @@ const App = () => {
             label: "Usuarios",
             icon: "pi pi-fw pi-users",
             items: [
-                { label: "Lista de Usuarios",icon:'pi pi-fw pi-user' ,to: "/home/lista-usuarios" },
+                { label: "Administradores",icon:'pi pi-fw pi-user' ,to: "/home/lista-administradores" },
+                { label: "Meseros",icon:'pi pi-fw pi-user' ,to: "/home/lista-meseros" },
+                { label: "Bartenders",icon:'pi pi-fw pi-user' ,to: "/home/lista-bartenders" },
+                { label: "Cocineros",icon:'pi pi-fw pi-user' ,to: "/home/lista-cocineros" },
+
                 { label: "Roles", icon:'pi pi-fw pi-user-minus', to: "/home/roles" },
                 
             ]
@@ -208,7 +215,11 @@ const App = () => {
                 <Route path="/home/modificadores" component={Modificadores} />
 
                 {/* Usuarios */}
-                <Route path="/home/lista-usuarios" component={Usuarios} />
+                <Route path="/home/lista-administradores" component={Admins} />
+                <Route path="/home/lista-meseros" component={Meseros} />
+                <Route path="/home/lista-bartenders" component={Bartenders} />
+                <Route path="/home/lista-cocineros" component={Cocineros} />
+
                 <Route path="/home/roles" component={Roles} />
 
                 {/* Mesas */}

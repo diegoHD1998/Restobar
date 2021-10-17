@@ -298,8 +298,29 @@ const DataTableColGroupDemo = () => {
 
 
 
-            }else if(productoPedido.modificadorPrecio || opcionModificador){ //Desarrollo guardar modificador
-                console.log('Esta Opcion tiene modificadores')
+            }else if(opcionModificador){ //Desarrollo guardar modificador
+                let _ProductoPedido ={
+                    ...productoPedido,
+                    nombreReferencia: opcionModificador.nombre,
+                    total: ((productoPedido.precio + productoPedido.modificadorPrecio) * productoPedido.cantidad),
+                    fecha: fechaActual,
+                    hora: horaActual,
+                }
+                _productoPedidos.push(_ProductoPedido)
+                console.log(_ProductoPedido)
+                //Funcionalidad Create
+            }else{
+
+                let _ProductoPedido ={
+                    ...productoPedido,
+                    total: productoPedido.precio  * productoPedido.cantidad,
+                    fecha: fechaActual,
+                    hora: horaActual,
+                }
+                _productoPedidos.push(_ProductoPedido)
+                console.log(_ProductoPedido)
+                //Funcionalidad Create
+
             }
             
             
@@ -436,14 +457,14 @@ const DataTableColGroupDemo = () => {
     const dialogFooter2 = (
         <>
             <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog2} />
-            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={()=>console.log(productoPedido)} />
+            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={saveProductoPedido} />
         </>
     );
 
     const dialogFooter3 = (
         <>
             <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog3} />
-            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={()=>console.log(productoPedido)} />
+            <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={saveProductoPedido} />
         </>
     );
     
@@ -575,7 +596,7 @@ const DataTableColGroupDemo = () => {
                 </div>
 
                 <div className="p-field p-col-12">
-                    <span style={{fontSize:'25px'}} > <b>{`TOTAL: ${formatCurrency((productoPedido.precio * productoPedido.cantidad) + (productoPedido.modificadorPrecio * productoPedido.cantidad))}`}</b> </span>
+                    <span style={{fontSize:'25px'}} > <b>{`TOTAL: ${formatCurrency(((productoPedido.precio + productoPedido.modificadorPrecio) * productoPedido.cantidad))}`}</b> </span>
                 </div>
 
             </Dialog>

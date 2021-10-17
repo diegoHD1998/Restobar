@@ -29,6 +29,38 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(usuarios);
         }
 
+        // GET: api/Usuarios/Admin
+        [HttpGet("Admin")]
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetAdminUsuarios()
+        {
+            var usuarios = await _context.Usuarios.Where(u => u.RolIdRol == 1).ToListAsync();
+            return Ok(usuarios);
+        }
+
+        // GET: api/Usuarios/Mesero
+        [HttpGet("Mesero")]
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetMeseroUsuarios()
+        {
+            var usuarios = await _context.Usuarios.Where(u => u.RolIdRol == 2).ToListAsync();
+            return Ok(usuarios);
+        }
+
+        // GET: api/Usuarios/Bartender
+        [HttpGet("Bartender")]
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetBartenderUsuarios()
+        {
+            var usuarios = await _context.Usuarios.Where(u => u.RolIdRol == 4).ToListAsync();
+            return Ok(usuarios);
+        }
+
+        // GET: api/Usuarios/Cocinero
+        [HttpGet("Cocinero")]
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetCocineroUsuarios()
+        {
+            var usuarios = await _context.Usuarios.Where(u => u.RolIdRol == 3).ToListAsync();
+            return Ok(usuarios);
+        }
+
         // GET: api/Usuarios/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
