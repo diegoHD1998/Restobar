@@ -66,7 +66,7 @@ const SalaDeVentas = () => {
                 <Toast ref={toast} />
                 {mesas.map(mesa =>
                     <div key={mesa.idMesa} className='p-col-4 p-lg-2 p-md-3 p-sm-4 p-d-flex p-jc-center'> 
-                        <Mesa nombre = {mesa.nombre} color ={mesa.color} />
+                        <Mesa nombre={mesa.nombre} disponibilidad={mesa.disponibilidad} />
                     </div>
                 )}
                 

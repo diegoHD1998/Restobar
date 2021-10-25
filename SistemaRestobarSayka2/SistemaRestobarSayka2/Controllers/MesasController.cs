@@ -81,6 +81,7 @@ namespace SistemaRestobarSayka2.Controllers
         {
             try
             {
+                mesa.Disponibilidad = false;
                 _context.Mesas.Add(mesa);
                 await _context.SaveChangesAsync();
             }

@@ -25,21 +25,22 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductoPedido>>> GetProductoPedidos()
         {
-            return await _context.ProductoPedidos.ToListAsync();
+            var productosPedidos = await _context.ProductoPedidos.ToListAsync();
+            return Ok(productosPedidos);
         }
 
         // GET: api/ProductoPedidos/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProductoPedido>> GetProductoPedido(int id)
+        [HttpGet("{idPro}/{idPe}/{idPP}")]
+        public async Task<ActionResult<ProductoPedido>> GetProductoPedido(int idPro, int idPe, int idPP )
         {
-            var productoPedido = await _context.ProductoPedidos.FindAsync(id);
+            var productoPedido = await _context.ProductoPedidos.FindAsync(idPro,idPe,idPP);
 
             if (productoPedido == null)
             {
-                return NotFound();
+                return NotFound("ProductoPedido No Encontrado");
             }
 
-            return productoPedido;
+            return Ok(productoPedido);
         }
 
         // PUT: api/ProductoPedidos/5
@@ -47,7 +48,7 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProductoPedido(int id, ProductoPedido productoPedido)
         {
-            if (id != productoPedido.ProductoIdProducto)
+            if (id != productoPedido.IdProductoPedido)
             {
                 return BadRequest();
             }
@@ -78,16 +79,18 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductoPedido>> PostProductoPedido(ProductoPedido productoPedido)
         {
-            _context.ProductoPedidos.Add(productoPedido);
             try
             {
+             
+
+                _context.ProductoPedidos.Add(productoPedido);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (ProductoPedidoExists(productoPedido.ProductoIdProducto))
+                if (ProductoPedidoExists(productoPedido.IdProductoPedido))
                 {
-                    return Conflict("Producto Pedido No Guardado");
+                    return Conflict("Conflicto, Producto Pedido No Guardado");
                 }
                 else
                 {
@@ -95,28 +98,36 @@ namespace SistemaRestobarSayka2.Controllers
                 }
             }
 
-            return CreatedAtAction("GetProductoPedido", new { id = productoPedido.ProductoIdProducto }, productoPedido);
+            return Ok(productoPedido);
         }
 
         // DELETE: api/ProductoPedidos/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProductoPedido(int id)
+        [HttpDelete("{idPro}/{idPe}/{idPP}")]
+        public async Task<IActionResult> DeleteProductoPedido(int idPro, int idPe, int idPP)
         {
-            var productoPedido = await _context.ProductoPedidos.FindAsync(id);
+            var productoPedido = await _context.ProductoPedidos.FindAsync(idPro, idPe, idPP);
             if (productoPedido == null)
             {
-                return NotFound();
+                return NotFound("ProductoPedido No Encontrado");
             }
 
-            _context.ProductoPedidos.Remove(productoPedido);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.ProductoPedidos.Remove(productoPedido);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return BadRequest("El ProductoPedido No fue Eliminado");
+            }
 
-            return NoContent();
+
+            return Ok(idPP);
         }
 
         private bool ProductoPedidoExists(int id)
         {
-            return _context.ProductoPedidos.Any(e => e.ProductoIdProducto == id);
+            return _context.ProductoPedidos.Any(e => e.IdProductoPedido == id);
         }
     }
 }

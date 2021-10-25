@@ -371,8 +371,8 @@ export default function Modificadores ()  {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-plus" className="p-button-rounded p-button-secondary p-mr-2" tooltip='Agregar Opcion' tooltipOptions={{position: 'top'}} onClick={() => openNewOpcion(rowData)} />
                 <Button icon="pi pi-search" className="p-button-rounded p-button-info p-mr-2" tooltip='Ver detalle opciones' tooltipOptions={{position: 'top'}} onClick={()=> abrirOpciones(rowData)} />
+                <Button icon="pi pi-plus" className="p-button-rounded p-button-secondary p-mr-2" tooltip='Agregar Opcion' tooltipOptions={{position: 'top'}} onClick={() => openNewOpcion(rowData)} />
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editProduct(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} />
             </div>

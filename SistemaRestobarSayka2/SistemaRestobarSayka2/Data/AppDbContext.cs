@@ -239,7 +239,6 @@ namespace SistemaRestobarSayka2.Data
 
             modelBuilder.Entity<ProductoModificador>(entity =>
             {
-
                 entity.HasKey(e => new { e.ProductoIdProducto, e.ModificadorIdModificador });
 
                 entity.ToTable("ProductoModificador");
@@ -253,44 +252,45 @@ namespace SistemaRestobarSayka2.Data
                 entity.HasOne(d => d.ModificadorIdModificadorNavigation)
                     .WithMany(p => p.ProductoModificadors)
                     .HasForeignKey(d => d.ModificadorIdModificador)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProductoModificador_Modificador");
 
                 entity.HasOne(d => d.ProductoIdProductoNavigation)
                     .WithMany(p => p.ProductoModificadors)
                     .HasForeignKey(d => d.ProductoIdProducto)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProductoModificador_Producto");
             });
 
             modelBuilder.Entity<ProductoPedido>(entity =>
             {
 
-                entity.HasKey(e => new { e.ProductoIdProducto, e.PedidoIdPedido });
+                entity.HasKey(e => e.IdProductoPedido);
 
                 entity.ToTable("ProductoPedido");
 
-                entity.HasIndex(e => e.PedidoIdPedido, "IX_FK_ProductoPedido_Pedido");
+                entity.HasIndex(e => e.PedidoIdPedido, "IX_FK_PedidoProductoPedido");
 
-                entity.Property(e => e.ProductoIdProducto).HasColumnName("Producto_Id_producto");
+                entity.HasIndex(e => e.ProductoIdProducto, "IX_FK_ProductoProductoPedido");
 
-                entity.Property(e => e.PedidoIdPedido).HasColumnName("Pedido_Id_pedido");
+                entity.Property(e => e.IdProductoPedido).HasColumnName("Id_Producto_Pedido");
 
-                entity.Property(e => e.Fecha).HasColumnType("datetime");
+                entity.Property(e => e.ProductoIdProducto).HasColumnName("ProductoId_producto");
 
-                entity.Property(e => e.Hora).HasColumnType("datetime");
+                entity.Property(e => e.PedidoIdPedido).HasColumnName("PedidoId_pedido");
+
+                entity.Property(e => e.FechaHora).HasColumnType("datetime");
 
                 entity.HasOne(d => d.PedidoIdPedidoNavigation)
                     .WithMany(p => p.ProductoPedidos)
                     .HasForeignKey(d => d.PedidoIdPedido)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ProductoPedido_Pedido");
+                    .HasConstraintName("FK_PedidoProductoPedido");
 
                 entity.HasOne(d => d.ProductoIdProductoNavigation)
                     .WithMany(p => p.ProductoPedidos)
                     .HasForeignKey(d => d.ProductoIdProducto)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ProductoPedido_Producto");
+                    .HasConstraintName("FK_ProductoProductoPedido");
+
             });
 
             modelBuilder.Entity<Rol>(entity =>
@@ -365,7 +365,7 @@ namespace SistemaRestobarSayka2.Data
 
                 entity.Property(e => e.IdVenta).HasColumnName("Id_venta");
 
-                entity.Property(e => e.BoletaIdBoleta).HasColumnName("Boleta_Id_boleta");
+                entity.Property(e => e.BoletaIdBoleta).HasColumnName("VentaBoleta_Venta_Id_boleta");
 
                 entity.Property(e => e.Estado).IsRequired();
 

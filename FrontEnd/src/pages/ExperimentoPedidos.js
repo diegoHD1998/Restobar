@@ -8,15 +8,12 @@ import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Row } from 'primereact/row';
-/* import { Toast } from 'primereact/toast'; */
+import { Toast } from 'primereact/toast';
 
 import ProductoService from '../service/ProductosService/ProductoService';
 import CategoriaService from '../service/ProductosService/CategoriaService';
-/* import VarienteService from '../service/ProductosService/VarianteService'; */
 import OpcionVarienteService from '../service/ProductosService/OpcionVarianteService';
-/* import ModificadorService from '../service/ProductosService/ModificadorService'; */
 import OpcionModificadorService from '../service/ProductosService/OpcionModificadorService';
-
 import ProductoModificadorService from '../service/ProductosService/ProductoModificadorService';
 import ProductoPedidoService from '../service/PedidoService/ProductoPedidoService';
 
@@ -27,6 +24,7 @@ const DataTableColGroupDemo = () => {
     let empty = {
         productoIdProducto: null,
         pedidoIdPedido: null,
+        idProductoPedido:null,
         nombre:'',
         cantidad: 1,
         precio: 0,
@@ -61,7 +59,7 @@ const DataTableColGroupDemo = () => {
 
     const [productos, setProductos] = useState(null)
     const [categorias, setCategorias] = useState(null)
-    const [productoPedidos, setProductoPedidos] = useState(_productoPedidos)
+    const [productoPedidos, setProductoPedidos] = useState(null)
 
     const [categoriaSelected, setCategoriaSelected] = useState(null)
 
@@ -76,9 +74,10 @@ const DataTableColGroupDemo = () => {
     const [opcionesModificadoresProducto, setOpcionesModificadoresProducto] = useState(null)
     
     const [selected, setSelected] = useState(null);
+    const toast = useRef(null);
     const dt = useRef(null);
     
-    const pedido = {idPedido:501, fecha:'04-10-2021', estado: 'Activo', usuarioIdUsuario:1, mesaIdMesa:2}
+    const pedido = {idPedido:1, fecha:'04-10-2021', estado: 'Activo', usuarioIdUsuario:1, mesaIdMesa:2}
 
     
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -90,6 +89,18 @@ const DataTableColGroupDemo = () => {
     const productoPedidoService = new ProductoPedidoService()
 
     useEffect(() => {
+        const productoPedidoService = new ProductoPedidoService()
+        productoPedidoService.readAll().then(res => {
+            if(res){
+                if(res.status >= 200 && res.status < 300){
+                    setProductoPedidos(res.data)
+                }else{
+                    console.log('Error al cargar Datos de ProductoPedido')
+                }
+            }else{
+                console.log('Error de conexion con Backend, Backend esta abajo')
+            }
+        })
         
         const categoriaService = new CategoriaService();
         categoriaService.readCategoriasActivas().then(res => {
@@ -185,7 +196,7 @@ const DataTableColGroupDemo = () => {
             let _ProductoPedido ={
                 ...empty,
                 productoIdProducto: _producto.idProducto,
-                pedidoIdPedido:501 // aqui cambiar el Id de pedido con el de la mesa
+                pedidoIdPedido:1 // aqui cambiar el Id de pedido con el de la mesa
             }
             setOpcionesVariantesProducto(_opcionesV)
             setProductoPedido(_ProductoPedido);
@@ -206,7 +217,7 @@ const DataTableColGroupDemo = () => {
             let _ProductoPedido ={
                 ...empty,
                 productoIdProducto: _producto.idProducto,
-                pedidoIdPedido:501, // aqui cambiar el Id de pedido con el de la mesa
+                pedidoIdPedido:1, // aqui cambiar el Id de pedido con el de la mesa
                 precio: _producto.precio
             }
 
@@ -218,7 +229,7 @@ const DataTableColGroupDemo = () => {
             let _ProductoPedido ={
                 ...empty,
                 productoIdProducto: _producto.idProducto,
-                pedidoIdPedido:501, // aqui cambiar el Id de pedido con el de la mesa
+                pedidoIdPedido:1, // aqui cambiar el Id de pedido con el de la mesa
                 precio: _producto.precio
             }
             setProductoPedido(_ProductoPedido)
@@ -263,11 +274,12 @@ const DataTableColGroupDemo = () => {
 
             let hoy = new Date();
 
-            let fechaActual = `${hoy.getDate()}-${hoy.getMonth() + 1}-${hoy.getFullYear()}`
-            let horaActual = `${hoy.getHours()}:${hoy.getMinutes()}:${hoy.getSeconds()}`
-
+            let fechaActual = `${hoy.getFullYear()}-${hoy.getMonth() + 1}-${hoy.getDate()}`
+            /* let horaActual = `${hoy.getHours()}:${hoy.getMinutes()}:${hoy.getSeconds()}:${hoy.getMilliseconds()}` */
+            let horaActual = `${hoy.getFullYear()}-${hoy.getMonth() + 1}-${hoy.getDate()}`
+            
             if(opcionVariante){ //Desarrollo guardar Variante
-
+                console.log('Estas aqui 1')
                 
                 let _ProductoPedido ={
                     ...productoPedido,
@@ -276,13 +288,14 @@ const DataTableColGroupDemo = () => {
                     fecha: fechaActual,
                     hora: horaActual,
                 }
-                _productoPedidos.push(_ProductoPedido)
+
+                delete _ProductoPedido.idProductoPedido
                 console.log(_ProductoPedido)
-                /* await productoPedidoService.create(_ProductoPedido).then(res => {
+                await productoPedidoService.create(_ProductoPedido).then(res => {
                     if(res){
                         if(res.status >= 200 && res.status<300){
 
-                            productoPedidos.push(res.data)
+                            _productoPedidos.push(res.data)
                             console.log(res.data)
 
                         }else if(res.status >= 400 && res.status<500){
@@ -290,15 +303,13 @@ const DataTableColGroupDemo = () => {
                             toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
                         }else{
                             console.log(res)
-                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Update de Producto, Status no controlado`, life: 5000 });
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create de ProductoPedido, Status no controlado`, life: 5000 });
                         }
                     }
-                }) */
-
-
-
+                })
 
             }else if(opcionModificador){ //Desarrollo guardar modificador
+                console.log('Estas aqui 2')
                 let _ProductoPedido ={
                     ...productoPedido,
                     nombreReferencia: opcionModificador.nombre,
@@ -306,20 +317,52 @@ const DataTableColGroupDemo = () => {
                     fecha: fechaActual,
                     hora: horaActual,
                 }
-                _productoPedidos.push(_ProductoPedido)
-                console.log(_ProductoPedido)
-                //Funcionalidad Create
-            }else{
 
+                delete _ProductoPedido.idProductoPedido
+                console.log(_ProductoPedido)
+                await productoPedidoService.create(_ProductoPedido).then(res => {
+                    if(res){
+                        if(res.status >= 200 && res.status<300){
+
+                            _productoPedidos.push(res.data)
+                            console.log(res.data)
+
+                        }else if(res.status >= 400 && res.status<500){
+                            console.log(res)
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+                        }else{
+                            console.log(res)
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create de ProductoPedido, Status no controlado`, life: 5000 });
+                        }
+                    }
+                })
+            }else{
+                console.log('Estas aqui 3')
                 let _ProductoPedido ={
                     ...productoPedido,
                     total: productoPedido.precio  * productoPedido.cantidad,
                     fecha: fechaActual,
                     hora: horaActual,
                 }
-                _productoPedidos.push(_ProductoPedido)
+
+                delete _ProductoPedido.idProductoPedido
                 console.log(_ProductoPedido)
-                //Funcionalidad Create
+                await productoPedidoService.create(_ProductoPedido).then(res => {
+                    if(res){
+                        if(res.status >= 200 && res.status<300){
+
+                            _productoPedidos.push(res.data)
+                            console.log(res.data)
+
+                        }else if(res.status >= 400 && res.status<500){
+                            console.log(res)
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+                        }else{
+                            console.log(res)
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create de ProductoPedido, Status no controlado`, life: 5000 });
+                        }
+                    }
+                })
 
             }
             
@@ -369,35 +412,40 @@ const DataTableColGroupDemo = () => {
         setProductoPedido(_productoPedido);
         setOpcionModificador(opcionM)
     }
-    const actionBodyTemplate = () => {
-        return (
-            <div className="actions">
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-button-outlined " />
-            </div>
-        );
-    }
+
     const PrecioBodyTemplate = (rowData) => {
-        return rowData.precio.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
+        return rowData.precio?.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
     }
     
     const TotalBodyTemplate = (rowData) => {
-        return rowData.total.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
+        return rowData.total?.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
     }
     
     const formatCurrency = (value) => {
-        return value.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
-    }
-    const TotalPagoBodyTemplate = () => {
-        
-        const _productoPedidoActual = productoPedidos.filter(value => value.pedidoIdPedido === pedido.idPedido)
-        
-        let total = _productoPedidoActual.reduce((acc, el) => acc + el.total, 0)
-        
-        return formatCurrency(total);
+        return value?.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
     }
 
     const categoriaItemTemplate = (option) => {
         return <span>{option.nombre}</span>
+    }
+
+    const TotalPagoBodyTemplate = () => {
+        const _productoPedidoActual = productoPedidos?.filter(value => value.pedidoIdPedido === pedido.idPedido)
+        let total = _productoPedidoActual?.reduce((acc, el) => acc + el.total, 0)
+        return formatCurrency(total);
+    }
+
+    const productoBodyTemplate = (rowData)=>{
+        if(productos){
+            const _producto = productos?.find(value => value.idProducto === rowData.productoIdProducto)
+            return(
+                <>
+                    <span>
+                        {_producto?.nombre}
+                    </span>
+                </>
+            )
+        }
     }
     
     const ProductoTemplate = (rowData) => {
@@ -413,39 +461,27 @@ const DataTableColGroupDemo = () => {
             return(
                 <>
                     <div className="ProductoItem" >
-    
-                            <img src={`/assets/demo/images/product/black-watch.jpg`} alt={rowData.nombre} />
-    
-                            <div className="detalle-producto">
-                                <div className="nombreProducto">{rowData.nombre}</div>
-                                <i style={{color:`#${_categoria.color}`}} className="pi pi-tag categoriaProductoIcon"></i><span className="categoriaProducto">{_categoria.nombre}</span>
-                            </div>
-    
-                            <div className="accion-producto">
-                                <span className="precio-producto">{rowData.precio ? formatCurrency(rowData.precio) : <span className='variante-producto' >{`${cont} variantes`}</span>}</span>
-                            </div>
+                        <img src={`/assets/demo/images/product/black-watch.jpg`} alt={rowData.nombre} />
+                        <div className="detalle-producto">
+                            <div className="nombreProducto">{rowData.nombre}</div>
+                            <i style={{color:`#${_categoria.color}`}} className="pi pi-tag categoriaProductoIcon"></i><span className="categoriaProducto">{_categoria.nombre}</span>
+                        </div>
+                        <div className="accion-producto">
+                            <span className="precio-producto">{rowData.precio ? formatCurrency(rowData.precio) : <span className='variante-producto' >{`${cont} variantes`}</span>}</span>
+                        </div>
                     </div>
                 </>
             )
         }
     }
 
-    const productoBodyTemplate = (rowData)=>{
-
-        if(productos){
-
-            const _producto = productos?.find(value => value.idProducto === rowData.productoIdProducto)
-            return(
-                <>
-                    <span>
-                        {_producto?.nombre}
-                    </span>
-                </>
-            )
-        }
+    const actionBodyTemplate = () => {
+        return (
+            <div className="actions">
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-button-outlined " />
+            </div>
+        );
     }
-
-
 
     const dialogFooter = (
         <>
@@ -481,27 +517,21 @@ const DataTableColGroupDemo = () => {
     )
 
     const header1 = (
-        
         <div>
             <span><b> {`${producto.nombre.toUpperCase()} ${opcionVariante ? opcionVariante.nombre : ''}: `}</b> </span>
             <span><b>{`${ productoPedido.precio ? formatCurrency(productoPedido.precio) : ''}`}</b></span>
         </div>
-    
     )
     const header2 = (
-        
         <div>
             <span><b> {`${producto.nombre.toUpperCase()} ${opcionModificador ? opcionModificador.nombre : ''} : ${formatCurrency(productoPedido.precio)}`}</b> </span>
         </div>
-    
     )
     const header3 = (
-        
         <div>
             <span><b> {`${producto.nombre.toUpperCase()}: ${formatCurrency(productoPedido.precio)} `}</b> </span>
             
         </div>
-    
     )
 
     let headerGroup = <ColumnGroup>                    
@@ -524,7 +554,9 @@ const DataTableColGroupDemo = () => {
                         </ColumnGroup>;
 
     return (
+
         <div className='p-grid p-d-flex' >
+                <Toast ref={toast} />
             <div className='p-col-12 p-md-6 '>
                 <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={'Mesa 2'} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
                     <Column field="productoIdProducto" body={productoBodyTemplate} />
@@ -580,11 +612,9 @@ const DataTableColGroupDemo = () => {
                 <div className= 'p-grid p-d-flex p-col-12'>
                     {
                         opcionesModificadoresProducto?.map((value1) => 
-                            
                             <div key={value1.idOpcionM} className='p-mr-2 p-my-2 '>
                                 <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChangeM(value1.precio,'modificadorPrecio',value1)}/>
                             </div>
-                            
                         )
                     }
                 </div>

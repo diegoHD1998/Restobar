@@ -17,7 +17,7 @@ namespace SistemaRestobarSayka2.Models
         public string Estado { get; set; }
         public int UsuarioIdUsuario { get; set; }
         public int MesaIdMesa { get; set; }
-        public int VentaIdVenta { get; set; }
+        public int? VentaIdVenta { get; set; }
 
         public virtual Mesa MesaIdMesaNavigation { get; set; }
         public virtual Usuario UsuarioIdUsuarioNavigation { get; set; }
