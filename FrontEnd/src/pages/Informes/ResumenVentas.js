@@ -3,7 +3,6 @@ import {Calendar} from 'primereact/calendar'
 import { addLocale } from 'primereact/api';
 import { Chart } from 'primereact/chart';
 import VentasService from '../../service/InformeService/VentaService';
-import { plugins } from 'chart.js';
 
 const ResumenVentas = () => {
     const [date1, setDate1] = useState(null)
@@ -11,7 +10,7 @@ const ResumenVentas = () => {
     const [Ventas, setVentas] = useState(null)
     const [Fechas, setFechas] = useState(null)
 
-    const fechaOptions = {month:'short', day:'numeric'}
+    /* const fechaOptions = {month:'short', day:'numeric'} */
 
     addLocale('es', {
         firstDayOfWeek: 1,
@@ -30,6 +29,7 @@ const ResumenVentas = () => {
         let final = new Date()
 
         inicio.setDate(inicio.getDate()-30)
+
         setDate1(inicio)
         setDate2(final)
 
@@ -40,7 +40,7 @@ const ResumenVentas = () => {
             setVentas(data.map(value =>value.montoTotal))
             setFechas(data.map(value =>{
                 let _date = new Date(value.fecha)
-                let _fecha = _date.toLocaleDateString('es-CL',fechaOptions)
+                let _fecha = _date.toLocaleDateString('es-CL',{month:'short', day:'numeric'})
                 return _fecha
             }))
             
@@ -60,12 +60,15 @@ const ResumenVentas = () => {
         labels:Fechas,
         datasets: [
             {
-                label:'hola',
                 data: Ventas,
                 fill: true,
                 backgroundColor: 'rgba(66,165,245,0.2)',
                 borderColor: '#42A5F5',
-                tension: .1
+                tension: .1,
+                pointBackgroundColor:'#42A5F5',
+                pointHoverRadius: 6,
+                pointHitRadius: 30,
+                
             }
         ]
     };
@@ -73,6 +76,7 @@ const ResumenVentas = () => {
     const options = {
         responsive: true,
         title: {
+            
           display: true,
           text: 'Resumen de Ventas',
           fontSize: 16
@@ -83,12 +87,21 @@ const ResumenVentas = () => {
         scales:{
 
             yAxes: [{
+
+                
                 ticks: {
+                    
+                    beginAtZero: true,
+                    /* stepSize: 200000, */
                     callback: function(value) {
                         return value.toLocaleString("es-CL",{style:"currency", currency:"CLP"});
-                    }
+                    },
+                    
                 }
-            }]
+            }],
+            
+
+
         },
         tooltips:{
             callbacks:{
@@ -104,18 +117,24 @@ const ResumenVentas = () => {
     return (
         <>
 
-            <div className='p-mb-4' >
-                <label htmlFor="horizontal">Fecha Inicial: </label>
-                <Calendar value={date1} dateFormat='dd M yy' onChange={(e)=>setDate1(e.value)}  showIcon className='p-mr-3' locale='es' />
+            <div className='p-fluid p-grid ' >
 
-                <label htmlFor="horizontal"> Fecha Final: </label>
-                <Calendar value={date2} dateFormat='dd M yy' onChange={(e)=>setDate2(e.value)} showIcon locale='es'/>
+                <div className='p-field'>
+                    <label htmlFor="date1">Fecha Inicial: </label>
+                    <Calendar id='date1' value={date1} dateFormat='dd M yy' onChange={(e)=>setDate1(e.value)}  showIcon className='p-mr-3' locale='es' />
+                </div>
+
+                <div className='p-field'>
+                    <label htmlFor="date2"> Fecha Final: </label>
+                    <Calendar id='date2' value={date2} dateFormat='dd M yy' onChange={(e)=>setDate2(e.value)} showIcon locale='es'/>
+                </div>
+
             </div> 
 
             <div className='p-grid p-card p-jc-center' >
 
                 <div className='p-col-10  ' >
-                    <Chart type="line" data={lineData} options={options} />
+                    <Chart type="line" data={lineData} options={options}/>
                 </div>
 
             </div>

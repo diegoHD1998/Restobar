@@ -100,7 +100,7 @@ const App = () => {
     }
 
     const onMenuItemClick = (event) => {
-        if (!event.item.items /* && layoutMode === "overlay" */) {
+        if (!event.item.items && layoutMode === "overlay") { // aqui se cambia desde el and
             setSidebarActive(false);
         }
     }
@@ -231,7 +231,7 @@ const App = () => {
             </div>
 
             <div class="layout-mask"></div>
-            <AppFooter />
+            {/* <AppFooter /> */}
         </div>
     );
 
