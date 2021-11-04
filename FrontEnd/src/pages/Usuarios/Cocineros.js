@@ -11,6 +11,7 @@ import { Dropdown } from 'primereact/dropdown';
 import md5 from 'md5'
 
 import UsuarioService from '../../service/UsuariosService/UsuarioService';
+import {estados} from '../../service/Variables'
 
 export default function Cocineros ()  {
 
@@ -23,15 +24,11 @@ export default function Cocineros ()  {
         direccion:'',
         userName:'',
         password:'',
-        estado:'Activo',
+        estado:estados[0],
         rolIdRol: 3
 
     };
 
-    let estadoUsuario = [
-        'Activo',
-        'Inactivo'
-    ];
     const [usuarios, setUsuarios] = useState(null);
     const [usuario, setUsuario] = useState(emptyUsuario);
     const [password2, setPassword2] = useState(null)
@@ -103,7 +100,7 @@ export default function Cocineros ()  {
 
                         const index = findIndexById(usuario.idUsuario);
                         _usuarios[index] = _usuario;
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Actualizado', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Actualizado', life: 5000 });
                         console.log(res.data);
 
                     }else if(res.status >= 400 && res.status<500){
@@ -124,7 +121,7 @@ export default function Cocineros ()  {
                 .then(res => {
                     if(res.status >= 200 && res.status<300){
                         _usuarios.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Creado', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Creado', life: 5000 });
                         console.log(res.data)
                     } else if(res.status >= 400 && res.status<500){
                         console.log(res)
@@ -162,7 +159,7 @@ export default function Cocineros ()  {
                 setUsuarios(usuarios.filter(val => val.idUsuario !== res.data))
                 setDeleteProductDialog(false);
                 setUsuario(emptyUsuario);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Eliminado', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Eliminado', life: 5000 });
 
             }else if(res.status >= 400 && res.status<500){
                 console.log(res)
@@ -313,7 +310,7 @@ export default function Cocineros ()  {
 
                         <div className="p-field">
                             <label htmlFor="estado">Estado</label>
-                            <Dropdown id="estado" value={usuario.estado} options={estadoUsuario} placeholder='Seleccione estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !usuario.estado })}rows={3} cols={20} />
+                            <Dropdown id="estado" value={usuario.estado} options={estados} placeholder='Seleccione estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !usuario.estado })}rows={3} cols={20} />
                             {submitted && !usuario.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
 

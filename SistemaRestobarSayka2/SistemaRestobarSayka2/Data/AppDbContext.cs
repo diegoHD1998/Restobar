@@ -178,7 +178,7 @@ namespace SistemaRestobarSayka2.Data
 
                 entity.Property(e => e.Estado).IsRequired();
 
-                entity.Property(e => e.Fecha).HasColumnType("datetime");
+                entity.Property(e => e.Fecha).HasColumnType("date");
 
                 entity.Property(e => e.MesaIdMesa).HasColumnName("MesaId_mesa");
 
@@ -271,13 +271,13 @@ namespace SistemaRestobarSayka2.Data
 
                 entity.HasIndex(e => e.ProductoIdProducto, "IX_FK_ProductoProductoPedido");
 
-                entity.Property(e => e.IdProductoPedido).HasColumnName("Id_Producto_Pedido");
+                entity.Property(e => e.IdProductoPedido).HasColumnName("IdProductoPedido");
 
                 entity.Property(e => e.ProductoIdProducto).HasColumnName("ProductoId_producto");
 
                 entity.Property(e => e.PedidoIdPedido).HasColumnName("PedidoId_pedido");
 
-                entity.Property(e => e.FechaHora).HasColumnType("datetime");
+                entity.Property(e => e.Fecha).HasColumnType("date");
 
                 entity.HasOne(d => d.PedidoIdPedidoNavigation)
                     .WithMany(p => p.ProductoPedidos)
@@ -367,9 +367,7 @@ namespace SistemaRestobarSayka2.Data
 
                 entity.Property(e => e.BoletaIdBoleta).HasColumnName("VentaBoleta_Venta_Id_boleta");
 
-                entity.Property(e => e.Estado).IsRequired();
-
-                entity.Property(e => e.Fecha).HasColumnType("datetime");
+                entity.Property(e => e.Fecha).HasColumnType("date");
 
                 entity.Property(e => e.TipoPagoIdTipoPago).HasColumnName("TipoPagoId_tipoPago");
 

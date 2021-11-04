@@ -18,21 +18,19 @@ import ProductoModificadorService from '../service/ProductosService/ProductoModi
 import ProductoPedidoService from '../service/PedidoService/ProductoPedidoService';
 
 
-const DataTableColGroupDemo = () => {
-
+const ExperimentoPedidos = () => {
 
     let empty = {
-        productoIdProducto: null,
-        pedidoIdPedido: null,
         idProductoPedido:null,
-        nombre:'',
         cantidad: 1,
         precio: 0,
         nombreReferencia:'',
         modificadorPrecio: 0,
         total: 0,
-        fecha:null,
-        hora: null,
+        fecha: null,
+        hora:null,
+        productoIdProducto: null,
+        pedidoIdPedido: null,
     }
 
     let emptyProducto = {
@@ -45,12 +43,6 @@ const DataTableColGroupDemo = () => {
         categoriaIdCategoria:null,
         varianteIdVariante:null
     }
-    const _productoPedidos = [
-        {productoIdProducto: 4, pedidoIdPedido:501, nombre:'', cantidad: 1, precio: 6000, nombreReferencia:'', modificadorPrecio: null, total:6000, fecha:null, hora:null},
-        {productoIdProducto: 5, pedidoIdPedido:501, nombre:'', cantidad: 2, precio: 10000, nombreReferencia:'', modificadorPrecio: null, total:20000, fecha:null, hora:null},
-        {productoIdProducto: 6, pedidoIdPedido:501, nombre:'', cantidad: 1, precio: 6000, nombreReferencia:'', modificadorPrecio: null, total:6000, fecha:null, hora:null},
-        {productoIdProducto: 7, pedidoIdPedido:501, nombre:'', cantidad: 3, precio: 500, nombreReferencia:'', modificadorPrecio: null, total:1500, fecha:null, hora:null},
-    ];
 
     const [productoPedido, setProductoPedido] = useState(empty)
     const [producto, setProducto] = useState(emptyProducto)
@@ -60,16 +52,12 @@ const DataTableColGroupDemo = () => {
     const [productos, setProductos] = useState(null)
     const [categorias, setCategorias] = useState(null)
     const [productoPedidos, setProductoPedidos] = useState(null)
-
     const [categoriaSelected, setCategoriaSelected] = useState(null)
 
-
-    
     const [opcionVariantes, setOpcionVariantes] = useState(null)
     const [opcionesVariantesProducto, setOpcionesVariantesProducto] = useState(null)
     
     const [productoModificadores, setProductoModificadores] = useState(null)
-    
     const [opcionModificadores, setOpcionModificadores] = useState(null)
     const [opcionesModificadoresProducto, setOpcionesModificadoresProducto] = useState(null)
     
@@ -272,12 +260,6 @@ const DataTableColGroupDemo = () => {
         if(productoPedido.precio && productoPedido.cantidad){
             let _productoPedidos = [...productoPedidos]
 
-            let hoy = new Date();
-
-            let fechaActual = `${hoy.getFullYear()}-${hoy.getMonth() + 1}-${hoy.getDate()}`
-            /* let horaActual = `${hoy.getHours()}:${hoy.getMinutes()}:${hoy.getSeconds()}:${hoy.getMilliseconds()}` */
-            let horaActual = `${hoy.getFullYear()}-${hoy.getMonth() + 1}-${hoy.getDate()}`
-            
             if(opcionVariante){ //Desarrollo guardar Variante
                 console.log('Estas aqui 1')
                 
@@ -285,12 +267,10 @@ const DataTableColGroupDemo = () => {
                     ...productoPedido,
                     nombreReferencia: opcionVariante.nombre,
                     total: productoPedido.precio * productoPedido.cantidad,
-                    fecha: fechaActual,
-                    hora: horaActual,
                 }
 
                 delete _ProductoPedido.idProductoPedido
-                console.log(_ProductoPedido)
+                //console.log(_ProductoPedido)
                 await productoPedidoService.create(_ProductoPedido).then(res => {
                     if(res){
                         if(res.status >= 200 && res.status<300){
@@ -314,12 +294,10 @@ const DataTableColGroupDemo = () => {
                     ...productoPedido,
                     nombreReferencia: opcionModificador.nombre,
                     total: ((productoPedido.precio + productoPedido.modificadorPrecio) * productoPedido.cantidad),
-                    fecha: fechaActual,
-                    hora: horaActual,
                 }
 
                 delete _ProductoPedido.idProductoPedido
-                console.log(_ProductoPedido)
+                //console.log(_ProductoPedido)
                 await productoPedidoService.create(_ProductoPedido).then(res => {
                     if(res){
                         if(res.status >= 200 && res.status<300){
@@ -341,12 +319,10 @@ const DataTableColGroupDemo = () => {
                 let _ProductoPedido ={
                     ...productoPedido,
                     total: productoPedido.precio  * productoPedido.cantidad,
-                    fecha: fechaActual,
-                    hora: horaActual,
                 }
 
                 delete _ProductoPedido.idProductoPedido
-                console.log(_ProductoPedido)
+                //console.log(_ProductoPedido)
                 await productoPedidoService.create(_ProductoPedido).then(res => {
                     if(res){
                         if(res.status >= 200 && res.status<300){
@@ -558,7 +534,7 @@ const DataTableColGroupDemo = () => {
         <div className='p-grid p-d-flex' >
                 <Toast ref={toast} />
             <div className='p-col-12 p-md-6 '>
-                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={'Mesa 2'} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
+                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={'nombreMesa'} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
                     <Column field="productoIdProducto" body={productoBodyTemplate} />
                     <Column field="nombreReferencia" />
                     <Column field="precio" body={PrecioBodyTemplate} />
@@ -652,4 +628,4 @@ const DataTableColGroupDemo = () => {
     );
 }
 
-export default DataTableColGroupDemo
+export default ExperimentoPedidos

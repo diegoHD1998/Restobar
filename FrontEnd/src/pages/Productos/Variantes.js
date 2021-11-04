@@ -11,6 +11,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
 import VarienteService from '../../service/ProductosService/VarianteService'
 import OpcionVarianteService from '../../service/ProductosService/OpcionVarianteService'
+import { numOrden } from '../../service/Variables';
 
 
 
@@ -29,8 +30,6 @@ export default function Variantes ()  {
         varianteIdVariante: null,
         orden: null
     }
-
-    const numerosOrden = [1,2,3,4,5,6]
 
     const [variantes, setVarientes] = useState(null);
     const [variante, setVariante] = useState(emptyProduct);
@@ -154,7 +153,7 @@ export default function Variantes ()  {
 
                         const index = findIndexById(variante.idVariante);
                         _variantes[index] = _variante;
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Variante Actualizada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Variante Actualizada', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status<500){
@@ -175,7 +174,7 @@ export default function Variantes ()  {
                     if(res.status >= 200 && res.status<300){
 
                         _variantes.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Variante Creada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Variante Creada', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status<500){
@@ -215,7 +214,7 @@ export default function Variantes ()  {
                         _Opciones[index2] = _OpcionVariante
                         setOpciones(_Opciones)
 
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Actualizada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Actualizada', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status<500){
@@ -233,7 +232,7 @@ export default function Variantes ()  {
                 .then(res => {
                     if(res.status >= 200 && res.status < 300){
                         _OpcionVariantes.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Creada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Creada', life: 5000 });
                         console.log(res.data)
                     }else if(res.status >= 400 && res.status < 500){
                         console.log(res)
@@ -279,7 +278,7 @@ export default function Variantes ()  {
                 setVarientes(variantes.filter(val => val.idVariante !== res.data))
                 setDeleteProductDialog(false);
                 setVariante(emptyProduct);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Variante Eliminada', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Variante Eliminada', life: 5000 });
 
             }else if(res.status >= 400 && res.status < 500){
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
@@ -300,7 +299,7 @@ export default function Variantes ()  {
                 setOpciones(opciones.filter(val => val.idOpcionV !== res.data));
                 setDeleteOpcionDialog(false);
                 setOpcionVariante(emptyOpcionVariante);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Eliminada', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Variante Eliminada', life: 5000 });
                 
             }else if(res.status >= 400 && res.status < 500){
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
@@ -526,7 +525,7 @@ export default function Variantes ()  {
 
                         <div className="p-field" >
                             <label htmlFor="orden">Orden</label>
-                            <Dropdown id="orden" value={opcionVariante.orden} options={numerosOrden} placeholder='Seleccione Orden' onChange={(e) => onInputChanceOpcionVariante(e, 'orden')} />
+                            <Dropdown id="orden" value={opcionVariante.orden} options={numOrden} placeholder='Seleccione Orden' onChange={(e) => onInputChanceOpcionVariante(e, 'orden')} />
                         </div>
                         
                     </Dialog>

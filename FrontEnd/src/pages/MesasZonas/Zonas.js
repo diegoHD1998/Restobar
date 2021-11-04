@@ -9,6 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import { ColorPicker } from 'primereact/colorpicker';
 import { Dropdown } from 'primereact/dropdown';
 import ZonaService from '../../service/MesasService/ZonaService'
+import {estados} from '../../service/Variables'
 
 export default function Zonas ()  {
 
@@ -16,13 +17,8 @@ export default function Zonas ()  {
         idZona: null,
         nombre: '',
         color:'',
-        estado:'Activo'
+        estado:estados[0]
     };
-
-    let estadoZona = [
-        'Activo',
-        'Inactivo'
-    ];
 
     const [zonas, setZonas] = useState(null); /* <----------------- */
     const [zona, setZona] = useState(emptyProduct);/* <----------------- */
@@ -84,7 +80,7 @@ export default function Zonas ()  {
 
                         const index = findIndexById(zona.idZona);
                         _zonas[index] = _zona;
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Zona Actualizada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Zona Actualizada', life: 5000 });
                         console.log(res.data);
 
                     }else if(res.status >= 400 && res.status<500){
@@ -104,7 +100,7 @@ export default function Zonas ()  {
                 .then(res => {
                     if(res.status >= 200 && res.status<300){
                         _zonas.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Zona Creada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Zona Creada', life: 5000 });
                         console.log(res.data)
                     } else if(res.status >= 400 && res.status<500){
                         console.log(res)
@@ -142,7 +138,7 @@ export default function Zonas ()  {
                 setZonas(zonas.filter(val => val.idZona !== res.data))
                 setDeleteProductDialog(false);
                 setZona(emptyProduct);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Zona Eliminada', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Zona Eliminada', life: 5000 });
 
             }else if(res.status >= 400 && res.status<500){
                 console.log(res)
@@ -254,7 +250,7 @@ export default function Zonas ()  {
                         </div>
                         <div className="p-field" style={{height:'120px'}}>
                             <label htmlFor="estado">Estado</label>
-                            <Dropdown id="estado" value={zona.estado} options={estadoZona} placeholder='Seleccione estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !zona.estado })}rows={3} cols={20} />
+                            <Dropdown id="estado" value={zona.estado} options={estados} placeholder='Seleccione estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !zona.estado })}rows={3} cols={20} />
                             {submitted && !zona.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
                 

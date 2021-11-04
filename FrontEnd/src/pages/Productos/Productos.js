@@ -17,6 +17,7 @@ import OpcionVarianteService from '../../service/ProductosService/OpcionVariante
 import ModificadorService from '../../service/ProductosService/ModificadorService'
 import OpcionModificadorService from '../../service/ProductosService/OpcionModificadorService'
 import ProductoModificadorService from '../../service/ProductosService/ProductoModificadorService';
+import {estados} from '../../service/Variables'
 
 
 
@@ -28,15 +29,10 @@ export default function Productos ()  {
         descripcion: '',
         precio: null,
         imagen:'',
-        estado:'Activo',
+        estado:estados[0],
         categoriaIdCategoria:null,
         varianteIdVariante:null
     };
-
-    let estadoProducto = [
-        'Activo',
-        'Inactivo'
-    ];
 
     const [productDialog, setProductDialog] = useState(false);
     const [dialogVisible, setDialogVisible] = useState(false);
@@ -124,14 +120,11 @@ export default function Productos ()  {
 
                     const _data = res.data.map(value => {
                         /* Aqui Escribir codigo de ProductoModificador*/
-                        
                             return {
                                 ...value,
                                 seleccionado:false,
     
                             }
-                        
-
                     });
                     setModificadores(_data)
 
@@ -237,7 +230,7 @@ export default function Productos ()  {
                         const index = findIndexById(producto.idProducto);
                         _productos[index] = _producto;
                         console.log(res.data)
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Actualizado', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Actualizado', life: 5000 });
 
                         let SwitchActivos = modificadores.filter(value => value.seleccionado === true);
                         if(SwitchActivos){
@@ -263,7 +256,7 @@ export default function Productos ()  {
 
                         _productos.push(res.data);
                         console.log(res.data)
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Creado', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Creado', life: 5000 });
 
                         let SwitchActivos = modificadores.filter(value => value.seleccionado === true);
                         if(SwitchActivos){
@@ -334,7 +327,7 @@ export default function Productos ()  {
                 setProductos(productos.filter(val => val.idProducto !== res.data))
                 setDeleteProductDialog(false);
                 setProducto(emptyProduct);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Eliminado', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Eliminado', life: 5000 });
 
             }else if(res.status >= 400 && res.status < 500){
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
@@ -692,7 +685,7 @@ export default function Productos ()  {
                         {/* ------------------------------------------------------------------------------------------------------------ */}
                         <div className="p-field" /* style={{height:'100px'}} */>
                             <label htmlFor="estado">Estado</label>
-                            <Dropdown id="estado" value={producto.estado} options={estadoProducto} placeholder='Seleccione Estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !producto.estado })}rows={3} cols={20} />
+                            <Dropdown id="estado" value={producto.estado} options={estados} placeholder='Seleccione Estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !producto.estado })}rows={3} cols={20} />
                             {submitted && !producto.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
 

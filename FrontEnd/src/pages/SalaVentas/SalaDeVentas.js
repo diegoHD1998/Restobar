@@ -1,7 +1,9 @@
 import React, {useState,useEffect, useRef} from 'react';
 import Mesa from '../../components/Mesa'
+import Mesa2 from '../../components/Mesa2';
 import Loading from '../../components/Loading'
 import MesaService from '../../service/MesasService/MesaService'
+import { Link, useHistory } from 'react-router-dom';
 import { Toast } from 'primereact/toast';
 
 const SalaDeVentas = () => {
@@ -10,6 +12,7 @@ const SalaDeVentas = () => {
     const [mesas, setMesas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error , setError] = useState(false)
+    const history = useHistory();
 
     useEffect(()=>{
         const mesaService = new MesaService();
@@ -62,11 +65,15 @@ const SalaDeVentas = () => {
         
     }else{
         return (
-            <div className='p-grid p-d-flex p-mx-auto'>
+            <div className='p-grid p-d-flex '>
                 <Toast ref={toast} />
+                
                 {mesas.map(mesa =>
-                    <div key={mesa.idMesa} className='p-col-4 p-lg-2 p-md-3 p-sm-4 p-d-flex p-jc-center'> 
-                        <Mesa nombre={mesa.nombre} disponibilidad={mesa.disponibilidad} />
+                
+                    <div key={mesa.idMesa} className='p-col-4 p-lg-2 p-md-3 p-sm-4 p-d-flex p-jc-center p-my-1' /* onClick={() => history.push('/home/experimento')} */ > 
+                        <Link to={`/home/Experimento`}>
+                            <Mesa2 nombre={mesa.nombre} disponibilidad={mesa.disponibilidad}/>
+                        </Link>
                     </div>
                 )}
                 

@@ -30,10 +30,10 @@ namespace SistemaRestobarSayka2.Controllers
         }
 
         // GET: api/ProductoPedidos/5
-        [HttpGet("{idPro}/{idPe}/{idPP}")]
-        public async Task<ActionResult<ProductoPedido>> GetProductoPedido(int idPro, int idPe, int idPP )
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProductoPedido>> GetProductoPedido(int id)
         {
-            var productoPedido = await _context.ProductoPedidos.FindAsync(idPro,idPe,idPP);
+            var productoPedido = await _context.ProductoPedidos.FindAsync(id);
 
             if (productoPedido == null)
             {
@@ -63,7 +63,7 @@ namespace SistemaRestobarSayka2.Controllers
             {
                 if (!ProductoPedidoExists(id))
                 {
-                    return NotFound();
+                    return NotFound("ProductoPedido No Encontrado");
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace SistemaRestobarSayka2.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(productoPedido);
         }
 
         // POST: api/ProductoPedidos
@@ -81,8 +81,8 @@ namespace SistemaRestobarSayka2.Controllers
         {
             try
             {
-             
-
+                productoPedido.Fecha = DateTime.Today;
+                productoPedido.Hora = DateTime.Now.TimeOfDay;
                 _context.ProductoPedidos.Add(productoPedido);
                 await _context.SaveChangesAsync();
             }
@@ -102,10 +102,10 @@ namespace SistemaRestobarSayka2.Controllers
         }
 
         // DELETE: api/ProductoPedidos/5
-        [HttpDelete("{idPro}/{idPe}/{idPP}")]
-        public async Task<IActionResult> DeleteProductoPedido(int idPro, int idPe, int idPP)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProductoPedido(int id)
         {
-            var productoPedido = await _context.ProductoPedidos.FindAsync(idPro, idPe, idPP);
+            var productoPedido = await _context.ProductoPedidos.FindAsync(id);
             if (productoPedido == null)
             {
                 return NotFound("ProductoPedido No Encontrado");
@@ -122,7 +122,7 @@ namespace SistemaRestobarSayka2.Controllers
             }
 
 
-            return Ok(idPP);
+            return Ok(id);
         }
 
         private bool ProductoPedidoExists(int id)

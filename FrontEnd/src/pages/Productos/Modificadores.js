@@ -10,6 +10,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
 import ModificadorService from '../../service/ProductosService/ModificadorService'
 import OpcionModificadorService from '../../service/ProductosService/OpcionModificadorService'
+import { numOrden } from '../../service/Variables';
 
 
 
@@ -28,8 +29,6 @@ export default function Modificadores ()  {
         orden: null,
         modificadorIdModificador: null
     }
-
-    const numerosOrden = [1,2,3,4,5,6]
 
     const [modificadores, setModificadores] = useState(null);
     const [modificador, setModificador] = useState(emptyProduct);
@@ -151,7 +150,7 @@ export default function Modificadores ()  {
 
                         const index = findIndexById(modificador.idModificador);
                         _modificadores[index] = _modificador;
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Modificador Actualizado', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Modificador Actualizado', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status<500){
@@ -172,7 +171,7 @@ export default function Modificadores ()  {
                     if(res.status >= 200 && res.status<300){
 
                         _modificadores.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Modificador Creado', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Modificador Creado', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status<500){
@@ -210,7 +209,7 @@ export default function Modificadores ()  {
                         _Opciones[index2] = _OpcionModificador
                         setOpciones(_Opciones)
 
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Modificador Actualizado', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Modificador Actualizado', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status<500){
@@ -228,7 +227,7 @@ export default function Modificadores ()  {
                 .then(res => {
                     if(res.status >= 200 && res.status < 300){
                         _OpcionModificadores.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Modificador Creado', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Modificador Creado', life: 5000 });
                         console.log(res.data)
                     }else if(res.status >= 400 && res.status < 500){
                         console.log(res)
@@ -274,7 +273,7 @@ export default function Modificadores ()  {
                 setModificadores(modificadores.filter(val => val.idModificador !== res.data))
                 setDeleteProductDialog(false);
                 setModificador(emptyProduct);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Modificador Eliminado', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Modificador Eliminado', life: 5000 });
 
             }else if(res.status >= 400 && res.status < 500){
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
@@ -295,7 +294,7 @@ export default function Modificadores ()  {
                 setOpciones(opciones.filter(val => val.idOpcionM !== res.data));
                 setDeleteOpcionDialog(false);
                 setOpcionModificador(emptyOpcionModificador);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Modificador Eliminado', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Opcion Modificador Eliminado', life: 5000 });
                 
             }else if(res.status >= 400 && res.status < 500){
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
@@ -519,7 +518,7 @@ export default function Modificadores ()  {
 
                         <div className="p-field" >
                             <label htmlFor="orden">Orden</label>
-                            <Dropdown id="orden" value={opcionModificador.orden} options={numerosOrden} placeholder='Seleccione Orden' onChange={(e) => onInputChanceOpcionModificador(e, 'orden')} />
+                            <Dropdown id="orden" value={opcionModificador.orden} options={numOrden} placeholder='Seleccione Orden' onChange={(e) => onInputChanceOpcionModificador(e, 'orden')} />
                         </div>
                         
                     </Dialog>

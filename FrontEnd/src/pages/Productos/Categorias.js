@@ -10,6 +10,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { ColorPicker } from 'primereact/colorpicker';
 import { Dropdown } from 'primereact/dropdown';
 import CategoriaService from '../../service/ProductosService/CategoriaService'
+import {estados,tiposCategoria} from '../../service/Variables'
 
 export default function Categorias ()  {
 
@@ -18,21 +19,10 @@ export default function Categorias ()  {
         nombre: '',
         descripcion: '',
         color:'',
-        estado:'Activo',
+        estado:estados[0],
         tipo:''
 
     };
-
-    let estadoCategoria = [
-        'Activo',
-        'Inactivo'
-    ];
-
-    let tipoCategoria = [
-        'Bebestible',
-        'Comestible',
-        'Otro'
-    ];
 
     const [categorias, setCategorias] = useState(null); 
     const [categoria, setCategoria] = useState(emptyProduct);
@@ -96,7 +86,7 @@ export default function Categorias ()  {
 
                         const index = findIndexById(categoria.idCategoria);
                         _categorias[index] = _categoria;
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Categoria Actualizada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Categoria Actualizada', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status < 500){
@@ -117,7 +107,7 @@ export default function Categorias ()  {
                     if(res.status >= 200 && res.status <300){
 
                         _categorias.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Categoria Creada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Categoria Creada', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status < 500){
@@ -155,7 +145,7 @@ export default function Categorias ()  {
                 setCategorias(categorias.filter(val => val.idCategoria !== res.data))
                 setDeleteProductDialog(false);
                 setCategoria(emptyProduct);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Categoria Eliminada', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Categoria Eliminada', life: 5000 });
             }else if(res.status >= 400 && res.status < 500){
                 console.log(res)
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
@@ -274,13 +264,13 @@ export default function Categorias ()  {
 
                         <div className="p-field">
                             <label htmlFor="estado">Estado</label>
-                            <Dropdown id="estado" value={categoria.estado} options={estadoCategoria} placeholder='Seleccione estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !categoria.estado })}rows={3} cols={20} />
+                            <Dropdown id="estado" value={categoria.estado} options={estados} placeholder='Seleccione estado' onChange={(e) => onInputChange(e, 'estado')} required className={classNames({ 'p-invalid': submitted && !categoria.estado })}rows={3} cols={20} />
                             {submitted && !categoria.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
 
                         <div className="p-field">
                             <label htmlFor="tipo">Tipo de Categoria</label>
-                            <Dropdown id="tipo" value={categoria.tipo} options={tipoCategoria} placeholder='Seleccione Tipo categoria' onChange={(e) => onInputChange(e, 'tipo')} required className={classNames({ 'p-invalid': submitted && !categoria.tipo })}rows={3} cols={20} />
+                            <Dropdown id="tipo" value={categoria.tipo} options={tiposCategoria} placeholder='Seleccione Tipo categoria' onChange={(e) => onInputChange(e, 'tipo')} required className={classNames({ 'p-invalid': submitted && !categoria.tipo })}rows={3} cols={20} />
                             {submitted && !categoria.tipo && <small className="p-invalid">Tipo de Categoria Requerido.</small>}
                         </div>
 

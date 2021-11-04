@@ -100,7 +100,7 @@ export default function Mesas ()  {
 
                         const index = findIndexById(mesa.idMesa);
                         _mesas[index] = _mesa;
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Mesa Actualizada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Mesa Actualizada', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status<500){
@@ -121,7 +121,7 @@ export default function Mesas ()  {
                     if(res.status >= 200 && res.status<300){
 
                         _mesas.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Mesa Creada', life: 3000 });
+                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Mesa Creada', life: 5000 });
                         console.log(res.data)
 
                     }else if(res.status >= 400 && res.status<500){
@@ -159,7 +159,7 @@ export default function Mesas ()  {
                 setMesas(mesas.filter(val => val.idMesa !== res.data))
                 setDeleteProductDialog(false);
                 setMesa(emptyProduct);
-                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Mesa Eliminada', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Mesa Eliminada', life: 5000 });
 
             }else if(res.status >= 400 && res.status < 500){
                 toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
@@ -268,7 +268,7 @@ export default function Mesas ()  {
                         <div className="p-field" style={{height:'200px'}}>
                             <label htmlFor="zonaIdZona">Zona</label>
                             <Dropdown id="zonaIdZona" optionLabel="nombre" optionValue="idZona" value={mesa.zonaIdZona} options={zonas} placeholder='Seleccione Zona' onChange={(e) => onInputChange(e, 'zonaIdZona')} required className={classNames({ 'p-invalid': submitted && !mesa.zonaIdZona })}rows={3} cols={20} />
-                            {submitted && !mesa.estado && <small className="p-invalid">Zona Requerida.</small>}
+                            {submitted && !mesa.zonaIdZona && <small className="p-invalid">Zona Requerida.</small>}
                             
                         </div>
                 

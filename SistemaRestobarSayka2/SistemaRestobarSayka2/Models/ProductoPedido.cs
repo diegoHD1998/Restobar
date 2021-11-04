@@ -9,13 +9,13 @@ namespace SistemaRestobarSayka2.Models
     {
 
         public int IdProductoPedido { get; set; }
-        public string Nombre { get; set; }
         public int Cantidad { get; set; }
         public int Precio { get; set; }
         public string NombreReferencia { get; set; }
         public int? ModificadorPrecio { get; set; }
         public int Total { get; set; }
-        public DateTime? FechaHora { get; set; }
+        public DateTime? Fecha { get; set; }
+        public TimeSpan? Hora { get; set; }
         public int ProductoIdProducto { get; set; }
         public int PedidoIdPedido { get; set; }
 
