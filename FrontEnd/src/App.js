@@ -226,7 +226,7 @@ const App = () => {
                 <Route path="/home/lista-mesas" component={Mesas} />
                 <Route path="/home/zonas" component={Zonas} />
 
-                <Route path="/home/experimento" component={ExperimentoPedidos}/>
+                <Route path="/home/experimento/:id/:name/:disp/:zona" component={ExperimentoPedidos}/>
                 
             </div>
 

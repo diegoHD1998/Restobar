@@ -29,6 +29,14 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(productosPedidos);
         }
 
+        // GET: api/ProductoPedidos/DePedido/id
+        [HttpGet("DePedido/{id}")]
+        public async Task<ActionResult<IEnumerable<ProductoPedido>>> GetProductoPedidosDePedido(int id)
+        {
+            var productosPedidos = await _context.ProductoPedidos.Where(e => e.PedidoIdPedido == id).ToListAsync();
+            return Ok(productosPedidos);
+        }
+
         // GET: api/ProductoPedidos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductoPedido>> GetProductoPedido(int id)

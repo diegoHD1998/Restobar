@@ -28,18 +28,18 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(pedidos);
         }
 
-        // GET: api/Pedidos/5
+        // GET: api/Pedidos/hgc
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pedido>> GetPedido(int id)
+        public async Task<ActionResult<Pedido>> GetPedidoActivo(int id) // aqui llega el id de la mesa
         {
-            var pedido = await _context.Pedidos.FindAsync(id);
+            var pedido = await _context.Pedidos.Where(e => e.Estado == true && e.MesaIdMesa == id).SingleAsync();
 
             if (pedido == null)
             {
                 return NotFound();
             }
 
-            return pedido;
+            return Ok(pedido);
         }
 
         // PUT: api/Pedidos/5
@@ -78,10 +78,22 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpPost]
         public async Task<ActionResult<Pedido>> PostPedido(Pedido pedido)
         {
-            _context.Pedidos.Add(pedido);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPedido", new { id = pedido.IdPedido }, pedido);
+            try
+            {
+                pedido.Fecha = DateTime.Today;
+                pedido.Estado = true;
+
+                _context.Pedidos.Add(pedido);
+                await _context.SaveChangesAsync();
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
+            return Ok(pedido);
         }
 
         // DELETE: api/Pedidos/5

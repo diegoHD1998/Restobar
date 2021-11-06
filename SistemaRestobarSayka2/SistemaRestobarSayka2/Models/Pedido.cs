@@ -14,7 +14,7 @@ namespace SistemaRestobarSayka2.Models
 
         public int IdPedido { get; set; }
         public DateTime Fecha { get; set; }
-        public string Estado { get; set; }
+        public bool Estado { get; set; }
         public int UsuarioIdUsuario { get; set; }
         public int MesaIdMesa { get; set; }
         public int? VentaIdVenta { get; set; }

@@ -16,11 +16,35 @@ import OpcionVarienteService from '../service/ProductosService/OpcionVarianteSer
 import OpcionModificadorService from '../service/ProductosService/OpcionModificadorService';
 import ProductoModificadorService from '../service/ProductosService/ProductoModificadorService';
 import ProductoPedidoService from '../service/PedidoService/ProductoPedidoService';
+import PedidoService from '../service/PedidoService/PedidoService';
+import MesaService from '../service/MesasService/MesaService';
+import {useParams} from 'react-router-dom'
 
 
 const ExperimentoPedidos = () => {
 
-    let empty = {
+    /* console.log(useParams()) */
+
+    const {id} = useParams()
+    const {name} = useParams()
+    const {disp} = useParams()
+    const {zona} = useParams()
+
+    let mesa = {
+        idMesa: JSON.parse(id),
+        nombre: name ,
+        disponibilidad: JSON.parse(disp) ,
+        zonaIdZona: JSON.parse(zona)
+    }
+    
+    let emptyPedido = {
+        idPedido: null,
+        usuarioIdUsuario: 3,
+        mesaIdMesa: null,
+        ventaIdVenta: null
+    }
+
+    let emptyProductoPedido = {
         idProductoPedido:null,
         cantidad: 1,
         precio: 0,
@@ -44,14 +68,15 @@ const ExperimentoPedidos = () => {
         varianteIdVariante:null
     }
 
-    const [productoPedido, setProductoPedido] = useState(empty)
+    const [pedido, setPedido] = useState(null)
+    const [productoPedido, setProductoPedido] = useState(emptyProductoPedido)
     const [producto, setProducto] = useState(emptyProducto)
     const [opcionVariante, setOpcionVariante] = useState(null)
     const [opcionModificador, setOpcionModificador] = useState(null)
 
     const [productos, setProductos] = useState(null)
     const [categorias, setCategorias] = useState(null)
-    const [productoPedidos, setProductoPedidos] = useState(null)
+    const [productoPedidos, setProductoPedidos] = useState([])
     const [categoriaSelected, setCategoriaSelected] = useState(null)
 
     const [opcionVariantes, setOpcionVariantes] = useState(null)
@@ -65,9 +90,6 @@ const ExperimentoPedidos = () => {
     const toast = useRef(null);
     const dt = useRef(null);
     
-    const pedido = {idPedido:1, fecha:'04-10-2021', estado: 'Activo', usuarioIdUsuario:1, mesaIdMesa:2}
-
-    
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogVisible2, setDialogVisible2] = useState(false);
     const [dialogVisible3, setDialogVisible3] = useState(false);
@@ -75,21 +97,37 @@ const ExperimentoPedidos = () => {
     const [submitted, setSubmitted] = useState(false);
 
     const productoPedidoService = new ProductoPedidoService()
+    const pedidoService = new PedidoService()
+    const mesaService = new MesaService()
 
     useEffect(() => {
+
+        const pedidoService = new PedidoService()
         const productoPedidoService = new ProductoPedidoService()
-        productoPedidoService.readAll().then(res => {
+
+        pedidoService.readOne(mesa.idMesa).then(res => {
             if(res){
                 if(res.status >= 200 && res.status < 300){
-                    setProductoPedidos(res.data)
+                    setPedido(res.data)//------------------------------------------------------------------------
+
+                    productoPedidoService.readPPDPedido(res.data.idPedido).then(rest => {
+                        if(rest){
+                            if(rest.status >= 200 && rest.status < 300){
+                                setProductoPedidos(rest.data)//---------------------------------------------------
+
+                            }else{
+                                console.log('Error al cargar Datos de ProductoPedido')
+                            }
+                        }else{
+                            console.log('Error de conexion con Backend, Backend esta abajo')
+                        }
+                    });
                 }else{
-                    console.log('Error al cargar Datos de ProductoPedido')
+                    console.log('Esta mesa no tiene un pedido vigente')
                 }
-            }else{
-                console.log('Error de conexion con Backend, Backend esta abajo')
             }
-        })
-        
+        });
+
         const categoriaService = new CategoriaService();
         categoriaService.readCategoriasActivas().then(res => {
             if(res){
@@ -156,9 +194,14 @@ const ExperimentoPedidos = () => {
 
         
     }, [])
+
+    if(productoPedidos.length < 1){
+        mesa.disponibilidad = false
+        mesaService.update(mesa)
+    }
     
-    const buscarProductoModificadores = (id) => {
-        const _productoModificadores = productoModificadores.filter(value => value.productoIdProducto === id);
+    const buscarProductoModificadores = (idM) => {
+        const _productoModificadores = productoModificadores.filter(value => value.productoIdProducto === idM);
         
         if(_productoModificadores.length !== 0 ){
             return(_productoModificadores)
@@ -182,9 +225,8 @@ const ExperimentoPedidos = () => {
 
             let _opcionesV = opcionVariantes.filter(value => value.varianteIdVariante === _producto.varianteIdVariante)
             let _ProductoPedido ={
-                ...empty,
+                ...emptyProductoPedido,
                 productoIdProducto: _producto.idProducto,
-                pedidoIdPedido:1 // aqui cambiar el Id de pedido con el de la mesa
             }
             setOpcionesVariantesProducto(_opcionesV)
             setProductoPedido(_ProductoPedido);
@@ -203,9 +245,8 @@ const ExperimentoPedidos = () => {
             });
 
             let _ProductoPedido ={
-                ...empty,
+                ...emptyProductoPedido,
                 productoIdProducto: _producto.idProducto,
-                pedidoIdPedido:1, // aqui cambiar el Id de pedido con el de la mesa
                 precio: _producto.precio
             }
 
@@ -215,9 +256,8 @@ const ExperimentoPedidos = () => {
         }else{
 
             let _ProductoPedido ={
-                ...empty,
+                ...emptyProductoPedido,
                 productoIdProducto: _producto.idProducto,
-                pedidoIdPedido:1, // aqui cambiar el Id de pedido con el de la mesa
                 precio: _producto.precio
             }
             setProductoPedido(_ProductoPedido)
@@ -231,7 +271,7 @@ const ExperimentoPedidos = () => {
         setSubmitted(false);
         setDialogVisible(false);
         setProducto(emptyProducto)
-        setProductoPedido(empty)
+        setProductoPedido(emptyProductoPedido)
         setOpcionesVariantesProducto(null)
         setOpcionVariante(null)
         setSelected(null)
@@ -241,7 +281,7 @@ const ExperimentoPedidos = () => {
         setSubmitted(false);
         setDialogVisible2(false)
         setProducto(emptyProducto)
-        setProductoPedido(empty)
+        setProductoPedido(emptyProductoPedido)
         setOpcionModificador(null)
         setSelected(null)
     }
@@ -250,7 +290,7 @@ const ExperimentoPedidos = () => {
         setSubmitted(false);
         setDialogVisible3(false)
         setProducto(emptyProducto)
-        setProductoPedido(empty)
+        setProductoPedido(emptyProductoPedido)
         setSelected(null)
     }
 
@@ -259,7 +299,36 @@ const ExperimentoPedidos = () => {
 
         if(productoPedido.precio && productoPedido.cantidad){
             let _productoPedidos = [...productoPedidos]
+            let _pedido1
 
+            if(pedido === null){
+                let _pedido ={
+                    ...emptyPedido,
+                    mesaIdMesa: mesa.idMesa
+                }
+                delete _pedido.idPedido
+                await pedidoService.create(_pedido).then(res => {
+                    if(res){
+                        if(res.status >= 200 && res.status<300){
+                            setPedido(res.data)
+                            _pedido1 = res.data
+                            console.log(res.data)
+                        }else if(res.status >= 400 && res.status<500){
+                            console.log(res)
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+                        }else{
+                            console.log(res)
+                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create de Pedido, Status no controlado`, life: 5000 });
+                        }
+                    }
+                });
+
+                mesa.disponibilidad= true
+                await mesaService.update(mesa)
+
+
+                
+            }
             if(opcionVariante){ //Desarrollo guardar Variante
                 console.log('Estas aqui 1')
                 
@@ -267,6 +336,7 @@ const ExperimentoPedidos = () => {
                     ...productoPedido,
                     nombreReferencia: opcionVariante.nombre,
                     total: productoPedido.precio * productoPedido.cantidad,
+                    pedidoIdPedido: pedido ? pedido.idPedido : _pedido1.idPedido
                 }
 
                 delete _ProductoPedido.idProductoPedido
@@ -294,6 +364,7 @@ const ExperimentoPedidos = () => {
                     ...productoPedido,
                     nombreReferencia: opcionModificador.nombre,
                     total: ((productoPedido.precio + productoPedido.modificadorPrecio) * productoPedido.cantidad),
+                    pedidoIdPedido: pedido ? pedido.idPedido : _pedido1.idPedido                
                 }
 
                 delete _ProductoPedido.idProductoPedido
@@ -319,6 +390,7 @@ const ExperimentoPedidos = () => {
                 let _ProductoPedido ={
                     ...productoPedido,
                     total: productoPedido.precio  * productoPedido.cantidad,
+                    pedidoIdPedido: pedido ? pedido.idPedido : _pedido1.idPedido                
                 }
 
                 delete _ProductoPedido.idProductoPedido
@@ -349,7 +421,7 @@ const ExperimentoPedidos = () => {
             setDialogVisible2(false)
             setDialogVisible3(false)
             setProducto(emptyProducto)
-            setProductoPedido(empty)
+            setProductoPedido(emptyProductoPedido)
             setOpcionesVariantesProducto(null)
             setOpcionVariante(null)
             setOpcionModificador(null)
@@ -406,7 +478,7 @@ const ExperimentoPedidos = () => {
     }
 
     const TotalPagoBodyTemplate = () => {
-        const _productoPedidoActual = productoPedidos?.filter(value => value.pedidoIdPedido === pedido.idPedido)
+        const _productoPedidoActual = productoPedidos?.filter(value => value.pedidoIdPedido === pedido?.idPedido)
         let total = _productoPedidoActual?.reduce((acc, el) => acc + el.total, 0)
         return formatCurrency(total);
     }
@@ -534,7 +606,7 @@ const ExperimentoPedidos = () => {
         <div className='p-grid p-d-flex' >
                 <Toast ref={toast} />
             <div className='p-col-12 p-md-6 '>
-                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={'nombreMesa'} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
+                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={name} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
                     <Column field="productoIdProducto" body={productoBodyTemplate} />
                     <Column field="nombreReferencia" />
                     <Column field="precio" body={PrecioBodyTemplate} />

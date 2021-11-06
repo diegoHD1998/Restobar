@@ -184,7 +184,7 @@ namespace SistemaRestobarSayka2.Data
 
                 entity.Property(e => e.UsuarioIdUsuario).HasColumnName("UsuarioId_usuario");
 
-                entity.Property(e => e.VentaIdVenta).HasColumnName("Venta_Id_venta");
+                entity.Property(e => e.VentaIdVenta).HasColumnName("PedidoVenta_Pedido_Id_venta");
 
                 entity.HasOne(d => d.MesaIdMesaNavigation)
                     .WithMany(p => p.Pedidos)

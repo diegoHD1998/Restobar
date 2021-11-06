@@ -8,6 +8,12 @@ export default class ProductoPedidoService {
         return await axios.get(baseUrl).then(res => res)
         .catch(err => err.response)
     }
+
+    async readPPDPedido(id){
+        return await axios.get(`${baseUrl}/DePedido/${id}`).then(res => res)
+        .catch(err => err.response)
+    }
+
     async create(productoPedido){
         return await axios.post(baseUrl,productoPedido).then(res => res)
         .catch(err => err.response)
