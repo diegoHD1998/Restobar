@@ -18,7 +18,7 @@ export default class ProductoPedidoService {
         return await axios.post(baseUrl,productoPedido).then(res => res)
         .catch(err => err.response)
     }
-    async delete(id){// falta logica
+    async delete(id){
         return await axios.delete(`${baseUrl}/${id}`).then(res => res)
         .catch(err => err.response)
     }

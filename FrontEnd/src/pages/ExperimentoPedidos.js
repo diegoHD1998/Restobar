@@ -74,8 +74,8 @@ const ExperimentoPedidos = () => {
     const [opcionVariante, setOpcionVariante] = useState(null)
     const [opcionModificador, setOpcionModificador] = useState(null)
 
-    const [productos, setProductos] = useState(null)
-    const [categorias, setCategorias] = useState(null)
+    const [productos, setProductos] = useState([])
+    const [categorias, setCategorias] = useState([])
     const [productoPedidos, setProductoPedidos] = useState([])
     const [categoriaSelected, setCategoriaSelected] = useState(null)
 
@@ -93,6 +93,8 @@ const ExperimentoPedidos = () => {
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogVisible2, setDialogVisible2] = useState(false);
     const [dialogVisible3, setDialogVisible3] = useState(false);
+
+    const [deleteProductDialog, setDeleteProductDialog] = useState(false);
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -195,8 +197,11 @@ const ExperimentoPedidos = () => {
         
     }, [])
 
-    if(productoPedidos.length < 1){
+    if(productoPedidos.length === 0 ){
         mesa.disponibilidad = false
+        mesaService.update(mesa)
+    }else{
+        mesa.disponibilidad = true
         mesaService.update(mesa)
     }
     
@@ -292,6 +297,11 @@ const ExperimentoPedidos = () => {
         setProducto(emptyProducto)
         setProductoPedido(emptyProductoPedido)
         setSelected(null)
+    }
+
+    const hideDeleteProductDialog = () => {
+        setDeleteProductDialog(false);
+        setProductoPedido(emptyProductoPedido)
     }
 
     const saveProductoPedido = async() => {
@@ -431,7 +441,32 @@ const ExperimentoPedidos = () => {
 
 
     }
+
+    const confirmDeleteProduct = (product) => {/* <----------------- */
+        setProductoPedido(product);
+        setDeleteProductDialog(true);
+    }
     
+
+    const deleteProduct = async() => { 
+        await productoPedidoService.delete(productoPedido.idProductoPedido)
+        .then(res => {
+
+            if(res.status >= 200 && res.status < 300){
+
+                setProductoPedidos(productoPedidos.filter(val => val.idProductoPedido !== res.data))
+                setDeleteProductDialog(false);
+                setProductoPedido(emptyProductoPedido)
+                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Producto Eliminado', life: 5000 });
+
+            }else if(res.status >= 400 && res.status < 500){
+                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+            }else{
+                console.log(res)
+                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Delete ProductoPedido, Status No controlado`, life: 5000 });
+            }
+        });
+    }
     const onCategoriaChange = (e) => {
         dt.current.filter(e.value, 'categoriaIdCategoria', 'equals');
         setCategoriaSelected(e.value);
@@ -523,10 +558,10 @@ const ExperimentoPedidos = () => {
         }
     }
 
-    const actionBodyTemplate = () => {
+    const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-button-outlined " />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-button-outlined " onClick={() => confirmDeleteProduct(rowData)}/>
             </div>
         );
     }
@@ -549,6 +584,13 @@ const ExperimentoPedidos = () => {
         <>
             <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog3} />
             <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={saveProductoPedido} />
+        </>
+    );
+
+    const deleteProductDialogFooter = (
+        <>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} />
+            <Button label="Si" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} />
         </>
     );
     
@@ -695,7 +737,15 @@ const ExperimentoPedidos = () => {
                 </div>
 
             </Dialog>
+
             
+            <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
+                        <div className="confirmation-content">
+                            <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
+                            {productoPedido && <span>Estas seguro que quieres eliminar una <b>{productoBodyTemplate(productoPedido)} x{productoPedido.cantidad}</b>?</span>}
+                        </div>
+            </Dialog>
+
         </div>
     );
 }
