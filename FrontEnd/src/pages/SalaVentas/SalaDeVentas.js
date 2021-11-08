@@ -1,9 +1,8 @@
 import React, {useState,useEffect, useRef} from 'react';
-import Mesa from '../../components/Mesa'
 import Mesa2 from '../../components/Mesa2';
 import Loading from '../../components/Loading'
 import MesaService from '../../service/MesasService/MesaService'
-import { Link, useHistory } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { Toast } from 'primereact/toast';
 
 const SalaDeVentas = () => {
@@ -12,13 +11,11 @@ const SalaDeVentas = () => {
     const [mesas, setMesas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error , setError] = useState(false)
-    const history = useHistory();
 
     useEffect(()=>{
         const mesaService = new MesaService();
         mesaService.readAll().then((res) => {
-            console.log(res)
-
+            
             if(res){
                 if(res.status >= 200 && res.status<300){
                     setMesas(res.data);
@@ -35,8 +32,6 @@ const SalaDeVentas = () => {
 
             }
 
-            
-            
         })
 
     },[]);

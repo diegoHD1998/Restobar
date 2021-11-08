@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -10,20 +9,18 @@ import { Dialog } from 'primereact/dialog';
 import { Row } from 'primereact/row';
 import { Toast } from 'primereact/toast';
 
-import ProductoService from '../service/ProductosService/ProductoService';
-import CategoriaService from '../service/ProductosService/CategoriaService';
-import OpcionVarienteService from '../service/ProductosService/OpcionVarianteService';
-import OpcionModificadorService from '../service/ProductosService/OpcionModificadorService';
-import ProductoModificadorService from '../service/ProductosService/ProductoModificadorService';
-import ProductoPedidoService from '../service/PedidoService/ProductoPedidoService';
-import PedidoService from '../service/PedidoService/PedidoService';
-import MesaService from '../service/MesasService/MesaService';
-import {useParams} from 'react-router-dom'
+import ProductoService from '../../service/ProductosService/ProductoService';
+import CategoriaService from '../../service/ProductosService/CategoriaService';
+import OpcionVarienteService from '../../service/ProductosService/OpcionVarianteService';
+import OpcionModificadorService from '../../service/ProductosService/OpcionModificadorService';
+import ProductoModificadorService from '../../service/ProductosService/ProductoModificadorService';
+import ProductoPedidoService from '../../service/PedidoService/ProductoPedidoService';
+import PedidoService from '../../service/PedidoService/PedidoService';
+import MesaService from '../../service/MesasService/MesaService';
+import {useParams,useHistory } from 'react-router-dom'
 
 
-const ExperimentoPedidos = () => {
-
-    /* console.log(useParams()) */
+const PedidosMesa = () => {
 
     const {id} = useParams()
     const {name} = useParams()
@@ -67,6 +64,7 @@ const ExperimentoPedidos = () => {
         categoriaIdCategoria:null,
         varianteIdVariante:null
     }
+    const history = useHistory();
 
     const [pedido, setPedido] = useState(null)
     const [productoPedido, setProductoPedido] = useState(emptyProductoPedido)
@@ -76,7 +74,7 @@ const ExperimentoPedidos = () => {
 
     const [productos, setProductos] = useState([])
     const [categorias, setCategorias] = useState([])
-    const [productoPedidos, setProductoPedidos] = useState([])
+    const [productoPedidos, setProductoPedidos] = useState([]) // ProductoPedidos de la mesa actual
     const [categoriaSelected, setCategoriaSelected] = useState(null)
 
     const [opcionVariantes, setOpcionVariantes] = useState(null)
@@ -95,6 +93,7 @@ const ExperimentoPedidos = () => {
     const [dialogVisible3, setDialogVisible3] = useState(false);
 
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
+    const [Total, setTotal] = useState(0)
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -103,32 +102,6 @@ const ExperimentoPedidos = () => {
     const mesaService = new MesaService()
 
     useEffect(() => {
-
-        const pedidoService = new PedidoService()
-        const productoPedidoService = new ProductoPedidoService()
-
-        pedidoService.readOne(mesa.idMesa).then(res => {
-            if(res){
-                if(res.status >= 200 && res.status < 300){
-                    setPedido(res.data)//------------------------------------------------------------------------
-
-                    productoPedidoService.readPPDPedido(res.data.idPedido).then(rest => {
-                        if(rest){
-                            if(rest.status >= 200 && rest.status < 300){
-                                setProductoPedidos(rest.data)//---------------------------------------------------
-
-                            }else{
-                                console.log('Error al cargar Datos de ProductoPedido')
-                            }
-                        }else{
-                            console.log('Error de conexion con Backend, Backend esta abajo')
-                        }
-                    });
-                }else{
-                    console.log('Esta mesa no tiene un pedido vigente')
-                }
-            }
-        });
 
         const categoriaService = new CategoriaService();
         categoriaService.readCategoriasActivas().then(res => {
@@ -154,6 +127,32 @@ const ExperimentoPedidos = () => {
                 console.log('Error de conexion con Backend, Backend esta abajo')
             }
         });
+        const pedidoService = new PedidoService()
+        const productoPedidoService = new ProductoPedidoService()
+
+        pedidoService.readOne(mesa.idMesa).then(res => {
+            if(res){
+                if(res.status >= 200 && res.status < 300){
+                    setPedido(res.data)// Busca si la mesa tiene un pedido
+
+                    productoPedidoService.readPPDPedido(res.data.idPedido).then(rest => {
+                        if(rest){
+                            if(rest.status >= 200 && rest.status < 300){
+                                setProductoPedidos(rest.data)// Trae los Productos de ese pedido de la mesa
+
+                            }else{
+                                console.log('Error al cargar Datos de ProductoPedido')
+                            }
+                        }else{
+                            console.log('Error de conexion con Backend, Backend esta abajo')
+                        }
+                    });
+                }else{
+                    console.log('Esta mesa no tiene un pedido vigente')
+                }
+            }
+        });
+
         
         const opcionVarianteService = new OpcionVarienteService();
         opcionVarianteService.readAll().then(res => {
@@ -195,7 +194,7 @@ const ExperimentoPedidos = () => {
         });
 
         
-    }, [])
+    }, [mesa.idMesa])
 
     if(productoPedidos.length === 0 ){
         mesa.disponibilidad = false
@@ -334,10 +333,7 @@ const ExperimentoPedidos = () => {
                 });
 
                 mesa.disponibilidad= true
-                await mesaService.update(mesa)
-
-
-                
+                await mesaService.update(mesa) 
             }
             if(opcionVariante){ //Desarrollo guardar Variante
                 console.log('Estas aqui 1')
@@ -496,6 +492,13 @@ const ExperimentoPedidos = () => {
         setOpcionModificador(opcionM)
     }
 
+    const HoraBodyTemplate = (rowData) => {
+        let _hora = rowData.hora.hours
+        let _minuto = rowData.hora.minutes
+        let _tiempo = `${_hora}:${_minuto}`
+        return <span className={`product-badge-1 status-activo`}>{_tiempo}</span>
+    }
+
     const PrecioBodyTemplate = (rowData) => {
         return rowData.precio?.toLocaleString('es-CL', {style: 'currency', currency: 'CLP'});
     }
@@ -515,7 +518,14 @@ const ExperimentoPedidos = () => {
     const TotalPagoBodyTemplate = () => {
         const _productoPedidoActual = productoPedidos?.filter(value => value.pedidoIdPedido === pedido?.idPedido)
         let total = _productoPedidoActual?.reduce((acc, el) => acc + el.total, 0)
+        setTotal(total)
         return formatCurrency(total);
+    }
+
+    const PropinaTemplate = () => {
+        let _propina = Total * 0.1
+        return `Propina ${formatCurrency(_propina)}`
+        
     }
 
     const productoBodyTemplate = (rowData)=>{
@@ -546,11 +556,11 @@ const ExperimentoPedidos = () => {
                     <div className="ProductoItem" >
                         <img src={`/assets/demo/images/product/black-watch.jpg`} alt={rowData.nombre} />
                         <div className="detalle-producto">
-                            <div className="nombreProducto">{rowData.nombre}</div>
-                            <i style={{color:`#${_categoria.color}`}} className="pi pi-tag categoriaProductoIcon"></i><span className="categoriaProducto">{_categoria.nombre}</span>
+                            <div className="nombreProducto">{rowData?.nombre}</div>
+                            <i style={{color:`#${_categoria?.color}`}} className="pi pi-tag categoriaProductoIcon"></i><span className="categoriaProducto">{_categoria?.nombre}</span>
                         </div>
                         <div className="accion-producto">
-                            <span className="precio-producto">{rowData.precio ? formatCurrency(rowData.precio) : <span className='variante-producto' >{`${cont} variantes`}</span>}</span>
+                            <span className="precio-producto">{rowData?.precio ? formatCurrency(rowData?.precio) : <span className='variante-producto' >{`${cont} variantes`}</span>}</span>
                         </div>
                     </div>
                 </>
@@ -565,6 +575,15 @@ const ExperimentoPedidos = () => {
             </div>
         );
     }
+
+    const header4 = (
+        
+        <div className='p-d-flex p-ai-center'>
+            <Button icon="pi pi-arrow-left" className="p-button-rounded p-mr-3" onClick={()=>history.push("/home")}/>
+            <span className='' >{name.toUpperCase()}</span>
+        </div>
+        
+    );
 
     const dialogFooter = (
         <>
@@ -632,15 +651,17 @@ const ExperimentoPedidos = () => {
                             <Column header="Cantidad" />
                             <Column header="Total" />
                             <Column/>
+                            <Column/>
                         </Row>
                     </ColumnGroup>;
 
     let footerGroup = <ColumnGroup>
                         <Row>
-                            <Column footer="Total a Pagar:" colSpan={4} footerStyle={{textAlign:'right'}}/>
-                            <Column footer={TotalPagoBodyTemplate}/>
-                            <Column/>
+                            <Column footer="Total a Pagar:" colSpan={4} footerStyle={{textAlign:'right', color: 'black'}}/>
+                            <Column footer={TotalPagoBodyTemplate} footerStyle={{color:'black'}}/>
+                            <Column footer={PropinaTemplate} colSpan={2} style={{color:'gray'}} />
                         </Row>
+                        
                         </ColumnGroup>;
 
     return (
@@ -648,12 +669,13 @@ const ExperimentoPedidos = () => {
         <div className='p-grid p-d-flex' >
                 <Toast ref={toast} />
             <div className='p-col-12 p-md-6 '>
-                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={name} headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
+                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={header4} scrollable scrollHeight='290px' headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
                     <Column field="productoIdProducto" body={productoBodyTemplate} />
                     <Column field="nombreReferencia" />
                     <Column field="precio" body={PrecioBodyTemplate} />
                     <Column field="cantidad" style={{padding:'0px 0px 0px 40px'}} />
                     <Column field="total" body={TotalBodyTemplate}/>
+                    <Column body={HoraBodyTemplate} />
                     <Column body={actionBodyTemplate}/>
                 </DataTable>
             </div>
@@ -742,7 +764,7 @@ const ExperimentoPedidos = () => {
             <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                         <div className="confirmation-content">
                             <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
-                            {productoPedido && <span>Estas seguro que quieres eliminar una <b>{productoBodyTemplate(productoPedido)} x{productoPedido.cantidad}</b>?</span>}
+                            {productoPedido && <span>Estas seguro que quieres eliminar una <b>{productoBodyTemplate(productoPedido)} {productoPedido.nombreReferencia} x{productoPedido.cantidad}</b>?</span>}
                         </div>
             </Dialog>
 
@@ -750,4 +772,4 @@ const ExperimentoPedidos = () => {
     );
 }
 
-export default ExperimentoPedidos
+export default PedidosMesa

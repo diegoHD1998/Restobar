@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { Route, useHistory } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import { AppTopbar } from './AppTopbar';
-import { AppFooter } from './AppFooter';
+/* import { AppFooter } from './AppFooter';*/
 import { AppMenu } from './AppMenu';
 import { AppProfile } from './AppProfile';
 import { AppConfig } from './AppConfig';
@@ -22,7 +22,7 @@ import Productos from './pages/Productos/Productos';
 import Variantes from './pages/Productos/Variantes';
 
 import Roles from './pages/Usuarios/Roles'
-import ExperimentoPedidos from './pages/ExperimentoPedidos'
+import PedidosMesa from './pages/SalaVentas/PedidosMesa'
 
 import PrimeReact from 'primereact/api';
 import Admins from './pages/Usuarios/Admins';
@@ -226,7 +226,7 @@ const App = () => {
                 <Route path="/home/lista-mesas" component={Mesas} />
                 <Route path="/home/zonas" component={Zonas} />
 
-                <Route path="/home/experimento/:id/:name/:disp/:zona" component={ExperimentoPedidos}/>
+                <Route path="/home/experimento/:id/:name/:disp/:zona" component={PedidosMesa}/>
                 
             </div>
 

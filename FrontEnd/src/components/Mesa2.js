@@ -1,6 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import ExperimentoPedidos from '../pages/ExperimentoPedidos';
 
 /* El div que tenga las mesas debe tener la propiedad p-d-flex */
 const Mesa2 = ({nombre, disponibilidad}) => {
