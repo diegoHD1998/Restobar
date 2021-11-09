@@ -8,7 +8,7 @@ import { HashRouter } from 'react-router-dom'
 import ScrollToTop from './ScrollToTop';
 
 ReactDOM.render(
-    <HashRouter>
+    <HashRouter hashType='noslash'>
         <ScrollToTop>
             <Main></Main>
         </ScrollToTop>

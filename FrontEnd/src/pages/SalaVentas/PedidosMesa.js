@@ -8,6 +8,7 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Row } from 'primereact/row';
 import { Toast } from 'primereact/toast';
+import classNames from 'classnames';
 
 import ProductoService from '../../service/ProductosService/ProductoService';
 import CategoriaService from '../../service/ProductosService/CategoriaService';
@@ -94,6 +95,7 @@ const PedidosMesa = () => {
 
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [Total, setTotal] = useState(0)
+    const [Propina, setPropina] = useState(0)
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -286,6 +288,7 @@ const PedidosMesa = () => {
         setDialogVisible2(false)
         setProducto(emptyProducto)
         setProductoPedido(emptyProductoPedido)
+        setOpcionesModificadoresProducto(null)
         setOpcionModificador(null)
         setSelected(null)
     }
@@ -305,7 +308,7 @@ const PedidosMesa = () => {
 
     const saveProductoPedido = async() => {
         setSubmitted(true);
-
+        
         if(productoPedido.precio && productoPedido.cantidad){
             let _productoPedidos = [...productoPedidos]
             let _pedido1
@@ -351,7 +354,7 @@ const PedidosMesa = () => {
                     if(res){
                         if(res.status >= 200 && res.status<300){
 
-                            _productoPedidos.push(res.data)
+                            _productoPedidos.splice(0,0,res.data)
                             console.log(res.data)
 
                         }else if(res.status >= 400 && res.status<500){
@@ -364,33 +367,40 @@ const PedidosMesa = () => {
                     }
                 })
 
-            }else if(opcionModificador){ //Desarrollo guardar modificador
-                console.log('Estas aqui 2')
-                let _ProductoPedido ={
-                    ...productoPedido,
-                    nombreReferencia: opcionModificador.nombre,
-                    total: ((productoPedido.precio + productoPedido.modificadorPrecio) * productoPedido.cantidad),
-                    pedidoIdPedido: pedido ? pedido.idPedido : _pedido1.idPedido                
+            }else if(opcionesModificadoresProducto){ //Desarrollo guardar modificador
+                if(opcionModificador){
+
+                    console.log('Estas aqui 2')
+                    let _ProductoPedido ={
+                        ...productoPedido,
+                        nombreReferencia: opcionModificador.nombre,
+                        total: ((productoPedido.precio + productoPedido.modificadorPrecio) * productoPedido.cantidad),
+                        pedidoIdPedido: pedido ? pedido.idPedido : _pedido1.idPedido                
+                    }
+    
+                    delete _ProductoPedido.idProductoPedido
+                    //console.log(_ProductoPedido)
+                    await productoPedidoService.create(_ProductoPedido).then(res => {
+                        if(res){
+                            if(res.status >= 200 && res.status<300){
+    
+                                _productoPedidos.splice(0,0,res.data)
+                                console.log(res.data)
+    
+                            }else if(res.status >= 400 && res.status<500){
+                                console.log(res)
+                                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+                            }else{
+                                console.log(res)
+                                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create de ProductoPedido, Status no controlado`, life: 5000 });
+                            }
+                        }
+                    })
+                }else{
+                    console.log('message')
+                    return
                 }
 
-                delete _ProductoPedido.idProductoPedido
-                //console.log(_ProductoPedido)
-                await productoPedidoService.create(_ProductoPedido).then(res => {
-                    if(res){
-                        if(res.status >= 200 && res.status<300){
-
-                            _productoPedidos.push(res.data)
-                            console.log(res.data)
-
-                        }else if(res.status >= 400 && res.status<500){
-                            console.log(res)
-                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
-                        }else{
-                            console.log(res)
-                            toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create de ProductoPedido, Status no controlado`, life: 5000 });
-                        }
-                    }
-                })
             }else{
                 console.log('Estas aqui 3')
                 let _ProductoPedido ={
@@ -405,7 +415,7 @@ const PedidosMesa = () => {
                     if(res){
                         if(res.status >= 200 && res.status<300){
 
-                            _productoPedidos.push(res.data)
+                            _productoPedidos.splice(0,0,res.data)
                             console.log(res.data)
 
                         }else if(res.status >= 400 && res.status<500){
@@ -422,6 +432,7 @@ const PedidosMesa = () => {
             
             
             //Poner aqui todos los SETs finales
+            setSubmitted(false)
             setProductoPedidos(_productoPedidos) 
             setDialogVisible(false)
             setDialogVisible2(false)
@@ -429,6 +440,7 @@ const PedidosMesa = () => {
             setProducto(emptyProducto)
             setProductoPedido(emptyProductoPedido)
             setOpcionesVariantesProducto(null)
+            setOpcionesModificadoresProducto(null)
             setOpcionVariante(null)
             setOpcionModificador(null)
             setSelected(null)
@@ -578,9 +590,18 @@ const PedidosMesa = () => {
 
     const header4 = (
         
-        <div className='p-d-flex p-ai-center'>
-            <Button icon="pi pi-arrow-left" className="p-button-rounded p-mr-3" onClick={()=>history.push("/home")}/>
-            <span className='' >{name.toUpperCase()}</span>
+        <div className='p-d-flex p-jc-between'>
+
+            <div className='p-d-flex p-ai-center' >
+                <Button icon="pi pi-arrow-left" className="p-button-rounded p-mr-3" onClick={()=>history.push("/home")}/>
+                <span className='' >{name.toUpperCase()}</span>
+            </div>
+
+            <div>
+                <Button label='Pre-Cuenta'  className='p-button-info p-mr-2' />
+                <Button label='Cobrar'  className='p-button-success' />
+            </div>
+            
         </div>
         
     );
@@ -657,7 +678,7 @@ const PedidosMesa = () => {
 
     let footerGroup = <ColumnGroup>
                         <Row>
-                            <Column footer="Total a Pagar:" colSpan={4} footerStyle={{textAlign:'right', color: 'black'}}/>
+                            <Column footer="SubTotal:" colSpan={4} footerStyle={{textAlign:'right', color: 'black'}}/>
                             <Column footer={TotalPagoBodyTemplate} footerStyle={{color:'black'}}/>
                             <Column footer={PropinaTemplate} colSpan={2} style={{color:'gray'}} />
                         </Row>
@@ -669,7 +690,7 @@ const PedidosMesa = () => {
         <div className='p-grid p-d-flex' >
                 <Toast ref={toast} />
             <div className='p-col-12 p-md-6 '>
-                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={header4} scrollable scrollHeight='290px' headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
+                <DataTable dataKey="pedidoIdPedido" value={productoPedidos} header={header4} scrollable scrollHeight='240px' headerColumnGroup={headerGroup} footerColumnGroup={footerGroup} /* scrollable scrollHeight='400px' */>
                     <Column field="productoIdProducto" body={productoBodyTemplate} />
                     <Column field="nombreReferencia" />
                     <Column field="precio" body={PrecioBodyTemplate} />
@@ -690,16 +711,19 @@ const PedidosMesa = () => {
 
             <Dialog visible={dialogVisible} style={{width:'600px'}} header={header1} modal className='p-fluid' footer={dialogFooter} onHide={hideDialog} >
                 
-                <div className= 'p-grid p-d-flex p-col-12'>
+                <div className= 'p-d-flex p-col-12 p-ai-center' /* style={submitted && !productoPedido.precio ? {border: '1px solid red'}:{}} */ >
                     {
                         opcionesVariantesProducto?.map((value1) => {
                             return(
                                 <div key={value1.idOpcionV} className='p-mr-2 p-my-2 '>
-                                    <Button className="p-button-outlined p-button-success BotonPedido" label={value1.nombre} onClick={()=>onInputNumberChangeV(value1.precio, 'precio', value1)}/>
+                                    <Button className={`p-button-outlined p-button-success BotonPedido `} style={submitted && !productoPedido.precio ? {border: '1px solid red'}:{}} label={value1.nombre} onClick={()=>onInputNumberChangeV(value1.precio, 'precio', value1)}/>
                                 </div>
                             )
                         })
                     }
+                    <div>
+                        {submitted && !productoPedido.precio && <small style={{color:'red'}} >*Seleccione Una Opcion</small>}
+                    </div>
                 </div>
 
                 <div className="p-field p-col-12">
@@ -721,14 +745,17 @@ const PedidosMesa = () => {
 
             <Dialog visible={dialogVisible2} style={{width:'600px'}} header={header2} modal className='p-fluid' footer={dialogFooter2} onHide={hideDialog2} >
                 
-                <div className= 'p-grid p-d-flex p-col-12'>
+                <div className= 'p-d-flex p-col-12 p-ai-center'>
                     {
                         opcionesModificadoresProducto?.map((value1) => 
                             <div key={value1.idOpcionM} className='p-mr-2 p-my-2 '>
-                                <Button className="p-button-outlined p-button-success" label={value1.nombre} onClick={()=>onInputNumberChangeM(value1.precio,'modificadorPrecio',value1)}/>
+                                <Button className="p-button-outlined p-button-success" style={submitted && !opcionModificador? {border: '1px solid red'}:{}} label={value1.nombre} onClick={()=>onInputNumberChangeM(value1.precio,'modificadorPrecio',value1)}/>
                             </div>
                         )
                     }
+                    <div>
+                        {submitted && !opcionModificador && <small style={{color:'red'}} >*Seleccione Una Opcion</small>}
+                    </div>
                 </div>
 
                 <div className="p-field p-col-12 ">

@@ -33,7 +33,7 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpGet("DePedido/{id}")]
         public async Task<ActionResult<IEnumerable<ProductoPedido>>> GetProductoPedidosDePedido(int id)
         {
-            var productosPedidos = await _context.ProductoPedidos.Where(e => e.PedidoIdPedido == id).ToListAsync();
+            var productosPedidos = await _context.ProductoPedidos.Where(e => e.PedidoIdPedido == id).OrderByDescending(r => r.Hora).ToListAsync();
             return Ok(productosPedidos);
         }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
-import { Route, useHistory } from 'react-router-dom';
+import { Route, useHistory, useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import { AppTopbar } from './AppTopbar';
 /* import { AppFooter } from './AppFooter';*/
@@ -29,6 +29,7 @@ import Admins from './pages/Usuarios/Admins';
 import Meseros from './pages/Usuarios/Meseros';
 import Bartenders from './pages/Usuarios/Bartenders';
 import Cocineros from './pages/Usuarios/Cocineros';
+import Experimento2 from './pages/Experimento2';
 
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -52,6 +53,9 @@ const App = () => {
     const sidebar = useRef();
 
     const history = useHistory();
+    /* let location = useLocation()
+    console.log(location)
+    const [ubicacion, setUbicacion] = useState(location.pathname) */
 
     let menuClick = false;
 
@@ -103,6 +107,10 @@ const App = () => {
         if (!event.item.items && layoutMode === "overlay") { // aqui se cambia desde el and
             setSidebarActive(false);
         }
+        /* if(!event.item.items && ubicacion==='/home/resumen-ventas'){
+            setSidebarActive(false);
+        }
+         */
     }
 
     const menu = [
@@ -147,7 +155,7 @@ const App = () => {
                 
             ]
         },
-        { label: 'Experimento', icon: 'pi pi-fw pi-home', to: '/home/experimento' },
+        { label: 'Experimento', icon: 'pi pi-fw pi-home', to: '/home/experimento2' },
     ];
 
     const addClass = (element, className) => {
@@ -202,32 +210,34 @@ const App = () => {
 
             <div className="layout-main">
                 
-                <Route path="/home" exact component={SalaDeVentas} />
                 {/* Informes */}
-                <Route path="/home/resumen-ventas" component={ResumenVentas} />
-                <Route path="/home/ventas-empleados" component={VentasEmpleados} />
-                <Route path="/home/ventas-producto" component={VentasProductos} />
+                <Route path="/home/resumen-ventas"  component={ResumenVentas} />
+                <Route path="/home/ventas-empleados"  component={VentasEmpleados} />
+                <Route path="/home/ventas-producto"  component={VentasProductos} />
 
                 {/* Productos */}
-                <Route path="/home/lista-productos" component={Productos} />
-                <Route path="/home/categoria" component={Categorias} />
-                <Route path="/home/variantes" component={Variantes} />
-                <Route path="/home/modificadores" component={Modificadores} />
+                <Route path="/home/lista-productos"  component={Productos} />
+                <Route path="/home/categoria"  component={Categorias} />
+                <Route path="/home/variantes"  component={Variantes} />
+                <Route path="/home/modificadores"  component={Modificadores} />
 
                 {/* Usuarios */}
-                <Route path="/home/lista-administradores" component={Admins} />
-                <Route path="/home/lista-meseros" component={Meseros} />
-                <Route path="/home/lista-bartenders" component={Bartenders} />
-                <Route path="/home/lista-cocineros" component={Cocineros} />
+                <Route path="/home/lista-administradores"  component={Admins} />
+                <Route path="/home/lista-meseros"  component={Meseros} />
+                <Route path="/home/lista-bartenders"  component={Bartenders} />
+                <Route path="/home/lista-cocineros"  component={Cocineros} />
 
-                <Route path="/home/roles" component={Roles} />
+                <Route path="/home/roles"  component={Roles} />
 
                 {/* Mesas */}
-                <Route path="/home/lista-mesas" component={Mesas} />
-                <Route path="/home/zonas" component={Zonas} />
+                <Route path="/home/lista-mesas"  component={Mesas} />
+                <Route path="/home/zonas"  component={Zonas} />
 
-                <Route path="/home/experimento/:id/:name/:disp/:zona" component={PedidosMesa}/>
+                <Route path="/home/pedido/:id/:name/:disp/:zona"  component={PedidosMesa}/>
+
+                <Route path="/home/experimento2"  component={Experimento2} />
                 
+                <Route path="/home" exact component={SalaDeVentas} />
             </div>
 
             <div class="layout-mask"></div>
