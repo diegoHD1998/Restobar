@@ -2,19 +2,19 @@ import React from 'react';
 import App from './App';
 import Login from './Login'
 import Error from './Error'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
-const Main = () => {
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+const AppRouter = () => {
     return (
-        <div>
-            <BrowserRouter>
+        
+        <Router>
             <Switch>
                 <Route path="/" exact component={Login} />
                 <Route path="/home"  component={App} />
                 <Route path="/err" exact component={Error} />
             </Switch>
-        </BrowserRouter>
-        </div>
+        </Router>
+        
     );
 };
 
-export default Main;
+export default AppRouter;
