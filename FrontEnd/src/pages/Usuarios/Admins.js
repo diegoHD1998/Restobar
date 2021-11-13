@@ -97,7 +97,7 @@ export default function Admins ()  {
                 }else if(res.status === 204){
                     setValidar(null)
                 }
-            } )
+            })
 
             console.log(validacion)
             if(validacion === null){
@@ -340,7 +340,7 @@ export default function Admins ()  {
                         <div className="p-field">
                             <label htmlFor="userName">UserName</label>
                             <InputText id="userName" value={usuario.userName} onChange={(e) => onInputChange(e, 'userName')} required className={classNames({ 'p-invalid': submitted && !usuario.userName },{ 'p-invalid': submitted && validar })} />
-                            {submitted && !usuario.userName && <small className="p-invalid">UserName Requerido.</small>} {submitted && validar && <small className="p-invalid">Este userName ya esta Registrado en el Sistema.</small>}
+                            {submitted && !usuario.userName && <small className="p-invalid">UserName Requerido.</small>} {submitted && validar && <small className="p-invalid">Este UserName ya esta Registrado en el Sistema.</small>}
                         </div>
 
                         <div className="p-field">

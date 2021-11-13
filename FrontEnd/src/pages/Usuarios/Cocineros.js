@@ -37,6 +37,7 @@ export default function Cocineros ()  {
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const [loading, setloading] = useState(true);
+    const [validar, setValidar] = useState(null)
     const toast = useRef(null);
     const dt = useRef(null);
     
@@ -86,57 +87,75 @@ export default function Cocineros ()  {
     const saveProduct = async() => { 
         setSubmitted(true);
 
-        if (usuario.nombre.trim() && usuario.apellido.trim() && usuario.telefono.trim() 
-         && usuario.userName.trim() && usuario.password.trim() && usuario.estado.trim() && password2.trim() && confirmPass === true ) {
-            let _usuarios = [...usuarios];
-            let _usuario = { ...usuario };
+        if(usuario.userName.trim()){
+            let validacion = null
+            await usuarioService.validarUserName(usuario.userName).then(res =>{
+                if(res.status === 200){
+                    setValidar(res.data)
+                    validacion = res.data
+                }else if(res.status === 204){
+                    setValidar(null)
+                }
+            })
+            console.log(validacion)
+            if(validacion === null){
 
-            
-            if (usuario.idUsuario) {
-                _usuario.password = md5(usuario.password)
-                await usuarioService.update(_usuario)
-                .then(res => {
-                    if(res.status >= 200 && res.status<300){
-
-                        const index = findIndexById(usuario.idUsuario);
-                        _usuarios[index] = _usuario;
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Actualizado', life: 5000 });
-                        console.log(res.data);
-
-                    }else if(res.status >= 400 && res.status<500){
-                        console.log(res)
-                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Usuario No Actualizado: ${res.data}`, life: 5000 });
-                    }else{
-                        console.log(res)
-                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Update Usuario, Status No controlado`, life: 5000 });
-                    }
+                if (usuario.nombre.trim() && usuario.apellido.trim() && usuario.telefono.trim() 
+                 && usuario.password.trim() && usuario.estado.trim() && password2.trim() && confirmPass === true ) {
+                    let _usuarios = [...usuarios];
+                    let _usuario = { ...usuario };
+        
                     
-
-                })
-            }
-            else {
-                delete _usuario.idUsuario;
-                _usuario.password = md5(usuario.password)
-                await usuarioService.create(_usuario)
-                .then(res => {
-                    if(res.status >= 200 && res.status<300){
-                        _usuarios.push(res.data);
-                        toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Creado', life: 5000 });
-                        console.log(res.data)
-                    } else if(res.status >= 400 && res.status<500){
-                        console.log(res)
-                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
-                    }else{
-                        console.log(res)
-                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create Usuario, Status No controlado`, life: 5000 });
+                    if (usuario.idUsuario) {
+                        _usuario.password = md5(usuario.password)
+                        await usuarioService.update(_usuario)
+                        .then(res => {
+                            if(res.status >= 200 && res.status<300){
+        
+                                const index = findIndexById(usuario.idUsuario);
+                                _usuarios[index] = _usuario;
+                                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Actualizado', life: 5000 });
+                                console.log(res.data);
+        
+                            }else if(res.status >= 400 && res.status<500){
+                                console.log(res)
+                                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Usuario No Actualizado: ${res.data}`, life: 5000 });
+                            }else{
+                                console.log(res)
+                                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Update Usuario, Status No controlado`, life: 5000 });
+                            }
+                            
+        
+                        })
                     }
-                });
+                    else {
+                        delete _usuario.idUsuario;
+                        _usuario.password = md5(usuario.password)
+                        await usuarioService.create(_usuario)
+                        .then(res => {
+                            if(res.status >= 200 && res.status<300){
+                                _usuarios.push(res.data);
+                                toast.current.show({ severity: 'success', summary: 'Operacion Exitosa', detail: 'Usuario Creado', life: 5000 });
+                                console.log(res.data)
+                            } else if(res.status >= 400 && res.status<500){
+                                console.log(res)
+                                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `${res.data}`, life: 5000 });
+                            }else{
+                                console.log(res)
+                                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: `Error en Create Usuario, Status No controlado`, life: 5000 });
+                            }
+                        });
+                    }
+        
+                    setUsuarios(_usuarios);
+                    setProductDialog(false);
+                    setUsuario(emptyUsuario);
+                    setPassword2(null)
+                }
             }
 
-            setUsuarios(_usuarios);
-            setProductDialog(false);
-            setUsuario(emptyUsuario);
         }
+
     }
 
     const editProduct = (product) => {
@@ -210,7 +229,9 @@ export default function Cocineros ()  {
         let _product = { ...usuario };
         _product[`${name}`] = val;
         setUsuario(_product);
-        validarPass(val)
+        if(name === 'password'){
+            validarPass(val)
+        }
     }
 
     const onInputChangePass = (e) => {
@@ -316,8 +337,8 @@ export default function Cocineros ()  {
 
                         <div className="p-field">
                             <label htmlFor="userName">UserName</label>
-                            <InputText id="userName" value={usuario.userName} onChange={(e) => onInputChange(e, 'userName')} required className={classNames({ 'p-invalid': submitted && !usuario.userName })} />
-                            {submitted && !usuario.userName && <small className="p-invalid">UserName Requerido.</small>}
+                            <InputText id="userName" value={usuario.userName} onChange={(e) => onInputChange(e, 'userName')} required className={classNames({ 'p-invalid': submitted && !usuario.userName },{ 'p-invalid': submitted && validar })} />
+                            {submitted && !usuario.userName && <small className="p-invalid">UserName Requerido.</small>}{submitted && validar && <small className="p-invalid">Este UserName ya esta Registrado en el Sistema.</small>}
                         </div>
 
                         <div className="p-field">
