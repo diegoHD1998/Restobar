@@ -75,6 +75,23 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(usuario);
         }
 
+        // GET api/Usuarios/validar
+        [HttpGet("validar/{userName}")]
+        public async Task<ActionResult<Usuario>> GetValidarUsuario(string userName)
+        {
+           var user = await _context.Usuarios.Where(e => e.UserName == userName).SingleOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return Ok(user);
+            }
+        }
+
+
         // PUT: api/Usuarios/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

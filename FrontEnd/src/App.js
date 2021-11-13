@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
-import { Route, useHistory, useLocation } from 'react-router-dom';
+import { Switch, Route, useHistory,Redirect } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import { AppTopbar } from './AppTopbar';
 /* import { AppFooter } from './AppFooter';*/
@@ -60,6 +60,7 @@ const App = () => {
     let menuClick = false;
 
     useEffect(() => {
+        console.log('render aqui')
         if (sidebarActive) {
             addClass(document.body, "body-overflow-hidden");
         } else {
@@ -114,35 +115,35 @@ const App = () => {
     }
 
     const menu = [
-        { label: 'Sala de Ventas', icon: 'pi pi-fw pi-home', to: '/home' },
+        { label: 'Sala de Ventas', icon: 'pi pi-fw pi-home', to: '/' },
         {
             label: 'Informes', icon: 'pi pi-fw pi-chart-bar',
             items: [
-                { label: 'Resumen de Ventas', icon: 'pi pi-fw pi-bookmark', to: '/home/resumen-ventas' },
-                { label: 'Ventas por Empleado', icon: 'pi pi-fw pi-bookmark', to: '/home/ventas-empleados' },
-                { label: 'Ventas por Producto', icon: 'pi pi-fw pi-bookmark', to: '/home/ventas-producto' },
+                { label: 'Resumen de Ventas', icon: 'pi pi-fw pi-bookmark', to: '/resumen-ventas' },
+                { label: 'Ventas por Empleado', icon: 'pi pi-fw pi-bookmark', to: '/ventas-empleados' },
+                { label: 'Ventas por Producto', icon: 'pi pi-fw pi-bookmark', to: '/ventas-producto' },
             ]
         },
         {
             label: "Productos",
             icon: "pi pi-fw pi-book",
             items: [
-                { label: "Lista de Productos", to: "/home/lista-productos" },
-                { label: "Categorias", to: "/home/categoria" },
-                { label: "Variantes", to: "/home/variantes" },
-                { label: "Modificadores", to: "/home/modificadores" },
+                { label: "Lista de Productos", to: "/lista-productos" },
+                { label: "Categorias", to: "/categoria" },
+                { label: "Variantes", to: "/variantes" },
+                { label: "Modificadores", to: "/modificadores" },
             ]
         },
         {
             label: "Usuarios",
             icon: "pi pi-fw pi-users",
             items: [
-                { label: "Administradores",icon:'pi pi-fw pi-user' ,to: "/home/lista-administradores" },
-                { label: "Meseros",icon:'pi pi-fw pi-user' ,to: "/home/lista-meseros" },
-                { label: "Bartenders",icon:'pi pi-fw pi-user' ,to: "/home/lista-bartenders" },
-                { label: "Cocineros",icon:'pi pi-fw pi-user' ,to: "/home/lista-cocineros" },
+                { label: "Administradores",icon:'pi pi-fw pi-user' ,to: "/lista-administradores" },
+                { label: "Meseros",icon:'pi pi-fw pi-user' ,to: "/lista-meseros" },
+                { label: "Bartenders",icon:'pi pi-fw pi-user' ,to: "/lista-bartenders" },
+                { label: "Cocineros",icon:'pi pi-fw pi-user' ,to: "/lista-cocineros" },
 
-                { label: "Roles", icon:'pi pi-fw pi-user-minus', to: "/home/roles" },
+                { label: "Roles", icon:'pi pi-fw pi-user-minus', to: "/roles" },
                 
             ]
         },
@@ -150,12 +151,12 @@ const App = () => {
             label: "Asingnacion Mesas",
             icon: "pi pi-fw pi-table",
             items: [
-                { label: "Lista de Mesas" ,to: "/home/lista-mesas" },
-                { label: "Zonas", to: "/home/zonas" },
+                { label: "Lista de Mesas" ,to: "/lista-mesas" },
+                { label: "Zonas", to: "/zonas" },
                 
             ]
         },
-        { label: 'Experimento', icon: 'pi pi-fw pi-home', to: '/home/experimento2' },
+        { label: 'Experimento', icon: 'pi pi-fw pi-home', to: '/experimento2' },
     ];
 
     const addClass = (element, className) => {
@@ -197,7 +198,7 @@ const App = () => {
 
             <CSSTransition classNames="layout-sidebar" timeout={{ enter: 200, exit: 200 }} in={isSidebarVisible()} unmountOnExit>
                 <div ref={sidebar} className={sidebarClassName} onClick={onSidebarClick}>
-                    <div className="layout-logo" style={{cursor: 'pointer'}} onClick={() => history.push('/home')}>
+                    <div className="layout-logo" style={{cursor: 'pointer'}} onClick={() => history.push('/')}>
                         <img alt="Logo" src={logo} />
                     </div>
                     <AppProfile />
@@ -209,35 +210,39 @@ const App = () => {
                 layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
 
             <div className="layout-main">
-                
+                <Switch>
                 {/* Informes */}
-                <Route path="/home/resumen-ventas"  component={ResumenVentas} />
-                <Route path="/home/ventas-empleados"  component={VentasEmpleados} />
-                <Route path="/home/ventas-producto"  component={VentasProductos} />
+                <Route exact path="/resumen-ventas"  component={ResumenVentas} />
+                <Route exact path="/ventas-empleados"  component={VentasEmpleados} />
+                <Route exact path="/ventas-producto"  component={VentasProductos} />
 
                 {/* Productos */}
-                <Route path="/home/lista-productos"  component={Productos} />
-                <Route path="/home/categoria"  component={Categorias} />
-                <Route path="/home/variantes"  component={Variantes} />
-                <Route path="/home/modificadores"  component={Modificadores} />
+                <Route exact path="/lista-productos"  component={Productos} />
+                <Route exact path="/categoria"  component={Categorias} />
+                <Route exact path="/variantes"  component={Variantes} />
+                <Route exact path="/modificadores"  component={Modificadores} />
 
                 {/* Usuarios */}
-                <Route path="/home/lista-administradores"  component={Admins} />
-                <Route path="/home/lista-meseros"  component={Meseros} />
-                <Route path="/home/lista-bartenders"  component={Bartenders} />
-                <Route path="/home/lista-cocineros"  component={Cocineros} />
+                <Route exact path="/lista-administradores"  component={Admins} />
+                <Route exact path="/lista-meseros"  component={Meseros} />
+                <Route exact path="/lista-bartenders"  component={Bartenders} />
+                <Route exact path="/lista-cocineros"  component={Cocineros} />
 
-                <Route path="/home/roles"  component={Roles} />
+                <Route exact path="/roles"  component={Roles} />
 
                 {/* Mesas */}
-                <Route path="/home/lista-mesas"  component={Mesas} />
-                <Route path="/home/zonas"  component={Zonas} />
+                <Route exact path="/lista-mesas"  component={Mesas} />
+                <Route exact path="/zonas"  component={Zonas} />
 
-                <Route path="/home/pedido/:id/:name/:disp/:zona"  component={PedidosMesa}/>
+                <Route exact path="/pedido/:id/:name/:disp/:zona"  component={PedidosMesa}/>
 
-                <Route path="/home/experimento2"  component={Experimento2} />
+                <Route exact path="/experimento2"  component={Experimento2} />
                 
-                <Route path="/home" exact component={SalaDeVentas} />
+                <Route exact path="/salaVentas" component={SalaDeVentas} />
+
+                <Redirect to='/salaVentas'/>
+
+                </Switch>
             </div>
 
             <div class="layout-mask"></div>

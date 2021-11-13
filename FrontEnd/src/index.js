@@ -1,16 +1,16 @@
 import 'react-app-polyfill/ie11';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppRouter from './AppRouter'
 //import App from './App';
 //import * as serviceWorker from './serviceWorker';
 import { HashRouter } from 'react-router-dom'
 import ScrollToTop from './ScrollToTop';
+import Restobar from './Restobar';
 
 ReactDOM.render(
     <HashRouter hashType='noslash'>
         <ScrollToTop>
-            <AppRouter/>
+            <Restobar/>
         </ScrollToTop>
     </HashRouter>,
     document.getElementById('root')

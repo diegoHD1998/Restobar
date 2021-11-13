@@ -32,7 +32,7 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Pedido>> GetPedidoActivo(int id) // aqui llega el id de la mesa
         {
-            var pedido = await _context.Pedidos.Where(e => e.Estado == true && e.MesaIdMesa == id).SingleAsync();
+            var pedido = await _context.Pedidos.Where(e => e.Estado == true && e.MesaIdMesa == id).SingleOrDefaultAsync();
 
             if (pedido == null)
             {
