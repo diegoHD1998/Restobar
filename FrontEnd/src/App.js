@@ -60,7 +60,6 @@ const App = () => {
     let menuClick = false;
 
     useEffect(() => {
-        console.log('render aqui')
         if (sidebarActive) {
             addClass(document.body, "body-overflow-hidden");
         } else {

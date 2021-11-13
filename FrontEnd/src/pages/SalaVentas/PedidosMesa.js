@@ -8,7 +8,6 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Row } from 'primereact/row';
 import { Toast } from 'primereact/toast';
-import classNames from 'classnames';
 
 import ProductoService from '../../service/ProductosService/ProductoService';
 import CategoriaService from '../../service/ProductosService/CategoriaService';
@@ -593,7 +592,7 @@ const PedidosMesa = () => {
         <div className='p-d-flex p-jc-between'>
 
             <div className='p-d-flex p-ai-center' >
-                <Button icon="pi pi-arrow-left" className="p-button-rounded p-mr-3" onClick={()=>history.push("/home")}/>
+                <Button icon="pi pi-arrow-left" className="p-button-rounded p-mr-3" onClick={()=>history.push("/")}/>
                 <span className='' >{name.toUpperCase()}</span>
             </div>
 

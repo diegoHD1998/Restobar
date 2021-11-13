@@ -30,7 +30,14 @@ export default class UsuarioService {
         .catch(err => err.response)
     }
 
+
     
+
+    async validarUserName(userName){
+        return await axios.get(`${baseUrl}/validar/${userName}`).then(res => res)
+        .catch(err => err.response)
+    }
+
     async create(user){
         return await axios.post(baseUrl,user).then(res => res)
         .catch(err => err.response)

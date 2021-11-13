@@ -12,6 +12,7 @@ import md5 from 'md5'
 
 import UsuarioService from '../../service/UsuariosService/UsuarioService';
 import {estados} from '../../service/Variables'
+
 export default function Bartenders ()  {
 
     let emptyUsuario = {
