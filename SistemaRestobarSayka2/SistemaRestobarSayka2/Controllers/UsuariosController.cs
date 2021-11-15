@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaRestobarSayka2.Data;
+using SistemaRestobarSayka2.Dtos;
 using SistemaRestobarSayka2.Models;
 
 namespace SistemaRestobarSayka2.Controllers
@@ -139,6 +140,32 @@ namespace SistemaRestobarSayka2.Controllers
             }
 
             return CreatedAtAction("GetUsuario", new { id = usuario.IdUsuario }, usuario);
+        }
+
+        //POST : api/Usuarios/login
+        [HttpPost("login")]
+        public async Task<ActionResult<UsuarioDto>> Login(LoginDto loginDto)
+        {
+            var user = await _context.Usuarios.Where(e => e.UserName == loginDto.UserName).SingleOrDefaultAsync();
+
+            if (user == null)
+            {
+                return Unauthorized("El Usuario No Existe");
+            }
+
+            if( user.Password != loginDto.Password)
+            {
+                return Unauthorized("Contraseña Incorrecta");
+            }
+
+            return new UsuarioDto
+            {
+                UserName = user.UserName,
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                Rol = user.RolIdRol,
+                Token = "Este es el Token"
+            };
         }
 
         // DELETE: api/Usuarios/5

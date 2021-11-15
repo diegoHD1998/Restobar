@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
+import { Divider } from 'primereact/divider';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import {InputNumber} from 'primereact/inputnumber'
+import { InputSwitch } from 'primereact/inputswitch';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
@@ -83,16 +85,21 @@ const PedidosMesa = () => {
     const [productoModificadores, setProductoModificadores] = useState(null)
     const [opcionModificadores, setOpcionModificadores] = useState(null)
     const [opcionesModificadoresProducto, setOpcionesModificadoresProducto] = useState(null)
+
+    const [swit, setSwit] = useState(false) 
+    const [textoPropina, setTextoPropina] = useState('')
     
     const [selected, setSelected] = useState(null);
     const toast = useRef(null);
-    const dt = useRef(null);
+    const dt = useRef(null)
     
     const [dialogVisible, setDialogVisible] = useState(false);
     const [dialogVisible2, setDialogVisible2] = useState(false);
     const [dialogVisible3, setDialogVisible3] = useState(false);
+    const [dialogVisibleVenta, setDialogVisibleVenta] = useState(false);
 
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
+    const [SubTotal, setSubTotal] = useState(0)
     const [Total, setTotal] = useState(0)
     const [Propina, setPropina] = useState(0)
 
@@ -300,10 +307,24 @@ const PedidosMesa = () => {
         setSelected(null)
     }
 
+    
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
         setProductoPedido(emptyProductoPedido)
     }
+    
+    const hideDialogVenta = () =>{
+        setDialogVisibleVenta(false)
+        setTextoPropina('')
+        setSwit(false)
+    }
+
+    const PreCobrar = () => {
+        setDialogVisibleVenta(true)
+        setTotal(SubTotal)
+    }
+
+
 
     const saveProductoPedido = async() => {
         setSubmitted(true);
@@ -503,6 +524,20 @@ const PedidosMesa = () => {
         setOpcionModificador(opcionM)
     }
 
+    const onInputSwitchChange = (e) => {
+        const val = e.value
+        if(val === true){
+            setTextoPropina('+ Propina')
+            setTotal(Total+Propina)
+            setSwit(true)
+        }else if(val === false){
+            setTextoPropina('')
+            setTotal(Total-Propina)
+            setSwit(false)
+        }
+
+    }
+
     const HoraBodyTemplate = (rowData) => {
         let _hora = rowData.hora.hours
         let _minuto = rowData.hora.minutes
@@ -529,12 +564,13 @@ const PedidosMesa = () => {
     const TotalPagoBodyTemplate = () => {
         const _productoPedidoActual = productoPedidos?.filter(value => value.pedidoIdPedido === pedido?.idPedido)
         let total = _productoPedidoActual?.reduce((acc, el) => acc + el.total, 0)
-        setTotal(total)
+        setSubTotal(total)
         return formatCurrency(total);
     }
 
     const PropinaTemplate = () => {
-        let _propina = Total * 0.1
+        let _propina = SubTotal * 0.1
+        setPropina(_propina)
         return `Propina ${formatCurrency(_propina)}`
         
     }
@@ -598,7 +634,7 @@ const PedidosMesa = () => {
 
             <div>
                 <Button label='Pre-Cuenta'  className='p-button-info p-mr-2' />
-                <Button label='Cobrar'  className='p-button-success' />
+                <Button label='Cobrar'  className='p-button-success' onClick={()=> PreCobrar() } />
             </div>
             
         </div>
@@ -625,6 +661,8 @@ const PedidosMesa = () => {
             <Button label='Guardar' icon='pi pi-check' className='p-button-text' onClick={saveProductoPedido} />
         </>
     );
+
+    
 
     const deleteProductDialogFooter = (
         <>
@@ -663,12 +701,26 @@ const PedidosMesa = () => {
         </div>
     )
 
+    const Efectivo = (
+        <div>
+            <i className="pi pi-money-bill" style={{'fontSize': '1.2em'}}></i>
+            <span style={{'fontSize': '1.2em'}}> Efectivo</span>
+        </div>
+    )
+
+    const Tarjeta = (
+        <div>
+            <i className="pi pi-credit-card" style={{'fontSize': '1.2em'}}></i>
+            <span style={{'fontSize': '1.2em'}}> Tarjeta</span>
+        </div>
+    )
+
     let headerGroup = <ColumnGroup>                    
                         <Row>
                             <Column header="Productos"/>
                             <Column header=""/>
                             <Column header="Precio"/>
-                            <Column header="Cantidad" />
+                            <Column header="Cant"/>
                             <Column header="Total" />
                             <Column/>
                             <Column/>
@@ -679,7 +731,7 @@ const PedidosMesa = () => {
                         <Row>
                             <Column footer="SubTotal:" colSpan={4} footerStyle={{textAlign:'right', color: 'black'}}/>
                             <Column footer={TotalPagoBodyTemplate} footerStyle={{color:'black'}}/>
-                            <Column footer={PropinaTemplate} colSpan={2} style={{color:'gray'}} />
+                            <Column footer={PropinaTemplate} colSpan={2} style={{color:'gray', fontSize:'0.8em'}} />
                         </Row>
                         
                         </ColumnGroup>;
@@ -693,7 +745,7 @@ const PedidosMesa = () => {
                     <Column field="productoIdProducto" body={productoBodyTemplate} />
                     <Column field="nombreReferencia" />
                     <Column field="precio" body={PrecioBodyTemplate} />
-                    <Column field="cantidad" style={{padding:'0px 0px 0px 40px'}} />
+                    <Column field="cantidad" style={{padding:'0px 0px 0px 25px'}} />
                     <Column field="total" body={TotalBodyTemplate}/>
                     <Column body={HoraBodyTemplate} />
                     <Column body={actionBodyTemplate}/>
@@ -792,6 +844,57 @@ const PedidosMesa = () => {
                             <i className="pi pi-exclamation-triangle p-mr-3" style={{ fontSize: '2rem' }} />
                             {productoPedido && <span>Estas seguro que quieres eliminar una <b>{productoBodyTemplate(productoPedido)} {productoPedido.nombreReferencia} x{productoPedido.cantidad}</b>?</span>}
                         </div>
+            </Dialog>
+
+
+
+
+
+            <Dialog visible={dialogVisibleVenta} style={{ width: '600px' }} header={name} modal onHide={hideDialogVenta} >
+                <div>
+                    <div className='p-d-flex p-flex-column  p-ai-center' >
+                        <div>
+                            <h5 style={{fontSize:'2.5em'}}>
+                                <b>{`${formatCurrency(Total)} `}</b>
+                            </h5>
+                        </div>
+
+                        <div>
+                            <h5>
+                                <b>Cantidad Total a Pagar{textoPropina}</b>
+                            </h5>
+                        </div>
+
+                    </div>
+
+                    <Divider/>
+
+                    <div className='p-d-flex p-ai-center p-jc-between' >
+
+                        <div>
+                            <h5 style={{margin:'0px'}}>
+                                <b>Propina: {formatCurrency(Propina)} </b>
+                            </h5>
+                        </div>
+
+                        <div>
+                            <InputSwitch checked={swit} onChange={(e)=>onInputSwitchChange(e)}/>
+                        </div>
+
+                    </div>
+
+                    <Divider/>
+
+
+                    <div className='p-d-flex p-flex-column p-ai-center'>
+
+                        <Button label={Efectivo} /* icon="pi pi-money-bill"  */ className='p-button-info p-button-outlined p-m-3 p-col-12' />
+                        <Button label={Tarjeta}  /* icon="pi pi-credit-card" */ className='p-button-info p-button-outlined p-m-3 p-col-12' />
+
+                    </div>
+
+
+                </div>
             </Dialog>
 
         </div>
