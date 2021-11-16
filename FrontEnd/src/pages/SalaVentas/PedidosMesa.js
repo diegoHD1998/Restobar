@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Inplace, InplaceDisplay, InplaceContent } from 'primereact/inplace';
 import { DataTable } from 'primereact/datatable';
 import { Divider } from 'primereact/divider';
 import { Column } from 'primereact/column';
@@ -97,6 +98,7 @@ const PedidosMesa = () => {
     const [dialogVisible2, setDialogVisible2] = useState(false);
     const [dialogVisible3, setDialogVisible3] = useState(false);
     const [dialogVisibleVenta, setDialogVisibleVenta] = useState(false);
+    const [dialogEfectivo, setDialogEfectivo] = useState(false);
 
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [SubTotal, setSubTotal] = useState(0)
@@ -317,6 +319,10 @@ const PedidosMesa = () => {
         setDialogVisibleVenta(false)
         setTextoPropina('')
         setSwit(false)
+    }
+
+    const hideDialogEfectivo = () => {
+        setDialogEfectivo(false)
     }
 
     const PreCobrar = () => {
@@ -849,7 +855,6 @@ const PedidosMesa = () => {
 
 
 
-
             <Dialog visible={dialogVisibleVenta} style={{ width: '600px' }} header={name} modal onHide={hideDialogVenta} >
                 <div>
                     <div className='p-d-flex p-flex-column  p-ai-center' >
@@ -885,17 +890,28 @@ const PedidosMesa = () => {
 
                     <Divider/>
 
-
                     <div className='p-d-flex p-flex-column p-ai-center'>
 
-                        <Button label={Efectivo} /* icon="pi pi-money-bill"  */ className='p-button-info p-button-outlined p-m-3 p-col-12' />
+                        {/* <div className="p-field">
+                            <label htmlFor="precio">Precio</label>
+                            <InputNumber id="precio" value={producto.precio} onChange={(e) => onInputNumberChange(e, 'precio')} required mode="currency" currency="CLP" locale="es-CL" />
+                            
+                        </div> */}
+
+                        <Button label={Efectivo} /* icon="pi pi-money-bill"  */ className='p-button-info p-button-outlined p-m-3 p-col-12' /* onClick={}  *//>
                         <Button label={Tarjeta}  /* icon="pi pi-credit-card" */ className='p-button-info p-button-outlined p-m-3 p-col-12' />
 
                     </div>
 
-
                 </div>
             </Dialog>
+
+            {/* <Dialog visible={dialogEfectivo} style={{ width: '600px' }} header={name} modal onHide={hideDialogEfectivo}>
+
+            </Dialog> */}
+
+
+
 
         </div>
     );
