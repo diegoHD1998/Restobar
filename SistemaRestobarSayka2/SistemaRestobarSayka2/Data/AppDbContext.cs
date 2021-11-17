@@ -44,9 +44,19 @@ namespace SistemaRestobarSayka2.Data
             {
                 entity.HasKey(e => e.IdBoleta);
 
+                entity.HasIndex(e => e.BoletaVentaBoletaIdVenta, "IX_FK_BoletaVenta");
+
                 entity.Property(e => e.IdBoleta).HasColumnName("Id_boleta");
 
+                entity.Property(e => e.BoletaVentaBoletaIdVenta).HasColumnName("BoletaVenta_Boleta_Id_venta");
+
                 entity.Property(e => e.FormaDePago).IsRequired();
+
+                entity.HasOne(d => d.BoletaVentaBoletaIdVentaNavigation)
+                    .WithMany(p => p.Boleta)
+                    .HasForeignKey(d => d.BoletaVentaBoletaIdVenta)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BoletaVenta");
             });
 
             modelBuilder.Entity<Categoria>(entity =>
@@ -105,7 +115,6 @@ namespace SistemaRestobarSayka2.Data
                 entity.HasOne(d => d.ZonaIdZonaNavigation)
                     .WithMany(p => p.Mesas)
                     .HasForeignKey(d => d.ZonaIdZona)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_MesaZona");
             });
 
@@ -137,7 +146,6 @@ namespace SistemaRestobarSayka2.Data
                 entity.HasOne(d => d.ModificadorIdModificadorNavigation)
                     .WithMany(p => p.OpcionModificadors)
                     .HasForeignKey(d => d.ModificadorIdModificador)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ModificadorOpcionModificador");
             });
 
@@ -158,7 +166,6 @@ namespace SistemaRestobarSayka2.Data
                 entity.HasOne(d => d.VarianteIdVarianteNavigation)
                     .WithMany(p => p.OpcionVariantes)
                     .HasForeignKey(d => d.VarianteIdVariante)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_OpcionVarianteVariante");
             });
 
@@ -172,8 +179,6 @@ namespace SistemaRestobarSayka2.Data
 
                 entity.HasIndex(e => e.UsuarioIdUsuario, "IX_FK_PedidoUsuario");
 
-                entity.HasIndex(e => e.VentaIdVenta, "IX_FK_PedidoVenta");
-
                 entity.Property(e => e.IdPedido).HasColumnName("Id_pedido");
 
                 entity.Property(e => e.Estado).IsRequired();
@@ -183,8 +188,6 @@ namespace SistemaRestobarSayka2.Data
                 entity.Property(e => e.MesaIdMesa).HasColumnName("MesaId_mesa");
 
                 entity.Property(e => e.UsuarioIdUsuario).HasColumnName("UsuarioId_usuario");
-
-                entity.Property(e => e.VentaIdVenta).HasColumnName("PedidoVenta_Pedido_Id_venta");
 
                 entity.HasOne(d => d.MesaIdMesaNavigation)
                     .WithMany(p => p.Pedidos)
@@ -198,11 +201,6 @@ namespace SistemaRestobarSayka2.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PedidoUsuario");
 
-                entity.HasOne(d => d.VentaIdVentaNavigation)
-                    .WithMany(p => p.Pedidos)
-                    .HasForeignKey(d => d.VentaIdVenta)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PedidoVenta");
             });
 
             modelBuilder.Entity<Producto>(entity =>
@@ -359,29 +357,39 @@ namespace SistemaRestobarSayka2.Data
             {
                 entity.HasKey(e => e.IdVenta);
 
-                entity.HasIndex(e => e.BoletaIdBoleta, "IX_FK_VentaBoleta");
+                entity.HasIndex(e => e.PedidoIdPedido, "IX_FK_VentaPedido");
 
                 entity.HasIndex(e => e.TipoPagoIdTipoPago, "IX_FK_VentaTipoPago");
 
-                entity.Property(e => e.IdVenta).HasColumnName("Id_venta");
+                entity.HasIndex(e => e.UsuarioIdUsuario, "IX_FK_VentaUsuario");
 
-                entity.Property(e => e.BoletaIdBoleta).HasColumnName("VentaBoleta_Venta_Id_boleta");
+                entity.Property(e => e.IdVenta).HasColumnName("Id_venta");
 
                 entity.Property(e => e.Fecha).HasColumnType("date");
 
+                entity.Property(e => e.PedidoIdPedido).HasColumnName("PedidoId_pedido");
+
                 entity.Property(e => e.TipoPagoIdTipoPago).HasColumnName("TipoPagoId_tipoPago");
 
-                entity.HasOne(d => d.BoletaIdBoletaNavigation)
+                entity.Property(e => e.UsuarioIdUsuario).HasColumnName("UsuarioId_usuario");
+
+                entity.HasOne(d => d.PedidoIdPedidoNavigation)
                     .WithMany(p => p.Venta)
-                    .HasForeignKey(d => d.BoletaIdBoleta)
+                    .HasForeignKey(d => d.PedidoIdPedido)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_VentaBoleta");
+                    .HasConstraintName("FK_VentaPedido");
 
                 entity.HasOne(d => d.TipoPagoIdTipoPagoNavigation)
                     .WithMany(p => p.Venta)
                     .HasForeignKey(d => d.TipoPagoIdTipoPago)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_VentaTipoPago");
+
+                entity.HasOne(d => d.UsuarioIdUsuarioNavigation)
+                    .WithMany(p => p.Venta)
+                    .HasForeignKey(d => d.UsuarioIdUsuario)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_VentaUsuario");
             });
 
             modelBuilder.Entity<Zona>(entity =>

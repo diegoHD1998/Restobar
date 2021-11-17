@@ -9,7 +9,7 @@ namespace SistemaRestobarSayka2.Models
     {
         public Venta()
         {
-            Pedidos = new HashSet<Pedido>();
+            Boleta = new HashSet<Boleta>();
         }
 
         public int IdVenta { get; set; }
@@ -19,10 +19,12 @@ namespace SistemaRestobarSayka2.Models
         public int Total { get; set; }
         public string FolioBoleta { get; set; }
         public int TipoPagoIdTipoPago { get; set; }
-        public int? BoletaIdBoleta { get; set; }
+        public int UsuarioIdUsuario { get; set; }
+        public int PedidoIdPedido { get; set; }
 
-        public virtual Boleta BoletaIdBoletaNavigation { get; set; }
+        public virtual Pedido PedidoIdPedidoNavigation { get; set; }
         public virtual TipoPago TipoPagoIdTipoPagoNavigation { get; set; }
-        public virtual ICollection<Pedido> Pedidos { get; set; }
+        public virtual Usuario UsuarioIdUsuarioNavigation { get; set; }
+        public virtual ICollection<Boleta> Boleta { get; set; }
     }
 }

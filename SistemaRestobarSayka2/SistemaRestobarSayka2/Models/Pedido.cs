@@ -17,11 +17,10 @@ namespace SistemaRestobarSayka2.Models
         public bool Estado { get; set; }
         public int UsuarioIdUsuario { get; set; }
         public int MesaIdMesa { get; set; }
-        public int? VentaIdVenta { get; set; }
 
         public virtual Mesa MesaIdMesaNavigation { get; set; }
         public virtual Usuario UsuarioIdUsuarioNavigation { get; set; }
-        public virtual Venta VentaIdVentaNavigation { get; set; }
         public virtual ICollection<ProductoPedido> ProductoPedidos { get; set; }
+        public virtual ICollection<Venta> Venta { get; set; }
     }
 }

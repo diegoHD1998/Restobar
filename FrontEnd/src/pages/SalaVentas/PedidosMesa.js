@@ -41,7 +41,7 @@ const PedidosMesa = () => {
         idPedido: null,
         usuarioIdUsuario: 3,
         mesaIdMesa: null,
-        ventaIdVenta: null
+        /* ventaIdVenta: null */
     }
 
     let emptyProductoPedido = {

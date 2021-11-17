@@ -25,5 +25,6 @@ namespace SistemaRestobarSayka2.Models
 
         public virtual Rol RolIdRolNavigation { get; set; }
         public virtual ICollection<Pedido> Pedidos { get; set; }
+        public virtual ICollection<Venta> Venta { get; set; }
     }
 }
