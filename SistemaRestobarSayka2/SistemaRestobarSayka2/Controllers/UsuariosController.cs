@@ -160,6 +160,7 @@ namespace SistemaRestobarSayka2.Controllers
 
             return new UsuarioDto
             {
+                IdUsuario = user.IdUsuario,
                 UserName = user.UserName,
                 Nombre = user.Nombre,
                 Apellido = user.Apellido,

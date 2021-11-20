@@ -52,12 +52,12 @@
     color: #2170E7;
     cursor: pointer;
   }
-  .login-body .login-wrapper .login-panel > input {
+  .login-body .login-wrapper .login-panel .userName .cajaSpan > input {
     width: 247px;
     max-width: 247px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     background-color: #F6F7F7;
-    border: 1.2px solid #D4D6D9;
+    /* border: 1.2px solid #D4D6D9; */
     color: #515C66;
     padding: 12px 10px;
   }
@@ -68,11 +68,13 @@
     width: 247px;
   }
 
+  
+
   .login-body .login-wrapper .login-panel .p-password .p-password-input {
     width: 100%;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     background-color: #F6F7F7;
-    border: 1.2px solid #D4D6D9;
+    /* border: 1.2px solid #D4D6D9; */
     color: #515C66;
     padding: 12px 10px;
   }
@@ -80,7 +82,7 @@
   .login-body .login-wrapper .login-panel .p-password .p-password-input::placeholder {
     color: gba(41, 50, 65, 0.3);
   }
-  .login-body .login-wrapper .login-panel > button {
+  .login-body .login-wrapper .login-panel .botonLogin {
     width: 247px;
     max-width: 247px;
     margin-bottom: 10px;

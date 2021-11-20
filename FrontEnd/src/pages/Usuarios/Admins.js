@@ -90,10 +90,14 @@ export default function Admins ()  {
         if(usuario.userName.trim()){
             let validacion = null
 
-            await usuarioService.validarUserName(usuario.userName).then(res =>{
+            await usuarioService.validarUserName(usuario.userName).then(res =>{// ver que el UserName no se repita
                 if(res.status === 200){
-                    setValidar(res.data)
-                    validacion = res.data
+                    if(usuario.idUsuario === res.data.idUsuario){
+                        setValidar(null)
+                    }else{
+                        setValidar(res.data)
+                        validacion = res.data
+                    }
                 }else if(res.status === 204){
                     setValidar(null)
                 }
@@ -152,6 +156,7 @@ export default function Admins ()  {
                     setProductDialog(false);
                     setUsuario(emptyUsuario);
                     setPassword2(null)
+                    setConfirmPass(false)
                 }
             }
             // UserName

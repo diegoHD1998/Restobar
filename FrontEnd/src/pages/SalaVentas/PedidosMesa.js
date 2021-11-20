@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Inplace, InplaceDisplay, InplaceContent } from 'primereact/inplace';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import {useParams,useHistory } from 'react-router-dom'
+import { AuthContext } from '../../auth/AuthContext';
+import { ColumnGroup } from 'primereact/columngroup';
+import { InputSwitch } from 'primereact/inputswitch';
+import { InputNumber } from 'primereact/inputnumber'
 import { DataTable } from 'primereact/datatable';
+import { Dropdown } from 'primereact/dropdown';
 import { Divider } from 'primereact/divider';
 import { Column } from 'primereact/column';
-import { ColumnGroup } from 'primereact/columngroup';
-import {InputNumber} from 'primereact/inputnumber'
-import { InputSwitch } from 'primereact/inputswitch';
-import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { Row } from 'primereact/row';
 import { Toast } from 'primereact/toast';
+import { Row } from 'primereact/row';
 
 import ProductoService from '../../service/ProductosService/ProductoService';
 import CategoriaService from '../../service/ProductosService/CategoriaService';
@@ -20,7 +21,6 @@ import ProductoModificadorService from '../../service/ProductosService/ProductoM
 import ProductoPedidoService from '../../service/PedidoService/ProductoPedidoService';
 import PedidoService from '../../service/PedidoService/PedidoService';
 import MesaService from '../../service/MesasService/MesaService';
-import {useParams,useHistory } from 'react-router-dom'
 
 
 const PedidosMesa = () => {
@@ -29,6 +29,8 @@ const PedidosMesa = () => {
     const {name} = useParams()
     const {disp} = useParams()
     const {zona} = useParams()
+
+    const {user} = useContext(AuthContext)
 
     let mesa = {
         idMesa: JSON.parse(id),
@@ -39,9 +41,8 @@ const PedidosMesa = () => {
     
     let emptyPedido = {
         idPedido: null,
-        usuarioIdUsuario: 3,
+        usuarioIdUsuario: user.idUsuario,
         mesaIdMesa: null,
-        /* ventaIdVenta: null */
     }
 
     let emptyProductoPedido = {

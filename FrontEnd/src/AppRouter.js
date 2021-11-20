@@ -1,9 +1,9 @@
-import React,{useContext} from 'react';
-import App from './App';
-import Login from './Login'
+import React, {useContext} from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { AuthContext } from './auth/AuthContext';
-import { PrivateRouter } from './Routers/PrivateRouter';
+import Login from './Login'
+import App from './App';
+
 
 const AppRouter = () => {
 
