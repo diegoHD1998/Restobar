@@ -21,14 +21,12 @@ import ProductoModificadorService from '../../service/ProductosService/ProductoM
 import ProductoPedidoService from '../../service/PedidoService/ProductoPedidoService';
 import PedidoService from '../../service/PedidoService/PedidoService';
 import MesaService from '../../service/MesasService/MesaService';
+import VentaService from '../../service/VentaService/VentaService';
 
 
 const PedidosMesa = () => {
 
-    const {id} = useParams()
-    const {name} = useParams()
-    const {disp} = useParams()
-    const {zona} = useParams()
+    const {id,name,disp,zona} = useParams()
 
     const {user} = useContext(AuthContext)
 
@@ -44,6 +42,14 @@ const PedidosMesa = () => {
         usuarioIdUsuario: user.idUsuario,
         mesaIdMesa: null,
     }
+
+    /* let emptyPedidoPrueba ={
+        idPedido: null,
+        fecha:null,
+        estado:null,
+        usuarioIdUsuario: null,
+        mesaIdMesa: null,
+    } */
 
     let emptyProductoPedido = {
         idProductoPedido:null,
@@ -68,6 +74,9 @@ const PedidosMesa = () => {
         categoriaIdCategoria:null,
         varianteIdVariante:null
     }
+    
+    
+
     const history = useHistory();
 
     const [pedido, setPedido] = useState(null)
@@ -100,17 +109,21 @@ const PedidosMesa = () => {
     const [dialogVisible3, setDialogVisible3] = useState(false);
     const [dialogVisibleVenta, setDialogVisibleVenta] = useState(false);
     const [dialogEfectivo, setDialogEfectivo] = useState(false);
+    const [dialogTarjeta, setDialogTarjeta] = useState(false);
 
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
-    const [SubTotal, setSubTotal] = useState(0)
-    const [Total, setTotal] = useState(0)
-    const [Propina, setPropina] = useState(0)
+    const [SubTotal, setSubTotal] = useState(0)//---------------------------------
+    const [Total, setTotal] = useState(0)//---------------------------------
+    const [Propina, setPropina] = useState(0)//---------------------------------
+    const [efectivoR, setEfectivoR] = useState(0)//---------------------------------
+    const [Vuelto, setVuelto] = useState(0)
 
     const [submitted, setSubmitted] = useState(false);
 
     const productoPedidoService = new ProductoPedidoService()
     const pedidoService = new PedidoService()
     const mesaService = new MesaService()
+    const ventaService = new VentaService()
 
     useEffect(() => {
 
@@ -207,12 +220,18 @@ const PedidosMesa = () => {
         
     }, [mesa.idMesa])
 
-    if(productoPedidos.length === 0 ){
-        mesa.disponibilidad = false
-        mesaService.update(mesa)
-    }else{
-        mesa.disponibilidad = true
-        mesaService.update(mesa)
+    const emptyVenta ={
+        idVenta:null,
+        /* fecha: null, */
+        propina: 0,
+        subTotal:0,
+        total: 0,
+        folioBoleta:'',
+        tipoPagoIdTipoPago:null,
+        usuarioIdUsuario: pedido?.usuarioIdUsuario,
+        pedidoIdPedido: null
+
+        
     }
     
     const buscarProductoModificadores = (idM) => {
@@ -318,19 +337,53 @@ const PedidosMesa = () => {
     
     const hideDialogVenta = () =>{
         setDialogVisibleVenta(false)
+        setEfectivoR(0)
+        setTotal(0)
         setTextoPropina('')
         setSwit(false)
     }
 
-    const hideDialogEfectivo = () => {
+    const hideDialogEfectivo = async() => {
+
+        mesa.disponibilidad = false
+        let _pedido ={
+            ...pedido,
+            estado: false
+        }
+        await mesaService.update(mesa)
+        await pedidoService.update(_pedido)
         setDialogEfectivo(false)
+        setEfectivoR(0)
+        setVuelto(0)
+        setTotal(0)
+        setTextoPropina('')
+        setSwit(false)
+        history.push("/")
     }
+
+    const hideDialogTarjeta = async() => {
+        setDialogTarjeta(false)
+        mesa.disponibilidad = false
+        let _pedido ={
+            ...pedido,
+            estado: false
+        }
+        await mesaService.update(mesa)
+        await pedidoService.update(_pedido)
+        setDialogTarjeta(false)
+        setEfectivoR(0)
+        setTotal(0)
+        setTextoPropina('')
+        setSwit(false)
+        history.push("/")
+    }
+
 
     const PreCobrar = () => {
         setDialogVisibleVenta(true)
         setTotal(SubTotal)
+        setEfectivoR(SubTotal)
     }
-
 
 
     const saveProductoPedido = async() => {
@@ -477,6 +530,98 @@ const PedidosMesa = () => {
 
     }
 
+    const saveVenta = async(idTipoPago) => {
+
+        if(idTipoPago === 1){ //Efectivo
+
+            let venta
+
+            if(swit === true){
+
+                venta = {
+                    ...emptyVenta,
+                    propina: Propina,
+                    subTotal: SubTotal,
+                    total: Total,
+                    tipoPagoIdTipoPago: idTipoPago,
+                    pedidoIdPedido: pedido.idPedido
+                }
+            }else{
+                venta = {
+                    ...emptyVenta,
+                    propina: 0,
+                    subTotal: SubTotal,
+                    total: Total,
+                    tipoPagoIdTipoPago: idTipoPago,
+                    pedidoIdPedido: pedido.idPedido
+                }
+            }
+
+
+            if(efectivoR >= venta.total){
+
+                delete venta.idVenta
+                await ventaService.create(venta).then(res => {
+                    if(res.status >=200 && res.status < 300){
+                        
+                        venta.total === efectivoR ? setVuelto(0) : setVuelto(efectivoR - venta.total) ;
+                        setDialogVisibleVenta(false)
+                        setDialogEfectivo(true)
+                        
+    
+                    }else{
+                        console.log('error en Registrar venta efectivo')
+                        console.log(res.data)
+                        toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: 'Error en Registrar Venta con Efectivo', life: 5000 });
+                    }
+                })
+            }else{
+                toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: 'Efectivo Recibido No Suficiente', life: 6000 });
+            }
+
+
+
+        }else if(idTipoPago === 2){//Tarjeta
+
+            let venta
+
+            if(swit === true){
+
+                venta = {
+                    ...emptyVenta,
+                    propina: Propina,
+                    subTotal: SubTotal,
+                    total: Total,
+                    tipoPagoIdTipoPago: idTipoPago,
+                    pedidoIdPedido: pedido.idPedido
+                }
+            }else{
+                venta = {
+                    ...emptyVenta,
+                    propina: 0,
+                    subTotal: SubTotal,
+                    total: Total,
+                    tipoPagoIdTipoPago: idTipoPago,
+                    pedidoIdPedido: pedido.idPedido
+                }
+            }
+            
+            delete venta.idVenta
+            await ventaService.create(venta).then(res => {
+                if(res.status >=200 && res.status < 300){
+                    setDialogVisibleVenta(false)
+                    setDialogTarjeta(true)
+                }else{
+                    console.log('error en Registrar venta efectivo')
+                    toast.current.show({ severity: 'error', summary: 'Operacion Fallida', detail: 'Error en Registrar Venta con Tarjeta', life: 5000 });
+                }
+            })
+            
+
+        }
+
+    }
+
     const confirmDeleteProduct = (product) => {/* <----------------- */
         setProductoPedido(product);
         setDeleteProductDialog(true);
@@ -502,6 +647,19 @@ const PedidosMesa = () => {
             }
         });
     }
+
+    const SalirDeMesa = async() => {
+        if(productoPedidos.length === 0 ){
+            mesa.disponibilidad = false
+            await mesaService.update(mesa)
+        }else{
+            mesa.disponibilidad = true
+            await mesaService.update(mesa)
+        }
+
+        history.push("/")
+    }
+
     const onCategoriaChange = (e) => {
         dt.current.filter(e.value, 'categoriaIdCategoria', 'equals');
         setCategoriaSelected(e.value);
@@ -536,10 +694,12 @@ const PedidosMesa = () => {
         if(val === true){
             setTextoPropina('+ Propina')
             setTotal(Total+Propina)
+            setEfectivoR(Total+Propina)
             setSwit(true)
         }else if(val === false){
             setTextoPropina('')
             setTotal(Total-Propina)
+            setEfectivoR(Total-Propina)
             setSwit(false)
         }
 
@@ -635,13 +795,13 @@ const PedidosMesa = () => {
         <div className='p-d-flex p-jc-between'>
 
             <div className='p-d-flex p-ai-center' >
-                <Button icon="pi pi-arrow-left" className="p-button-rounded p-mr-3" onClick={()=>history.push("/")}/>
+                <Button icon="pi pi-arrow-left" className="p-button-rounded p-mr-3" onClick={()=>SalirDeMesa()}/>
                 <span className='' >{name.toUpperCase()}</span>
             </div>
 
             <div>
-                <Button label='Pre-Cuenta'  className='p-button-info p-mr-2' />
-                <Button label='Cobrar'  className='p-button-success' onClick={()=> PreCobrar() } />
+                <Button label='Pre-Cuenta' disabled={pedido === null ? true : false}  className='p-button-info p-mr-2' />
+                <Button label='Cobrar' disabled={pedido === null ? true : false}  className='p-button-success' onClick={()=> PreCobrar() } />
             </div>
             
         </div>
@@ -720,7 +880,10 @@ const PedidosMesa = () => {
             <i className="pi pi-credit-card" style={{'fontSize': '1.2em'}}></i>
             <span style={{'fontSize': '1.2em'}}> Tarjeta</span>
         </div>
+        
     )
+    const dialogFooterEfectivo = <div className="p-d-flex p-jc-center"><Button label="OK" className="p-button-text" autoFocus onClick={() => hideDialogEfectivo()} /></div>;
+    const dialogFooterTarjeta = <div className="p-d-flex p-jc-center"><Button label="OK" className="p-button-text" autoFocus onClick={() => hideDialogTarjeta()} /></div>;
 
     let headerGroup = <ColumnGroup>                    
                         <Row>
@@ -867,7 +1030,7 @@ const PedidosMesa = () => {
 
                         <div>
                             <h5>
-                                <b>Cantidad Total a Pagar{textoPropina}</b>
+                                <b>Cantidad Total a Pagar {textoPropina}</b>
                             </h5>
                         </div>
 
@@ -893,26 +1056,49 @@ const PedidosMesa = () => {
 
                     <div className='p-d-flex p-flex-column p-ai-center'>
 
-                        {/* <div className="p-field">
-                            <label htmlFor="precio">Precio</label>
-                            <InputNumber id="precio" value={producto.precio} onChange={(e) => onInputNumberChange(e, 'precio')} required mode="currency" currency="CLP" locale="es-CL" />
+                        <div className="p-field">
+                            <label htmlFor="efectivo">Efectivo recibido</label>
+                            <InputNumber id="efectivo" value={efectivoR} onChange={(e)=> setEfectivoR(e.value)} mode="currency" currency="CLP" locale="es-CL" />
                             
-                        </div> */}
+                        </div>
 
-                        <Button label={Efectivo} /* icon="pi pi-money-bill"  */ className='p-button-info p-button-outlined p-m-3 p-col-12' /* onClick={}  *//>
-                        <Button label={Tarjeta}  /* icon="pi pi-credit-card" */ className='p-button-info p-button-outlined p-m-3 p-col-12' />
+                        <Button label={Efectivo} className='p-button-info p-button-outlined p-m-3 p-col-12' onClick={()=>saveVenta(1)} />
+                        <Button label={Tarjeta}  className='p-button-info p-button-outlined p-m-3 p-col-12' onClick={()=>saveVenta(2)} />
 
                     </div>
 
                 </div>
             </Dialog>
 
-            {/* <Dialog visible={dialogEfectivo} style={{ width: '600px' }} header={name} modal onHide={hideDialogEfectivo}>
+            <Dialog visible={dialogEfectivo}  footer={dialogFooterEfectivo}  showHeader={false} breakpoints={{ '960px': '80vw' }} style={{ width: '30vw' }} >
+                
+            <div className="p-d-flex p-ai-center p-dir-col p-pt-6 p-px-3">
 
-            </Dialog> */}
+                    <div>
+                        <span>Total: {Total} </span>
+                        <span>Vuelto: {Vuelto} </span>
+                    </div>
 
+                    <i className="pi pi-check-circle" style={{ fontSize: '5rem', color: 'var(--green-500)' }}></i>
+                    <h5>Venta registrada Exitosamente</h5>
+                    <p style={{ lineHeight: 1.5, textIndent: '1rem' }}>
+                        texto relleno Efectivo
+                    </p>
+            </div>
+                
+            </Dialog>
 
+            <Dialog visible={dialogTarjeta}  footer={dialogFooterTarjeta} showHeader={false} breakpoints={{ '960px': '80vw' }} style={{ width: '30vw' }} >
 
+                <div className="p-d-flex p-ai-center p-dir-col p-pt-6 p-px-3">
+                    <i className="pi pi-check-circle" style={{ fontSize: '5rem', color: 'var(--green-500)' }}></i>
+                    <h5>Venta registrada Exitosamente</h5>
+                    <p style={{ lineHeight: 1.5, textIndent: '1rem' }}>
+                        texto relleno Tarjeta
+                    </p>
+                </div>
+
+            </Dialog>
 
         </div>
     );

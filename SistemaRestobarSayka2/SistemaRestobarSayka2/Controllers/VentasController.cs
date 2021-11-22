@@ -25,7 +25,8 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Venta>>> GetVenta()
         {
-            return await _context.Venta.ToListAsync();
+            var ventas = await _context.Venta.ToListAsync();
+            return Ok(ventas);
         }
 
         // GET: api/Ventas/5
@@ -78,10 +79,21 @@ namespace SistemaRestobarSayka2.Controllers
         [HttpPost]
         public async Task<ActionResult<Venta>> PostVenta(Venta venta)
         {
-            _context.Venta.Add(venta);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetVenta", new { id = venta.IdVenta }, venta);
+            try
+            {
+                venta.Fecha = DateTime.Today;
+
+                _context.Venta.Add(venta);
+                await _context.SaveChangesAsync();
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
+            return Ok(venta);
         }
 
         // DELETE: api/Ventas/5

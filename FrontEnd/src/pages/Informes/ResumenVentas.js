@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Calendar} from 'primereact/calendar'
 import { addLocale } from 'primereact/api';
 import { Chart } from 'primereact/chart';
-import VentasService from '../../service/InformeService/VentaService';
+import VentasService from '../../service/InformeService/VentaFakeService';
 
 const ResumenVentas = () => {
     const [date1, setDate1] = useState(null)
