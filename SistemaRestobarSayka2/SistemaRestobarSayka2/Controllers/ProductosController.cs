@@ -124,6 +124,7 @@ namespace SistemaRestobarSayka2.Controllers
             catch
             {
                 return BadRequest("El Producto No fue Eliminado");
+                //return BadRequest(ex);
             }
 
 

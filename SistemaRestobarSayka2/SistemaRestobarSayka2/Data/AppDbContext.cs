@@ -1,7 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using SistemaRestobarSayka2.Dtos;
 using SistemaRestobarSayka2.Models;
+using SistemaRestobarSayka2.Models.StoredProcedure;
 
 #nullable disable
 
@@ -35,6 +37,14 @@ namespace SistemaRestobarSayka2.Data
         public virtual DbSet<Variante> Variantes { get; set; }
         public virtual DbSet<Venta> Venta { get; set; }
         public virtual DbSet<Zona> Zonas { get; set; }
+
+
+        public virtual DbSet<SP_VentasEmpleados> SP_VentasEmpleadoss  { get; set; }
+        public virtual DbSet<SP_VentasProducto> SP_VentasProductos  { get; set; }
+        public virtual DbSet<SP_VentasProductoSpecific> SP_VentasProductoSpecifics  { get; set; }
+        public virtual DbSet<SP_VentasSubTotales>SP_VentasSubTotaless { get; set; }
+        public virtual DbSet<SP_VentasTotales>SP_VentasTotaless  { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -405,6 +415,37 @@ namespace SistemaRestobarSayka2.Data
                 entity.Property(e => e.Estado).IsRequired();
 
                 entity.Property(e => e.Nombre).IsRequired();
+            });
+
+
+            modelBuilder.Entity<SP_VentasEmpleados>(entity =>
+            {
+                entity.HasNoKey();
+
+            });
+
+            modelBuilder.Entity<SP_VentasProducto>(entity =>
+            {
+                entity.HasNoKey();
+
+            });
+
+            modelBuilder.Entity<SP_VentasProductoSpecific>(entity =>
+            {
+                entity.HasNoKey();
+
+            });
+
+            modelBuilder.Entity<SP_VentasSubTotales>(entity =>
+            {
+                entity.HasNoKey();
+
+            });
+
+            modelBuilder.Entity<SP_VentasTotales>(entity =>
+            {
+                entity.HasNoKey();
+
             });
 
             OnModelCreatingPartial(modelBuilder);
