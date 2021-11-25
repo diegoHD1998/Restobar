@@ -1,9 +1,29 @@
 import React, {useState, useEffect} from 'react';
 import {Calendar} from 'primereact/calendar'
 import { addLocale } from 'primereact/api';
-import { Chart } from 'primereact/chart';
 import StoredProcedureVentas from '../../service/InformeService/StoredProcedureVentas'
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+  } from 'chart.js';
 
+  import { Line } from 'react-chartjs-2';
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  );
 
 const ResumenVentas = () => {
     let fecha = new Date();
@@ -17,8 +37,6 @@ const ResumenVentas = () => {
 
     const [RangoFecha, setRangoFecha] = useState(emptyFecha)
     const [SubTotalVentas, setSubTotalVentas] = useState([])
-    
-    /* const fechaOptions = {month:'short', day:'numeric'} */
     const storedProcedureVentas = new StoredProcedureVentas()
 
     addLocale('es', {
@@ -34,15 +52,11 @@ const ResumenVentas = () => {
     
 
     useEffect(()=>{
-
-
-
         let fechas = {
-            date1:fecha /* `${fecha.getFullYear()}-${fecha.getMonth()+1}-${fecha.getDate()}` */,
-            date2:fecha1 /* `${fecha1.getFullYear()}-${fecha1.getMonth()+1}-${fecha1.getDate()}` */
+            date1:`${fecha.getFullYear()}-${fecha.getMonth()+1}-${fecha.getDate()}`,
+            date2:`${fecha1.getFullYear()}-${fecha1.getMonth()+1}-${fecha1.getDate()}` 
         }
         console.log(fechas)
-        setRangoFecha(fechas)
         
         const storedProcedureVentas = new StoredProcedureVentas()
         storedProcedureVentas.GetVentasSubTotales(fechas).then(res => {
@@ -66,71 +80,63 @@ const ResumenVentas = () => {
             let _date = new Date(value.fecha)
             return _date.toLocaleDateString('es-CL',{month:'short', day:'numeric'})
         }),
-        datasets: [
-            {
-                data: SubTotalVentas.map((value) => value.subTotal),
-                fill: true,
-                backgroundColor: 'rgba(66,165,245,0.2)',
-                borderColor: '#42A5F5',
-                tension: .1,
-                pointBackgroundColor:'#42A5F5',
-                pointHoverRadius: 6,
-                pointHitRadius: 30,
-                
-            }
+        datasets: [{
+            label: "Ventas",
+            data: SubTotalVentas.map((value) => value.subTotal),
+            fill: true,
+            borderColor: '#42A5F5',
+            backgroundColor: 'rgba(66,165,245,0.2)',
+            tension: .1,
+            pointBackgroundColor:'#42A5F5',
+            pointHoverRadius: 6,
+            pointHitRadius: 30,        
+        }
         ]
     };
     
     const options = {
+        maintainAspectRatio:false,
         responsive: true,
-        title: {
-            
-          display: true,
-          text: 'Resumen de Ventas',
-          fontSize: 16
-        },
-        legend: {
-            display:false
-        },
-        parsing: {
-            xAxisKey: 'fecha',
-            yAxisKey: 'subTotal'
+        plugins:{
+            title: {
+              display: true,
+              text: 'Resumen de Ventas',
+              fontSize: 16
+            },
+            legend: {
+                display:false
+            },
+            /* tooltip:{
+                callbacks:{
+                    label: function(value){
+                        let valor = value.raw.toLocaleString("es-CL",{style:"currency", currency:"CLP"})
+                        let texto = `${value.dataset.label}: ${valor}`
+                        return texto ;
+                    }
+
+                    footer: function(value){
+                        return `${value} dfiugh`
+                    }
+                }
+            } */
+
+           
         },
         scales:{
-
-            
-            
-            yAxes: [{
-
-                
+            y:{
                 ticks: {
-                    
                     beginAtZero: true,
                     // stepSize: 200000, 
                     callback: function(value) {
                         return value.toLocaleString("es-CL",{style:"currency", currency:"CLP"});
                     },
-                    
-                }
-            }],
-            
-            
-            
-        },
-        tooltips:{
-            callbacks:{
-                label: function(value){
-                    
-                    return value.yLabel.toLocaleString("es-CL",{style:"currency", currency:"CLP"});
                 }
             }
-        }
-        
-        
+        },
     };
     
 
-    const onInputChange = async(e, name) => {/* <----------------- */
+    const onInputChange = async(e, name) => {
         
         const val = (e.target && e.target.value) || '';
         let _rangoFecha = {...RangoFecha};
@@ -159,21 +165,21 @@ const ResumenVentas = () => {
             <div className='p-fluid p-grid ' >
 
                 <div className='p-field'>
-                    <label htmlFor="date1">Desde: </label>
-                    <Calendar id='date1' value={RangoFecha.date1} dateFormat='dd M yy' onChange={(e)=>onInputChange(e,'date1')}  showIcon className='p-mr-3' locale='es' />
+                    {/* <label htmlFor="date1">Desde: </label> */}
+                    <Calendar id='date1' value={RangoFecha.date1} dateFormat='dd MM yy' onChange={(e)=>onInputChange(e,'date1')}  showIcon className='p-mr-3' locale='es' />
                 </div>
 
                 <div className='p-field'>
-                    <label htmlFor="date2"> Hasta: </label>
-                    <Calendar id='date2' value={RangoFecha.date2} dateFormat='dd M yy' onChange={(e)=>onInputChange(e,'date2')} showIcon locale='es'/>
+                    {/* <label htmlFor="date2"> Hasta: </label> */}
+                    <Calendar id='date2' value={RangoFecha.date2} dateFormat='dd MM yy' onChange={(e)=>onInputChange(e,'date2')} showIcon locale='es'/>
                 </div>
 
             </div> 
 
             <div className='p-grid p-card p-jc-center' >
 
-                <div className='p-col-10  ' >
-                    <Chart type="line" data={lineData} options={options}/>
+                <div className='p-col-12  ' >
+                    <Line data={lineData} options={options} height={350}/>
                 </div>
 
             </div>
@@ -182,17 +188,3 @@ const ResumenVentas = () => {
 };
 
 export default ResumenVentas;
-
-
-/* const ventasFakeService = new VentasFakeService()
-ventasFakeService.getVentasFake().then(data => {
-
-    
-    setVentas(data.map(value =>value.montoTotal))
-    setFechas(data.map(value =>{
-        let _date = new Date(value.fecha)
-        let _fecha = _date.toLocaleDateString('es-CL',{month:'short', day:'numeric'})
-        return _fecha
-    }))
-    
-}) */
