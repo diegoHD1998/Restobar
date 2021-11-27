@@ -105,6 +105,17 @@ const VentasEmpleados = () =>  {
                 text: "Ventas por Empleado",
             },
         },
+        scales:{
+            x:{
+                ticks: {
+                    beginAtZero: true,
+                    // stepSize: 200000, 
+                    callback: function(value) {
+                        return value.toLocaleString("es-CL",{style:"currency", currency:"CLP"});
+                    },
+                }
+            }
+        },
     };
 
 

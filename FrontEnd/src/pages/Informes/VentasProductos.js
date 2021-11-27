@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 import {Calendar} from 'primereact/calendar'
 import { addLocale } from 'primereact/api';
 import StoredProcedureVentas from '../../service/InformeService/StoredProcedureVentas'
@@ -12,7 +14,7 @@ import {
     Legend 
 } from "chart.js";
 
-  import { Bar } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 
   ChartJS.register(
     CategoryScale, 
@@ -62,14 +64,7 @@ const VentasProductos = () => {
             if(res){
                 if(res.status >= 200 && res.status < 300){
                     
-                    let _data = res.data.map((value) => {
-                        return {
-                            x: value.total,
-                            y: value.nombre
-                        }
-                    })
-                    setVentasProducto(_data)
-                    
+                    setVentasProducto(res.data)
                     
                 }else{
                     console.log(res.data)
@@ -83,10 +78,10 @@ const VentasProductos = () => {
     },[]);
     
     const basicData = {
-        /* labels: VentasProducto.map(value => value.nombre), */
+        labels: VentasProducto.map(value => `${value.nombre} (${value.cantidad})`),
         datasets: [{
             label: "Ventas",
-            data: VentasProducto,
+            data: VentasProducto.map((value) => value.total),
             fill: true,
             borderColor: '#42A5F5',
             backgroundColor: 'rgba(66,165,245,0.2)',
@@ -108,9 +103,6 @@ const VentasProductos = () => {
             },
         },
         plugins: {
-            legend: {
-                position: "top",
-            },
             title: {
                 display: true,
                 text: "Ventas por Producto",
@@ -120,11 +112,11 @@ const VentasProductos = () => {
             },
              tooltip:{
                 callbacks:{
-                    /* label: function(value){
+                    label: function(value){
                         let valor = value.raw.toLocaleString("es-CL",{style:"currency", currency:"CLP"})
                         let texto = `${value.dataset.label}: ${valor}`
                         return texto ;
-                    } */
+                    }
 
                     /* footer: function(value){
                         console.log(value)
@@ -133,6 +125,17 @@ const VentasProductos = () => {
                     } */
                 }
             } 
+        },
+        scales:{
+            x:{
+                ticks: {
+                    beginAtZero: true,
+                    // stepSize: 200000, 
+                    callback: function(value) {
+                        return value.toLocaleString("es-CL",{style:"currency", currency:"CLP"});
+                    },
+                }
+            }
         },
         
     };
@@ -148,14 +151,7 @@ const VentasProductos = () => {
         await storedProcedureVentas.GetVentasProducto(_rangoFecha).then(res => {
             if(res){
                 if(res.status >= 200 && res.status < 300){
-                    
-                    let _data = res.data.map((value) => {
-                        return {
-                            x: value.total,
-                            y: value.nombre
-                        }
-                    })
-                    setVentasProducto(_data)
+                    setVentasProducto(res.data)
                     
                 }else{
                     console.log(res.data)
@@ -166,6 +162,12 @@ const VentasProductos = () => {
             }
         })
         
+    }
+
+    const MonedaBodyTemplate = (rowData) => {
+
+        return rowData.total ? rowData.total.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0}) : '';
+
     }
     
     return (
@@ -185,10 +187,20 @@ const VentasProductos = () => {
 
             </div> 
 
-            <div className='p-grid p-card p-jc-center' >
+            <div className='p-grid  ' >
 
-                <div className='p-col-12  ' >
+                <div className='p-card p-col-12 p-mb-6 ' >
                     <Bar data={basicData} options={options} height={400}/>
+                </div>
+
+                <div className='p-card p-col-12 ' >
+                    
+                    <DataTable value={VentasProducto} header='Detalle Ventas por Producto' responsiveLayout="scroll">
+                        <Column field="nombre" header="Nombre"></Column>
+                        <Column field="cantidad" header="Cantidad" ></Column>
+                        <Column field="total" header="Total Vendidos"  body={MonedaBodyTemplate}></Column>
+                    </DataTable>
+                    
                 </div>
 
             </div>

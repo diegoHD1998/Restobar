@@ -21,6 +21,7 @@ namespace SistemaRestobarSayka2.Models
         public int TipoPagoIdTipoPago { get; set; }
         public int UsuarioIdUsuario { get; set; }
         public int PedidoIdPedido { get; set; }
+        public TimeSpan? Hora { get; set; }
 
         public virtual Pedido PedidoIdPedidoNavigation { get; set; }
         public virtual TipoPago TipoPagoIdTipoPagoNavigation { get; set; }

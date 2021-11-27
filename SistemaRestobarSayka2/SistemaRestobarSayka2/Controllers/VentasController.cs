@@ -78,6 +78,14 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(result);
         }
 
+        //GET api/Ventas/spVentasDelDia
+        [HttpPost("spVentasDelDia")]
+        public async Task<ActionResult<IEnumerable<SP_VentasDelDia>>> GetVentasDelDia(FechaDto fecha)
+        {
+            var result = await _context.SP_VentasDelDias.FromSqlInterpolated($"Exec SP_VentasDelDia @fecha1 = {fecha.Date1} ").ToListAsync();
+            return Ok(result);
+        }
+
         //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         // GET: api/Ventas/5
@@ -134,7 +142,7 @@ namespace SistemaRestobarSayka2.Controllers
             try
             {
                 venta.Fecha = DateTime.Today;
-
+                venta.Hora = DateTime.Now.TimeOfDay;
                 _context.Venta.Add(venta);
                 await _context.SaveChangesAsync();
 

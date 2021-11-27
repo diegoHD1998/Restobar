@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef,useContext } from 'react';
 import classNames from 'classnames';
 import { Switch, Route, useHistory,Redirect } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
@@ -7,11 +7,13 @@ import { AppTopbar } from './AppTopbar';
 import { AppMenu } from './AppMenu';
 import { AppProfile } from './AppProfile';
 import { AppConfig } from './AppConfig';
+import { AuthContext } from './auth/AuthContext';
 
 import SalaDeVentas from './pages/SalaVentas/SalaDeVentas';
 import ResumenVentas from './pages/Informes/ResumenVentas';
 import VentasEmpleados from './pages/Informes/VentasEmpleados';
 import VentasProductos from './pages/Informes/VentasProductos';
+import VentasDelDia from './pages/Informes/VentasDelDia';
 
 import Mesas from './pages/MesasZonas/Mesas';
 import Zonas from './pages/MesasZonas/Zonas';
@@ -44,7 +46,7 @@ import './layout/layout.scss';
 import './App.scss';
 
 const App = () => {
-
+    const {user} = useContext(AuthContext)
     const [layoutMode, setLayoutMode] = useState('static');
     const [layoutColorMode, setLayoutColorMode] = useState('dark')
     const [inputStyle, setInputStyle] = useState('outlined');
@@ -119,7 +121,8 @@ const App = () => {
             label: 'Informes', icon: 'pi pi-fw pi-chart-bar',
             items: [
                 { label: 'Resumen de Ventas', icon: 'pi pi-fw pi-bookmark', to: '/resumen-ventas' },
-                { label: 'Ventas por Empleado', icon: 'pi pi-fw pi-bookmark', to: '/ventas-empleados' },
+                { label: 'Ventas del Dia', icon: 'pi pi-fw pi-bookmark' , to: '/ventas-dia'},
+                /* { label: 'Ventas por Empleado', icon: 'pi pi-fw pi-bookmark', to: '/ventas-empleados' }, */
                 { label: 'Ventas por Producto', icon: 'pi pi-fw pi-bookmark', to: '/ventas-producto' },
             ]
         },
@@ -158,6 +161,37 @@ const App = () => {
         { label: 'Experimento', icon: 'pi pi-fw pi-home', to: '/experimento2' },
     ];
 
+    const menu2 = [
+        { label: 'Sala de Ventas', icon: 'pi pi-fw pi-home', to: '/' },
+        {
+            label: "Productos",
+            icon: "pi pi-fw pi-book",
+            items: [
+                { label: "Lista de Productos", to: "/lista-productos" },
+                { label: "Categorias", to: "/categoria" },
+                { label: "Variantes", to: "/variantes" },
+                { label: "Modificadores", to: "/modificadores" },
+            ]
+        },
+        {
+            label: "Asingnacion Mesas",
+            icon: "pi pi-fw pi-table",
+            items: [
+                { label: "Lista de Mesas" ,to: "/lista-mesas" },
+                { label: "Zonas", to: "/zonas" },
+                
+            ]
+        }
+    ];
+
+    const menu3 = [
+
+    ]
+
+    const menu4 = [
+
+    ]
+
     const addClass = (element, className) => {
         if (element.classList)
             element.classList.add(className);
@@ -191,6 +225,7 @@ const App = () => {
         'layout-sidebar-light': layoutColorMode === 'light'
     });
 
+
     return (
         <div className={wrapperClass} onClick={onWrapperClick}>
             <AppTopbar onToggleMenu={onToggleMenu} />
@@ -201,7 +236,7 @@ const App = () => {
                         <img alt="Logo" src={logo} />
                     </div>
                     <AppProfile />
-                    <AppMenu model={menu} onMenuItemClick={onMenuItemClick} />
+                    <AppMenu model={user?.rol === 1 ? menu : user?.rol === 2 ? menu2 : user?.rol === 3 ? menu3 : menu4} onMenuItemClick={onMenuItemClick} />
                 </div>
             </CSSTransition>
 
@@ -210,36 +245,37 @@ const App = () => {
 
             <div className="layout-main">
                 <Switch>
-                {/* Informes */}
-                <Route exact path="/resumen-ventas"  component={ResumenVentas} />
-                <Route exact path="/ventas-empleados"  component={VentasEmpleados} />
-                <Route exact path="/ventas-producto"  component={VentasProductos} />
+                    {/* Informes */}
+                    <Route exact path="/resumen-ventas"  component={ResumenVentas} />
+                    <Route exact path="/ventas-dia" component={VentasDelDia} /> 
+                    <Route exact path="/ventas-empleados"  component={VentasEmpleados} />
+                    <Route exact path="/ventas-producto"  component={VentasProductos} />
 
-                {/* Productos */}
-                <Route exact path="/lista-productos"  component={Productos} />
-                <Route exact path="/categoria"  component={Categorias} />
-                <Route exact path="/variantes"  component={Variantes} />
-                <Route exact path="/modificadores"  component={Modificadores} />
+                    {/* Productos */}
+                    <Route exact path="/lista-productos"  component={Productos} />
+                    <Route exact path="/categoria"  component={Categorias} />
+                    <Route exact path="/variantes"  component={Variantes} />
+                    <Route exact path="/modificadores"  component={Modificadores} />
 
-                {/* Usuarios */}
-                <Route exact path="/lista-administradores"  component={Admins} />
-                <Route exact path="/lista-meseros"  component={Meseros} />
-                <Route exact path="/lista-bartenders"  component={Bartenders} />
-                <Route exact path="/lista-cocineros"  component={Cocineros} />
+                    {/* Usuarios */}
+                    <Route exact path="/lista-administradores"  component={Admins} />
+                    <Route exact path="/lista-meseros"  component={Meseros} />
+                    <Route exact path="/lista-bartenders"  component={Bartenders} />
+                    <Route exact path="/lista-cocineros"  component={Cocineros} />
 
-                <Route exact path="/roles"  component={Roles} />
+                    <Route exact path="/roles"  component={Roles} />
 
-                {/* Mesas */}
-                <Route exact path="/lista-mesas"  component={Mesas} />
-                <Route exact path="/zonas"  component={Zonas} />
+                    {/* Mesas */}
+                    <Route exact path="/lista-mesas"  component={Mesas} />
+                    <Route exact path="/zonas"  component={Zonas} />
 
-                <Route exact path="/pedido/:id/:name/:disp/:zona"  component={PedidosMesa}/>
+                    <Route exact path="/pedido/:id/:name/:disp/:zona"  component={PedidosMesa}/>
 
-                <Route exact path="/experimento2"  component={Experimento2} />
-                
-                <Route exact path="/salaVentas" component={SalaDeVentas} />
+                    <Route exact path="/experimento2"  component={Experimento2} />
 
-                <Redirect to='/salaVentas'/>
+                    <Route exact path="/salaVentas" component={SalaDeVentas} />
+
+                    <Redirect to='/salaVentas'/>
 
                 </Switch>
             </div>

@@ -3,6 +3,7 @@ import {useParams,useHistory } from 'react-router-dom'
 import { AuthContext } from '../../auth/AuthContext';
 import { ColumnGroup } from 'primereact/columngroup';
 import { InputSwitch } from 'primereact/inputswitch';
+import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber'
 import { DataTable } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
@@ -119,6 +120,7 @@ const PedidosMesa = () => {
     const [Vuelto, setVuelto] = useState(0)
 
     const [submitted, setSubmitted] = useState(false);
+    const [globalFilter, setGlobalFilter] = useState(null);
 
     const productoPedidoService = new ProductoPedidoService()
     const pedidoService = new PedidoService()
@@ -845,7 +847,11 @@ const PedidosMesa = () => {
             </div>
 
             <div>
-                <Dropdown value={categoriaSelected} options={categorias} optionLabel='nombre' optionValue='idCategoria' placeholder='Buscar Categoria' itemTemplate={categoriaItemTemplate} onChange={(e)=>onCategoriaChange(e)} className='p-column-filter' showClear />
+                <span className="p-input-icon-left ">
+                    <i className="pi pi-search" />
+                    <InputText type="search" style={{width:'120px'}} onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Buscar..." />
+                </span>
+                <Dropdown value={categoriaSelected} options={categorias} optionLabel='nombre' optionValue='idCategoria' placeholder='Categoria' itemTemplate={categoriaItemTemplate} onChange={(e)=>onCategoriaChange(e)} className='p-column-filter' showClear />
             </div>
         </div>
     )
@@ -924,7 +930,8 @@ const PedidosMesa = () => {
 
             <div className='TablaProductos p-col-12 p-md-6 '>
                 <DataTable ref={dt} dataKey='idProducto' value={productos} header={header} scrollable scrollHeight='330px'  
-                 selection={selected} onSelectionChange={e => cambiarSelect(e.value)}  selectionMode="single" emptyMessage='No hay Productos Disponibles'>
+                 selection={selected} onSelectionChange={e => cambiarSelect(e.value)} globalFilter={globalFilter}  selectionMode="single" emptyMessage='No hay Productos Disponibles'>
+                    <Column field='nombre' style={{display:'none'}} />
                     <Column field='categoriaIdCategoria' headerStyle={{display:'none'}} body={ProductoTemplate} />
                 </DataTable>
             </div>

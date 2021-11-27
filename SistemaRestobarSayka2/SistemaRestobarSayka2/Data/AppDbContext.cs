@@ -44,6 +44,7 @@ namespace SistemaRestobarSayka2.Data
         public virtual DbSet<SP_VentasProductoSpecific> SP_VentasProductoSpecifics  { get; set; }
         public virtual DbSet<SP_VentasSubTotales>SP_VentasSubTotaless { get; set; }
         public virtual DbSet<SP_VentasTotales>SP_VentasTotaless  { get; set; }
+        public virtual DbSet<SP_VentasDelDia>SP_VentasDelDias { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -446,6 +447,11 @@ namespace SistemaRestobarSayka2.Data
             {
                 entity.HasNoKey();
 
+            });
+
+            modelBuilder.Entity<SP_VentasDelDia>(entity =>
+            {
+                entity.HasNoKey();
             });
 
             OnModelCreatingPartial(modelBuilder);

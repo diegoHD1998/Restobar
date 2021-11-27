@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace SistemaRestobarSayka2.Models.StoredProcedure
 {
-    public class SP_VentasSubTotales
+    public class SP_VentasDelDia
     {
-        public DateTime Fecha { get; set; }
+        public TimeSpan Hora { get; set; }
 
         public int SubTotal { get; set; }
 
