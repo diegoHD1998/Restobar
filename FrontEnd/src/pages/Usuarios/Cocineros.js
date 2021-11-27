@@ -91,8 +91,12 @@ export default function Cocineros ()  {
             let validacion = null
             await usuarioService.validarUserName(usuario.userName).then(res =>{
                 if(res.status === 200){
-                    setValidar(res.data)
-                    validacion = res.data
+                    if(usuario.idUsuario === res.data.idUsuario){
+                        setValidar(null)
+                    }else{
+                        setValidar(res.data)
+                        validacion = res.data
+                    }
                 }else if(res.status === 204){
                     setValidar(null)
                 }
@@ -151,6 +155,7 @@ export default function Cocineros ()  {
                     setProductDialog(false);
                     setUsuario(emptyUsuario);
                     setPassword2(null)
+                    setConfirmPass(false)
                 }
             }
 
@@ -164,10 +169,10 @@ export default function Cocineros ()  {
         setProductDialog(true);
     }
 
-    const confirmDeleteProduct = (product) => {
+    /* const confirmDeleteProduct = (product) => {
         setUsuario(product);
         setDeleteProductDialog(true);
-    }
+    } */
 
     const deleteProduct = async() => { 
         await usuarioService.delete(usuario.idUsuario)
@@ -246,9 +251,13 @@ export default function Cocineros ()  {
         return (
             <div className="actions">
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} />
+                {/* <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} /> */}
             </div>
         );
+    }
+
+    const statusBodyTemplate = (rowData) => {
+        return <span className={`product-badge-1 status-${rowData.estado.toLowerCase()}`}>{rowData.estado}</span>;
     }
 
     const header = (
@@ -292,7 +301,7 @@ export default function Cocineros ()  {
                         <Column field="apellido" header="Apellidos" ></Column>
                         <Column field="telefono" header="Telefono" ></Column>
                         <Column field="direccion" header="Direccion" ></Column>
-                        <Column field="estado" header="Estado" ></Column>
+                        <Column field="estado" header="Estado" body={statusBodyTemplate}></Column>
                         <Column field="email" header="Email"></Column>
                         <Column></Column>
                         <Column body={actionBodyTemplate}></Column>

@@ -101,7 +101,7 @@ export default function Admins ()  {
                 }else if(res.status === 204){
                     setValidar(null)
                 }
-            })
+            });
 
             console.log(validacion)
             if(validacion === null){
@@ -171,10 +171,10 @@ export default function Admins ()  {
         setProductDialog(true);
     }
 
-    const confirmDeleteProduct = (product) => {
+    /* const confirmDeleteProduct = (product) => {
         setUsuario(product);
         setDeleteProductDialog(true);
-    }
+    } */
 
     const deleteProduct = async() => { 
         await usuarioService.delete(usuario.idUsuario)
@@ -253,9 +253,13 @@ export default function Admins ()  {
         return (
             <div className="actions">
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} />
+                {/* <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} /> */}
             </div>
         );
+    }
+
+    const statusBodyTemplate = (rowData) => {
+        return <span className={`product-badge-1 status-${rowData.estado.toLowerCase()}`}>{rowData.estado}</span>;
     }
 
     const header = (
@@ -299,7 +303,7 @@ export default function Admins ()  {
                         <Column field="apellido" header="Apellidos" ></Column>
                         <Column field="telefono" header="Telefono" ></Column>
                         <Column field="direccion" header="Direccion" ></Column>
-                        <Column field="estado" header="Estado" ></Column>
+                        <Column field="estado" header="Estado" body={statusBodyTemplate}></Column>
                         <Column field="email" header="Email"></Column>
                         <Column></Column>
                         <Column body={actionBodyTemplate}></Column>

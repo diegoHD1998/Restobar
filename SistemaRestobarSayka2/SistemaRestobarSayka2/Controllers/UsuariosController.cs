@@ -158,6 +158,11 @@ namespace SistemaRestobarSayka2.Controllers
                 return Unauthorized("Contraseña Incorrecta");
             }
 
+            if (user.Estado == "Inactivo")
+            {
+                return Unauthorized("Usuario No Autorizado");
+            }
+
             return new UsuarioDto
             {
                 IdUsuario = user.IdUsuario,

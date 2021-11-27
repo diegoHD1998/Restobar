@@ -82,8 +82,15 @@ export default function Productos ()  {
         varianteService.readAll().then((res)=>{
             if(res){
                 if(res.status >= 200 && res.status<300){
+
+                    /* let _variantes = res.data
+                    let _ValorNull = {
+                        idVariante: null,
+                        nombre: 'Sin Variante'
+                    }
+
+                    _variantes.push(_ValorNull) */
                     setVariantes(res.data)
-                    
                     /* setloading(false) */
                 }else{
                     console.log('Error al cargar Datos de Variantes')
@@ -379,6 +386,10 @@ export default function Productos ()  {
         let _product = { ...producto };
         _product[`${name}`] = val;
 
+        if(name === 'varianteIdVariante' && val === ''){
+            _product[`${name}`] = null;
+        }
+
         setProducto(_product);
     }
     
@@ -386,7 +397,7 @@ export default function Productos ()  {
         const val = e.value || 0;
         let _product = {...producto};
         _product[`${name}`] = val;
-
+        
         setProducto(_product);
     }
 
@@ -626,7 +637,7 @@ export default function Productos ()  {
         return rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
         
     }
-
+    console.log(producto)
     return (
         
         <div className="p-grid crud-demo">
@@ -679,7 +690,7 @@ export default function Productos ()  {
 
                         <div className="p-field" >
                             <label htmlFor="varianteIdVariante">Variante</label>
-                            <Dropdown id="varianteIdVariante" optionLabel="nombre" optionValue="idVariante" value={producto.varianteIdVariante} options={variantes} placeholder='Seleccione Variante' onChange={(e) => onInputChange(e, 'varianteIdVariante')}  rows={3} cols={20} />
+                            <Dropdown id="varianteIdVariante" optionLabel="nombre" optionValue="idVariante" value={producto.varianteIdVariante} options={variantes} placeholder='Seleccione Variante' onChange={(e) => onInputChange(e, 'varianteIdVariante')} showClear   rows={3} cols={20} />
                         </div>
 
                         {/* ------------------------------------------------------------------------------------------------------------ */}
