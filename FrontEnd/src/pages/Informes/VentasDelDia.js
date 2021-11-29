@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import {Calendar} from 'primereact/calendar'
@@ -30,7 +30,10 @@ import {
   );
 
 const VentasDelDia = () => {
-    let fecha = new Date();
+    let fecha =  useMemo(() => {
+        let date = new Date()
+        return date
+    },[]);
     
     const emptyFecha = {
         date1:fecha
@@ -98,7 +101,7 @@ const VentasDelDia = () => {
             }
         })
         
-    },[]);
+    },[fecha]);
     
     const lineData = {
         labels: VentasD.map((value) => `${value.hora.hours}:${value.hora.minutes}:${value.hora.seconds}`),

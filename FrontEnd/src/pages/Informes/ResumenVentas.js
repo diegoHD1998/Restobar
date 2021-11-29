@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {Calendar} from 'primereact/calendar'
 import { addLocale } from 'primereact/api';
 import StoredProcedureVentas from '../../service/InformeService/StoredProcedureVentas'
@@ -26,9 +26,20 @@ import {
   );
 
 const ResumenVentas = () => {
-    let fecha = new Date();
-    let fecha1 = new Date();
-    fecha.setDate(fecha.getDate()-30)
+    
+    let fecha =  useMemo(() => {
+        let date = new Date()
+        date.setDate(date.getDate()-30)
+        
+        return date
+    },[]);
+
+    let fecha1 = useMemo(() => {
+        let date1 = new Date()
+        console.log(date1)
+        return date1
+    },[])
+
 
     const emptyFecha = {
         date1:fecha,
@@ -60,7 +71,7 @@ const ResumenVentas = () => {
             date2:`${fecha1.getFullYear()}-${fecha1.getMonth()+1}-${fecha1.getDate()}` 
         }
         console.log(fechas)
-        
+        console.log('useEfect')
         const storedProcedureVentas = new StoredProcedureVentas()
         storedProcedureVentas.GetVentasSubTotales(fechas).then(res => {
             if(res){
@@ -84,7 +95,7 @@ const ResumenVentas = () => {
             }
         })
         
-    },[]);
+    },[fecha, fecha1]);
     
     const lineData = {
         labels: SubTotalVentas.map((value) => {

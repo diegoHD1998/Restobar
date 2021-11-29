@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Calendar } from 'primereact/calendar'
 import { addLocale } from 'primereact/api';
 import StoredProcedureVentas from "../../service/InformeService/StoredProcedureVentas";
@@ -25,7 +25,10 @@ ChartJS.register(
 
 const VentasEmpleados = () =>  {
 
-    let fecha = new Date();
+    let fecha =  useMemo(() => {
+        let date = new Date()
+        return date
+    },[]);
 
     const emptyFecha = {
         date1: fecha
@@ -66,7 +69,7 @@ const VentasEmpleados = () =>  {
                 console.log("BackEnd Abajo");
             }
         });
-    }, []);
+    }, [fecha]);
 
     const basicData = {
         labels: VentasEmpleados.map((value) => `${value.nombre} ${value.apellido}`),

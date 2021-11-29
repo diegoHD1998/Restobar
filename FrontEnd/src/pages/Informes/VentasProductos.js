@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import {Calendar} from 'primereact/calendar'
@@ -27,9 +27,17 @@ import { Bar } from "react-chartjs-2";
 
 const VentasProductos = () => {
 
-    let fecha = new Date();
-    let fecha1 = new Date();
-    fecha.setDate(fecha.getDate()-30)
+    let fecha =  useMemo(() => {
+        let date = new Date()
+        date.setDate(date.getDate()-30)
+        return date
+    },[]);
+
+    let fecha1 = useMemo(() => {
+        let date1 = new Date()
+        console.log(date1)
+        return date1
+    },[])
 
     const emptyFecha = {
         date1:fecha,
@@ -75,7 +83,7 @@ const VentasProductos = () => {
             }
         })
         
-    },[]);
+    },[fecha, fecha1]);
     
     const basicData = {
         labels: VentasProducto.map(value => `${value.nombre} (${value.cantidad})`),

@@ -33,6 +33,9 @@ import Bartenders from './pages/Usuarios/Bartenders';
 import Cocineros from './pages/Usuarios/Cocineros';
 import Experimento2 from './pages/Experimento2';
 
+import Cocina from './pages/CocineroBartender/Cocina';
+import Bar from './pages/CocineroBartender/Bar';
+
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
@@ -114,6 +117,36 @@ const App = () => {
         }
          */
     }
+
+    const privateRouteA1 = () => {
+        if(user?.rol === 1)
+            return true
+        else
+            return false
+    }
+    
+    const privateRouteA2 = () => {
+        if(user?.rol === 1 || user?.rol === 2)
+            return true
+        else
+            return false
+    }
+    
+    const privateRouteA3 = () => {
+        if(user?.rol === 3)
+            return true
+        else
+            return false
+    }
+    
+    const privateRouteA4 = () => {
+        if(user?.rol === 4)
+            return true
+        else
+            return false
+    }
+
+
 
     const menu = [
         { label: 'Sala de Ventas', icon: 'pi pi-fw pi-home', to: '/' },
@@ -246,36 +279,35 @@ const App = () => {
             <div className="layout-main">
                 <Switch>
                     {/* Informes */}
-                    <Route exact path="/resumen-ventas"  component={ResumenVentas} />
-                    <Route exact path="/ventas-dia" component={VentasDelDia} /> 
-                    <Route exact path="/ventas-empleados"  component={VentasEmpleados} />
-                    <Route exact path="/ventas-producto"  component={VentasProductos} />
+                    { privateRouteA1() && <Route exact path="/resumen-ventas"  component={ResumenVentas} /> }
+                    { privateRouteA1() && <Route exact path="/ventas-dia" component={VentasDelDia} /> }
+                    { privateRouteA1() && <Route exact path="/ventas-empleados"  component={VentasEmpleados} />}
+                    { privateRouteA1() && <Route exact path="/ventas-producto"  component={VentasProductos} />}
 
                     {/* Productos */}
-                    <Route exact path="/lista-productos"  component={Productos} />
-                    <Route exact path="/categoria"  component={Categorias} />
-                    <Route exact path="/variantes"  component={Variantes} />
-                    <Route exact path="/modificadores"  component={Modificadores} />
+                    { privateRouteA2() && <Route exact path="/lista-productos"  component={Productos} />}
+                    { privateRouteA2() && <Route exact path="/categoria"  component={Categorias} />}
+                    { privateRouteA2() && <Route exact path="/variantes"  component={Variantes} />}
+                    { privateRouteA2() && <Route exact path="/modificadores"  component={Modificadores} />}
 
                     {/* Usuarios */}
-                    <Route exact path="/lista-administradores"  component={Admins} />
-                    <Route exact path="/lista-meseros"  component={Meseros} />
-                    <Route exact path="/lista-bartenders"  component={Bartenders} />
-                    <Route exact path="/lista-cocineros"  component={Cocineros} />
-
-                    <Route exact path="/roles"  component={Roles} />
+                    { privateRouteA1() && <Route exact path="/lista-administradores"  component={Admins} />}
+                    { privateRouteA1() && <Route exact path="/lista-meseros"  component={Meseros} />}
+                    { privateRouteA1() && <Route exact path="/lista-bartenders"  component={Bartenders} />}
+                    { privateRouteA1() && <Route exact path="/lista-cocineros"  component={Cocineros} />}
+                    { privateRouteA1() && <Route exact path="/roles"  component={Roles} />}
 
                     {/* Mesas */}
-                    <Route exact path="/lista-mesas"  component={Mesas} />
-                    <Route exact path="/zonas"  component={Zonas} />
+                    { privateRouteA2() && <Route exact path="/lista-mesas"  component={Mesas} />}
+                    { privateRouteA2() && <Route exact path="/zonas"  component={Zonas} />}
+                    { privateRouteA2() && <Route exact path="/pedido/:id/:name/:disp/:zona"  component={PedidosMesa}/>}
+                    { privateRouteA2() && <Route exact path="/salaVentas" component={SalaDeVentas} />}
 
-                    <Route exact path="/pedido/:id/:name/:disp/:zona"  component={PedidosMesa}/>
-
+                    { privateRouteA3() && <Route exact path="/cocina" component={Cocina}/>}
+                    { privateRouteA4() && <Route exact path="/bar" component={Bar}/>}
                     <Route exact path="/experimento2"  component={Experimento2} />
 
-                    <Route exact path="/salaVentas" component={SalaDeVentas} />
-
-                    <Redirect to='/salaVentas'/>
+                    { privateRouteA2() ? <Redirect to='/salaVentas'/> : privateRouteA3() ? <Redirect to='/cocina'/> : <Redirect to='/bar'/> }
 
                 </Switch>
             </div>
