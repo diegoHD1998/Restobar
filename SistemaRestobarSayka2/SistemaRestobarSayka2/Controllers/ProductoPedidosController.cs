@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaRestobarSayka2.Data;
 using SistemaRestobarSayka2.Models;
+using SistemaRestobarSayka2.Models.StoredProcedure;
 
 namespace SistemaRestobarSayka2.Controllers
 {
@@ -51,6 +52,26 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(productoPedido);
         }
 
+
+        // GET api/ProductoPedidos/Bar
+        [HttpGet("Bar")]
+        public async Task<ActionResult<IEnumerable<SP_ProductoPedido>>> GetSPBar()
+        {
+            var result = await _context.SP_Productopedido.FromSqlInterpolated($"Exec SP_ProductoPedidoBar").ToListAsync();
+            return Ok(result);
+        }
+
+
+
+        // GET api/ProductoPedidos/Cocina
+        [HttpGet("Cocina")]
+        public async Task<ActionResult<IEnumerable<SP_ProductoPedido>>> GetSPCocina()
+        {
+            var result = await _context.SP_Productopedido.FromSqlInterpolated($"Exec SP_ProductoPedidoCocina").ToListAsync();
+            return Ok(result);
+        }
+
+
         // PUT: api/ProductoPedidos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -58,7 +79,7 @@ namespace SistemaRestobarSayka2.Controllers
         {
             if (id != productoPedido.IdProductoPedido)
             {
-                return BadRequest();
+                return BadRequest("ProductoPedido No actualizado");
             }
 
             _context.Entry(productoPedido).State = EntityState.Modified;
@@ -82,6 +103,46 @@ namespace SistemaRestobarSayka2.Controllers
             return Ok(productoPedido);
         }
 
+
+        // PUT: api/ProductoPedidos/recepcion/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("recepcion/{id}")]
+        public async Task<IActionResult> PutRecepcionProductoPedido(int id)
+        {
+
+            var productoPedido = await _context.ProductoPedidos.FindAsync(id);
+
+            if ( productoPedido == null)
+            {
+                return BadRequest("ProductoPedido No encontrado para update");
+            }
+
+
+            productoPedido.Recepcion = true;
+            _context.Entry(productoPedido).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductoPedidoExists(id))
+                {
+                    return NotFound("ProductoPedido No Encontrado");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok(productoPedido.IdProductoPedido);
+        }
+
+
+
+
         // POST: api/ProductoPedidos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -91,6 +152,7 @@ namespace SistemaRestobarSayka2.Controllers
             {
                 productoPedido.Fecha = DateTime.Today;
                 productoPedido.Hora = DateTime.Now.TimeOfDay;
+                productoPedido.Recepcion = false;
                 _context.ProductoPedidos.Add(productoPedido);
                 await _context.SaveChangesAsync();
             }

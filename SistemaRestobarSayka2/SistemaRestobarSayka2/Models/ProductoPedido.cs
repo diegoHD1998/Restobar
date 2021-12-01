@@ -18,6 +18,7 @@ namespace SistemaRestobarSayka2.Models
         public TimeSpan? Hora { get; set; }
         public int ProductoIdProducto { get; set; }
         public int PedidoIdPedido { get; set; }
+        public bool Recepcion { get; set; }
 
         public virtual Pedido PedidoIdPedidoNavigation { get; set; }
         public virtual Producto ProductoIdProductoNavigation { get; set; }

@@ -637,7 +637,7 @@ export default function Productos ()  {
         return rowData.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits:0});
         
     }
-    console.log(producto)
+
     return (
         
         <div className="p-grid crud-demo">

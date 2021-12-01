@@ -153,8 +153,8 @@ const App = () => {
         {
             label: 'Informes', icon: 'pi pi-fw pi-chart-bar',
             items: [
-                { label: 'Resumen de Ventas', icon: 'pi pi-fw pi-bookmark', to: '/resumen-ventas' },
                 { label: 'Ventas del Dia', icon: 'pi pi-fw pi-bookmark' , to: '/ventas-dia'},
+                { label: 'Resumen de Ventas', icon: 'pi pi-fw pi-bookmark', to: '/resumen-ventas' },
                 /* { label: 'Ventas por Empleado', icon: 'pi pi-fw pi-bookmark', to: '/ventas-empleados' }, */
                 { label: 'Ventas por Producto', icon: 'pi pi-fw pi-bookmark', to: '/ventas-producto' },
             ]
