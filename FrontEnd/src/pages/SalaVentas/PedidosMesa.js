@@ -1077,7 +1077,7 @@ const PedidosMesa = () => {
                 </div>
             </Dialog>
 
-            <Dialog visible={dialogEfectivo}  footer={dialogFooterEfectivo}  showHeader={false} breakpoints={{ '960px': '80vw' }} style={{ width: '30vw' }} >
+            <Dialog visible={dialogEfectivo}  footer={dialogFooterEfectivo}  showHeader={false} breakpoints={{ '960px': '80vw' }} style={{ width: '30vw' }} onHide={hideDialogEfectivo} >
                 
             <div className="p-d-flex p-ai-center p-dir-col p-pt-6 p-px-3">
 
@@ -1095,7 +1095,7 @@ const PedidosMesa = () => {
                 
             </Dialog>
 
-            <Dialog visible={dialogTarjeta}  footer={dialogFooterTarjeta} showHeader={false} breakpoints={{ '960px': '80vw' }} style={{ width: '30vw' }} >
+            <Dialog visible={dialogTarjeta}  footer={dialogFooterTarjeta} showHeader={false} breakpoints={{ '960px': '80vw' }} style={{ width: '30vw' }} onHide={hideDialogTarjeta} >
 
                 <div className="p-d-flex p-ai-center p-dir-col p-pt-6 p-px-3">
                     <i className="pi pi-check-circle" style={{ fontSize: '5rem', color: 'var(--green-500)' }}></i>

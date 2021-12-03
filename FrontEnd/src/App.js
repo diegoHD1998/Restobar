@@ -243,7 +243,9 @@ const App = () => {
         return sidebarActive;
     };
 
-    const logo = layoutColorMode === 'dark' ? '/assets/layout/images/logo-white.svg' : '/assets/layout/images/logo.svg';
+/*     const logo = layoutColorMode === 'dark' ? '/assets/layout/images/LogoSaykaNegro.svg' : '/assets/layout/images/logo.svg'; */
+
+    const TextoLogo = layoutColorMode === 'dark' ? <span className='textoLogo blanco' >Sayka</span> : <span className='textoLogo negro' >Sayka</span>;
 
     const wrapperClass = classNames('layout-wrapper', {
         'layout-overlay': layoutMode === 'overlay',
@@ -266,7 +268,8 @@ const App = () => {
             <CSSTransition classNames="layout-sidebar" timeout={{ enter: 200, exit: 200 }} in={isSidebarVisible()} unmountOnExit>
                 <div ref={sidebar} className={sidebarClassName} onClick={onSidebarClick}>
                     <div className="layout-logo" style={{cursor: 'pointer'}} onClick={() => history.push('/')}>
-                        <img alt="Logo" src={logo} />
+                        {/* <img alt="Logo" src={logo} /> */}
+                        {TextoLogo}
                     </div>
                     <AppProfile />
                     <AppMenu model={user?.rol === 1 ? menu : user?.rol === 2 ? menu2 : user?.rol === 3 ? menu3 : menu4} onMenuItemClick={onMenuItemClick} />

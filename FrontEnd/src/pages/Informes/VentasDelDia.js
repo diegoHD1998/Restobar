@@ -62,6 +62,7 @@ const VentasDelDia = () => {
     
 
     useEffect(()=>{
+        
         let fechas = {
             date1:`${fecha.getFullYear()}-${fecha.getMonth()+1}-${fecha.getDate()}`,
         }

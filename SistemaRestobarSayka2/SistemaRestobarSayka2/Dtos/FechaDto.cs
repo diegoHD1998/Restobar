@@ -7,6 +7,6 @@ namespace SistemaRestobarSayka2.Dtos
 {
     public class FechaDto
     {
-        public DateTime Date1 { get; set; }
+        public string Date1 { get; set; }
     }
 }

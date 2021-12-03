@@ -7,8 +7,8 @@ namespace SistemaRestobarSayka2.Dtos
 {
     public class RangoFechaDto
     {
-        public DateTime Date1 { get; set; }
+        public string Date1 { get; set; }
 
-        public DateTime Date2 { get; set; }
+        public string Date2 { get; set; }
     }
 }
