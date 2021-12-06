@@ -770,7 +770,7 @@ const PedidosMesa = () => {
             return(
                 <>
                     <div className="ProductoItem" >
-                        <img src={`/assets/demo/images/product/black-watch.jpg`} alt={rowData.nombre} />
+                        <img src={`/assets/layout/images/sayka-favicon-100x100.png`} alt={rowData.nombre} />
                         <div className="detalle-producto">
                             <div className="nombreProducto">{rowData?.nombre}</div>
                             <i style={{color:`#${_categoria?.color}`}} className="pi pi-tag categoriaProductoIcon"></i><span className="categoriaProducto">{_categoria?.nombre}</span>
@@ -888,8 +888,8 @@ const PedidosMesa = () => {
         </div>
         
     )
-    const dialogFooterEfectivo = <div className="p-d-flex p-jc-center"><Button label="OK" className="p-button-text" autoFocus onClick={() => hideDialogEfectivo()} /></div>;
-    const dialogFooterTarjeta = <div className="p-d-flex p-jc-center"><Button label="OK" className="p-button-text" autoFocus onClick={() => hideDialogTarjeta()} /></div>;
+    const dialogFooterEfectivo = <div className="p-d-flex p-jc-center"><Button label="Finalizar Venta" className="p-button-text" autoFocus onClick={() => hideDialogEfectivo()} /></div>;
+    const dialogFooterTarjeta = <div className="p-d-flex p-jc-center"><Button label="Finalizar Venta" className="p-button-text" autoFocus onClick={() => hideDialogTarjeta()} /></div>;
 
     let headerGroup = <ColumnGroup>                    
                         <Row>
@@ -1079,19 +1079,20 @@ const PedidosMesa = () => {
 
             <Dialog visible={dialogEfectivo}  footer={dialogFooterEfectivo}  showHeader={false} breakpoints={{ '960px': '80vw' }} style={{ width: '30vw' }} onHide={hideDialogEfectivo} >
                 
-            <div className="p-d-flex p-ai-center p-dir-col p-pt-6 p-px-3">
-
-                    <div>
-                        <span>Total: {Total} </span>
-                        <span>Vuelto: {Vuelto} </span>
-                    </div>
-
+                <div className="p-d-flex p-ai-center p-dir-col p-pt-6 p-px-3">
                     <i className="pi pi-check-circle" style={{ fontSize: '5rem', color: 'var(--green-500)' }}></i>
-                    <h5>Venta registrada Exitosamente</h5>
+                    <h4>
+                        <b>Venta Registrada Exitosamente</b>
+                        
+                    </h4>
+                    <div style={{fontSize:'18px',fontWeight:'bold'}} >
+                        <span>Total: {formatCurrency(Total)} </span>
+                        <span>Vuelto: {formatCurrency(Vuelto)} </span>
+                    </div>
                     <p style={{ lineHeight: 1.5, textIndent: '1rem' }}>
-                        texto relleno Efectivo
+                        Metodo de Pago Efectivo
                     </p>
-            </div>
+                </div>
                 
             </Dialog>
 
@@ -1099,9 +1100,14 @@ const PedidosMesa = () => {
 
                 <div className="p-d-flex p-ai-center p-dir-col p-pt-6 p-px-3">
                     <i className="pi pi-check-circle" style={{ fontSize: '5rem', color: 'var(--green-500)' }}></i>
-                    <h5>Venta registrada Exitosamente</h5>
+                    <h4>
+                        <b>Venta Registrada Exitosamente</b>
+                    </h4>
+                    <div style={{fontSize:'18px',fontWeight:'bold'}}>
+                        <span>Total: {formatCurrency(Total)} </span>
+                    </div>
                     <p style={{ lineHeight: 1.5, textIndent: '1rem' }}>
-                        texto relleno Tarjeta
+                        Metodo de Pago Tarjeta
                     </p>
                 </div>
 

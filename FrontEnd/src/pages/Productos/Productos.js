@@ -700,10 +700,10 @@ export default function Productos ()  {
                             {submitted && !producto.estado && <small className="p-invalid">Estado Requerido.</small>}
                         </div>
 
-                        <div className="p-field" /* style={{height:'150px'}} */>
+                        {/* <div className="p-field" >
                             <label htmlFor="imagen">Imagen</label>
-                            <InputText id="imagen" value={producto.imagen} onChange={(e) => onInputChange(e, 'imagen')} /* className={classNames({ 'p-invalid': submitted && !producto.imagen })} */ />
-                        </div>
+                            <InputText id="imagen" value={producto.imagen} onChange={(e) => onInputChange(e, 'imagen')}  />
+                        </div> */}
 
                         
                         <div className="p-field">

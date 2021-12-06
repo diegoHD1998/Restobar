@@ -191,7 +191,7 @@ const App = () => {
                 
             ]
         },
-        { label: 'Experimento', icon: 'pi pi-fw pi-home', to: '/experimento2' },
+        /* { label: 'Experimento', icon: 'pi pi-fw pi-home', to: '/experimento2' }, */
     ];
 
     const menu2 = [
